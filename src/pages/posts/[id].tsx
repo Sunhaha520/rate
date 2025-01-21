@@ -1,9 +1,8 @@
-import { GetStaticPaths, GetStaticProps } from 'next';
+import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
 import { getPostData, getSortedPostsData } from '@/lib/posts';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import DOMPurify from 'dompurify';
 
 interface PostProps {
   postData: {
@@ -14,11 +13,26 @@ interface PostProps {
   };
 }
 
-export default function Post({ postData }: PostProps) {
+export default function Post({ postData }: InferGetStaticPropsType<typeof getStaticProps>) {
   const titleRef = useRef<HTMLHeadingElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const [cleanHtml, setCleanHtml] = useState('');
 
+  // 动态加载 DOMPurify 并清理 HTML 内容
+  useEffect(() => {
+    import('dompurify').then((module) => {
+      // 创建 DOMPurify 实例
+      const DOMPurify = module.default(window) as {
+        sanitize: (input: string) => string;
+      };
+      if (postData.contentHtml) {
+        setCleanHtml(DOMPurify.sanitize(postData.contentHtml));
+      }
+    });
+  }, [postData.contentHtml]);
+
+  // IntersectionObserver 逻辑
   useEffect(() => {
     const titleElement = titleRef.current;
     const dateElement = dateRef.current;
@@ -44,14 +58,9 @@ export default function Post({ postData }: PostProps) {
     if (contentElement) observer.observe(contentElement);
 
     return () => {
-      if (titleElement) observer.unobserve(titleElement);
-      if (dateElement) observer.unobserve(dateElement);
-      if (contentElement) observer.unobserve(contentElement);
+      observer.disconnect(); // 清理时断开所有观察
     };
   }, []);
-
-  // 清理 HTML 内容
-  const cleanHtml = DOMPurify.sanitize(postData.contentHtml);
 
   return (
     <div className="min-h-screen bg-gray-50">
