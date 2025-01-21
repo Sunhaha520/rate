@@ -3,6 +3,7 @@ import { getPostData, getSortedPostsData } from '@/lib/posts';
 import { useEffect, useRef } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import DOMPurify from 'dompurify';
 
 interface PostProps {
   postData: {
@@ -19,6 +20,10 @@ export default function Post({ postData }: PostProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const titleElement = titleRef.current;
+    const dateElement = dateRef.current;
+    const contentElement = contentRef.current;
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -34,16 +39,19 @@ export default function Post({ postData }: PostProps) {
       }
     );
 
-    if (titleRef.current) observer.observe(titleRef.current);
-    if (dateRef.current) observer.observe(dateRef.current);
-    if (contentRef.current) observer.observe(contentRef.current);
+    if (titleElement) observer.observe(titleElement);
+    if (dateElement) observer.observe(dateElement);
+    if (contentElement) observer.observe(contentElement);
 
     return () => {
-      if (titleRef.current) observer.unobserve(titleRef.current);
-      if (dateRef.current) observer.unobserve(dateRef.current);
-      if (contentRef.current) observer.unobserve(contentRef.current);
+      if (titleElement) observer.unobserve(titleElement);
+      if (dateElement) observer.unobserve(dateElement);
+      if (contentElement) observer.unobserve(contentElement);
     };
   }, []);
+
+  // 清理 HTML 内容
+  const cleanHtml = DOMPurify.sanitize(postData.contentHtml);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -74,7 +82,7 @@ export default function Post({ postData }: PostProps) {
         <div
           ref={contentRef}
           className="prose opacity-0 translate-y-10 transition-all duration-500 delay-200"
-          dangerouslySetInnerHTML={{ __html: postData.contentHtml }}
+          dangerouslySetInnerHTML={{ __html: cleanHtml }}
         />
       </main>
 

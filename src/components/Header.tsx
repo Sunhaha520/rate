@@ -17,7 +17,6 @@ interface NavItem {
 
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const [activeMenu, setActiveMenu] = useState<number | null>(null);
 
     const navItems: NavItem[] = [
         { id: 1, name: 'Home', href: '/' },
@@ -54,11 +53,7 @@ const Header = () => {
                         {/* 桌面端菜单 */}
                         <ul className="hidden lg:flex space-x-8">
                             {navItems.map(item => (
-                                <li key={item.id} 
-                                    className="relative group"
-                                    onMouseEnter={() => setActiveMenu(item.id)}
-                                    onMouseLeave={() => setActiveMenu(null)}
-                                >
+                                <li key={item.id} className="relative group">
                                     <a href={item.href} 
                                        className="block py-2 hover:text-blue-500 transition-colors">
                                         {item.name}
@@ -93,7 +88,11 @@ const Header = () => {
                         </ul>
 
                         {/* 移动端和平板端菜单按钮 */}
-                        <button onClick={toggleMenu} className="lg:hidden focus:outline-none">
+                        <button 
+                            onClick={toggleMenu} 
+                            className="lg:hidden focus:outline-none"
+                            aria-label="Toggle Menu"
+                        >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
@@ -107,13 +106,13 @@ const Header = () => {
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-4">
                                 <span className="font-bold">菜单</span>
-                                <button onClick={toggleMenu}>
+                                <button onClick={toggleMenu} aria-label="Close Menu">
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                                     </svg>
                                 </button>
                             </div>
-                            <ul className="space-y-4">
+                            <ul className="space-y-4 overflow-y-auto">
                                 {navItems.map(item => (
                                     <li key={item.id}>
                                         {item.children ? (
