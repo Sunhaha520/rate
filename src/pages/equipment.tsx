@@ -15,13 +15,20 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
     // 预加载图片
     useEffect(() => {
         const preloadImages = async () => {
-            const imagePromises = devices.map((device) => {
-                const img = new Image();
-                img.src = device.image;
-                return img.decode();
-            });
-            await Promise.all(imagePromises);
-            setLoading(false);
+            try {
+                const imagePromises = devices.map((device) => {
+                    const img = new Image();
+                    img.src = device.image;
+                    return img.decode().catch(() => {
+                        console.error(`Failed to load image: ${device.image}`);
+                    });
+                });
+                await Promise.all(imagePromises);
+            } catch (error) {
+                console.error('Error preloading images:', error);
+            } finally {
+                setLoading(false); // 无论成功与否，都关闭 loading
+            }
         };
 
         preloadImages();
@@ -54,7 +61,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
         return () => {
             observer.disconnect();
         };
-    }, []);
+    }, [devices]); // 添加 devices 作为依赖
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -83,7 +90,9 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                         {devices.map((device, index) => (
                             <div
                                 key={device.id}
-                                ref={(el) => (cardRefs.current[index] = el)} // 绑定卡片引用
+                                ref={(el) => {
+                                    cardRefs.current[index] = el; // 绑定卡片引用
+                                }}
                                 data-index={index} // 记录卡片索引
                                 className={`bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 ${
                                     visibleCards.includes(index)
