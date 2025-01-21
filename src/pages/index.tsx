@@ -18,10 +18,15 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
     // 预加载 Banner 图片
     useEffect(() => {
         const preloadBanner = async () => {
-            const bannerImage = new Image();
-            bannerImage.src = '/img/banner.webp';
-            await bannerImage.decode();
-            setLoading(false);
+            try {
+                const bannerImage = new Image();
+                bannerImage.src = '/img/banner.webp';
+                await bannerImage.decode();
+            } catch (error) {
+                console.error('Error preloading banner image:', error);
+            } finally {
+                setLoading(false); // 无论成功与否，都关闭 loading
+            }
         };
 
         preloadBanner();
@@ -54,7 +59,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
         return () => {
             observer.disconnect();
         };
-    }, []);
+    }, [researchDirections]); // 添加 researchDirections 作为依赖
 
     // Intersection Observer 配置（用于新闻）
     useEffect(() => {
@@ -83,7 +88,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
         return () => {
             observer.disconnect();
         };
-    }, []);
+    }, [latestPosts]); // 添加 latestPosts 作为依赖
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -144,7 +149,9 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         {researchDirections.map((card, index) => (
                             <div
                                 key={card.id}
-                                ref={(el) => (cardRefs.current[index] = el)} // 绑定卡片引用
+                                ref={(el) => {
+                                    cardRefs.current[index] = el; // 绑定卡片引用
+                                }}
                                 data-index={index} // 记录卡片索引
                                 className={`bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
                                     visibleCards.includes(index)
@@ -180,7 +187,9 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         {latestPosts.map((post, index) => (
                             <div
                                 key={post.id}
-                                ref={(el) => (newsRefs.current[index] = el)} // 绑定新闻引用
+                                ref={(el) => {
+                                    newsRefs.current[index] = el; // 绑定新闻引用
+                                }}
                                 data-index={index} // 记录新闻索引
                                 className={`bg-white rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
                                     visibleNews.includes(index)
