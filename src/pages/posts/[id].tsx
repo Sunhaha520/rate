@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 interface PostProps {
   postData: {
     id: string;
