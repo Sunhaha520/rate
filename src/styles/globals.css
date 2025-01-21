@@ -59,3 +59,7 @@ body {
 	padding-top: 2rem;
 	padding-bottom: 2rem;
 }
+
+img {
+  font-size: 0; /* 隐藏 alt 文字 */
+}
