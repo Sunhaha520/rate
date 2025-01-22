@@ -1,11 +1,32 @@
 'use client'; // 标记为客户端组件
 
 import { useTheme } from 'next-themes';
+import { useEffect } from 'react';
 
 export default function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
-  // 如果 theme 为 undefined，默认显示 ☀️
+  // 监听系统主题变化
+  useEffect(() => {
+    const handleSystemThemeChange = (e: MediaQueryListEvent) => {
+      const systemTheme = e.matches ? 'dark' : 'light';
+      setTheme(systemTheme);
+    };
+
+    const systemThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    systemThemeQuery.addEventListener('change', handleSystemThemeChange);
+
+    // 初始化时设置系统主题
+    if (theme === 'system' || theme === undefined) {
+      setTheme(systemThemeQuery.matches ? 'dark' : 'light');
+    }
+
+    return () => {
+      systemThemeQuery.removeEventListener('change', handleSystemThemeChange);
+    };
+  }, [theme, setTheme]);
+
+  // 根据 theme 显示图标
   const currentTheme = theme === 'dark' ? '🌙' : '☀️';
 
   return (

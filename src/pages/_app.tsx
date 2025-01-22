@@ -21,7 +21,7 @@ const ThemeToggle = dynamic(() => import('@/components/ThemeToggle'), {
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <ThemeProvider attribute="class" enableSystem={false}>
+    <ThemeProvider attribute="class" enableSystem>
       <main className={`${geistSans.variable} ${geistMono.variable}`}>
         <Component {...pageProps} />
         <ThemeToggle />
