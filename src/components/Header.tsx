@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
-import Head from 'next/head';
 
 interface SubNavItem {
     id: number;
