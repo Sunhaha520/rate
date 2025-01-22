@@ -11,10 +11,10 @@ export default function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="fixed bottom-4 right-4 p-3 bg-gray-200/50 dark:bg-gray-700/50 backdrop-blur-lg rounded-full shadow-lg border border-gray-300/20 dark:border-gray-600/20 hover:bg-gray-300/50 dark:hover:bg-gray-600/50 transition-colors duration-300"
+      className="fixed bottom-4 right-4 w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center bg-gray-200/50 dark:bg-gray-700/50 backdrop-blur-lg rounded-full shadow-lg border border-gray-300/20 dark:border-gray-600/20 hover:bg-gray-300/50 dark:hover:bg-gray-600/50 transition-colors duration-300"
       aria-label="Toggle dark mode"
     >
-      <span className="text-xl">{currentTheme}</span>
+      <span className="text-lg sm:text-xl">{currentTheme}</span>
     </button>
   );
 }
