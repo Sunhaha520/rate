@@ -109,8 +109,10 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         <div className="absolute inset-0 bg-black bg-opacity-30"></div>
                         <div className="relative z-10 text-center text-white flex items-center space-x-4">
                             <div>
-                                <h1 className="text-3xl md:text-4xl font-bold">RATE@UM</h1>
-                                <p className="text-lg">Research Group of Advanced Technologies in Engineering</p>
+                                <h1 className="text-3xl md:text-4xl font-bold !text-white">RATE@UM</h1>
+                                <p className="text-lg !text-white">
+                                    Research Group of Advanced Technologies in Engineering
+                                </p>
                             </div>
                         </div>
                     </div>
@@ -132,9 +134,13 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
 
                         {/* Text Section */}
                         <div className="p-6 md:w-2/3 order-1 md:order-2">
-                            <h3 className="text-xl font-semibold mb-4 text-center md:text-left dark:text-white">👋 Here is RATE@UM</h3>
+                            <h3 className="text-xl font-semibold mb-4 text-center md:text-left dark:text-white">
+                                👋 Here is RATE@UM
+                            </h3>
                             <p className="text-gray-700 dark:text-gray-300">
-                                RATE@UM, a research team at the University of Macau, focuses on engineering innovation, covering architecture, construction, and smart technologies to enhance industry efficiency and sustainability.
+                                RATE@UM, a research team at the University of Macau, focuses on engineering innovation,
+                                covering architecture, construction, and smart technologies to enhance industry
+                                efficiency and sustainability.
                             </p>
                         </div>
                     </div>
@@ -179,51 +185,50 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                 </section>
 
                 {/* Latest News Section */}
-                {/* Latest News Section */}
-<section className="mt-8">
-    <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">
-        📰 Latest News
-    </h2>
-    <div className="space-y-6">
-        {latestPosts.map((post, index) => (
-            <div
-                key={post.id}
-                ref={(el) => {
-                    newsRefs.current[index] = el; // 绑定新闻引用
-                }}
-                data-index={index}
-                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
-                    visibleNews.includes(index)
-                        ? 'opacity-100 translate-y-0'
-                        : 'opacity-0 translate-y-10'
-                }`}
-            >
-                <div className="flex flex-col md:flex-row transform transition-transform duration-300 hover:scale-105">
-                    {/* 图片部分 */}
-                    <div className="md:w-1/3">
-                        <img
-                            src={post.picture}
-                            alt={post.title}
-                            className="object-cover w-full h-48 md:h-full"
-                        />
+                <section className="mt-8">
+                    <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">
+                        📰 Latest News
+                    </h2>
+                    <div className="space-y-6">
+                        {latestPosts.map((post, index) => (
+                            <div
+                                key={post.id}
+                                ref={(el) => {
+                                    newsRefs.current[index] = el; // 绑定新闻引用
+                                }}
+                                data-index={index}
+                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
+                                    visibleNews.includes(index)
+                                        ? 'opacity-100 translate-y-0'
+                                        : 'opacity-0 translate-y-10'
+                                }`}
+                            >
+                                <div className="flex flex-col md:flex-row transform transition-transform duration-300 hover:scale-105">
+                                    {/* 图片部分 */}
+                                    <div className="md:w-1/3">
+                                        <img
+                                            src={post.picture}
+                                            alt={post.title}
+                                            className="object-cover w-full h-48 md:h-full"
+                                        />
+                                    </div>
+                                    {/* 标题、发布时间和简介部分 */}
+                                    <div className="p-6 md:w-2/3">
+                                        <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
+                                        <p className="text-sm text-gray-500 mb-4">Published on: {post.date}</p>
+                                        <p className="text-gray-700 dark:text-gray-300">{post.summary}</p>
+                                        <a
+                                            href={`/posts/${post.id}`}
+                                            className="inline-block mt-4 px-6 py-2 !bg-blue-500 !text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                                        >
+                                            Read More
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
                     </div>
-                    {/* 标题、发布时间和简介部分 */}
-                    <div className="p-6 md:w-2/3">
-                        <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
-                        <p className="text-sm text-gray-500 mb-4">Published on: {post.date}</p>
-                        <p className="text-gray-700 dark:text-gray-300">{post.summary}</p>
-                        <a
-                            href={`/posts/${post.id}`}
-                            className="inline-block mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                        >
-                            Read More
-                        </a>
-                    </div>
-                </div>
-            </div>
-        ))}
-    </div>
-</section>
+                </section>
             </main>
 
             <Footer />

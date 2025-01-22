@@ -52,8 +52,8 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                 });
             },
             {
-                rootMargin: '0px 0px 0px 0px', // 调整为 0
-                threshold: 0.01, // 降低阈值
+                rootMargin: '0px 0px -50px 0px', // 提前50px触发动画
+                threshold: 0.1, // 当元素10%进入视口时触发
             }
         );
 
@@ -66,7 +66,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
         return () => {
             observer.disconnect();
         };
-    }, [devices]); // 添加 devices 作为依赖
+    }, [mounted, theme]); // 依赖 mounted 和 theme
 
     // 确保组件在客户端渲染后再应用主题
     useEffect(() => {
@@ -90,7 +90,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
 
             <main className="container mx-auto px-4 py-8">
                 {/* Devices Section */}
-                <section className="mt-8">
+                <section className="">
                     {/* 标题卡片 */}
                     <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
                         <h2 className="text-3xl font-bold mb-4">🛠️ Our Equipment</h2>
@@ -106,13 +106,12 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                                 key={device.id}
                                 ref={(el) => {
                                     cardRefs.current[index] = el; // 绑定卡片引用
-                                    console.log(`Ref for card ${index} set`); // 添加日志
                                 }}
                                 data-index={index} // 记录卡片索引
                                 className={`rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 ${
                                     visibleCards.includes(index)
                                         ? 'opacity-100 translate-y-0' // 可见时的样式
-                                        : '' // 删除 opacity-0 translate-y-10
+                                        : 'opacity-0 translate-y-10' // 不可见时的样式
                                 } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
                                 style={{ minHeight: '300px' }} // 确保卡片有最小高度
                             >

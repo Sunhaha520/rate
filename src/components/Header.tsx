@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
 
@@ -20,10 +20,28 @@ const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const { theme } = useTheme(); // 获取当前主题
     const [mounted, setMounted] = useState(false);
+    const menuRef = useRef<HTMLDivElement>(null); // 用于引用菜单面板
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    // 监听点击事件，关闭菜单
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+                setMenuOpen(false); // 点击菜单面板外部时关闭菜单
+            }
+        };
+
+        // 添加点击事件监听器
+        document.addEventListener('mousedown', handleClickOutside);
+
+        // 清理监听器
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [menuRef]);
 
     if (!mounted) {
         return null; // 或者返回一个加载中的占位符
@@ -81,8 +99,8 @@ const Header = () => {
                                         <ul className={`absolute left-0 top-full pt-5 min-w-[200px]
                                                       invisible opacity-0 translate-y-2
                                                       group-hover:visible group-hover:opacity-100 group-hover:translate-y-0
-                                                      transition-all duration-300 ease-out ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'}`}>
-                                            <div className={`rounded-lg shadow-lg py-2 border ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200'}`}>
+                                                      transition-all duration-300 ease-out `}>
+                                            <div className={`rounded-lg shadow-lg py-2 border ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200' }`}>
                                                 {item.children.map(child => (
                                                     <li key={child.id}>
                                                         <a href={child.href}
@@ -112,11 +130,18 @@ const Header = () => {
                 </nav>
 
                 {/* 移动端和平板端菜单面板 */}
-                <div className={`lg:hidden fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}>
-                    <div className={`fixed top-0 left-0 h-full w-64 shadow-lg transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : '-translate-x-full'} ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+                <div 
+                    className={`lg:hidden fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                    onClick={toggleMenu} // 点击空白区域关闭菜单
+                >
+                    <div 
+                        ref={menuRef} // 绑定菜单面板的引用
+                        className={`fixed top-0 left-0 h-full w-64 shadow-lg transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : '-translate-x-full'} ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
+                        onClick={(e) => e.stopPropagation()} // 阻止点击菜单面板内部时冒泡
+                    >
                         <div className="p-4">
                             <div className="flex justify-between items-center mb-4">
-                                <span className="font-bold">菜单</span>
+                                <span className="font-bold"> Menu</span>
                                 <button onClick={toggleMenu} aria-label="Close Menu">
                                     <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
