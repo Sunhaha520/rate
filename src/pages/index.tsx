@@ -15,9 +15,6 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
     const [visibleNews, setVisibleNews] = useState<number[]>([]);
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
     const newsRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const { theme, setTheme } = useTheme();
-
-    
 
     // 预加载 Banner 图片
     useEffect(() => {
