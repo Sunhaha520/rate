@@ -5,14 +5,6 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useTheme } from 'next-themes';
 
-interface PostProps {
-  postData: {
-    id: string;
-    title: string;
-    date: string;
-    contentHtml: string;
-  };
-}
 
 export default function Post({ postData }: InferGetStaticPropsType<typeof getStaticProps>) {
   const titleRef = useRef<HTMLHeadingElement>(null);
