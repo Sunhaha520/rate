@@ -179,50 +179,51 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                 </section>
 
                 {/* Latest News Section */}
-                <section className="mt-8">
-                    <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">
-                        📰 Latest News
-                    </h2>
-                    <div className="space-y-6">
-                        {latestPosts.map((post, index) => (
-                            <div
-                                key={post.id}
-                                ref={(el) => {
-                                    newsRefs.current[index] = el; // 绑定新闻引用
-                                }}
-                                data-index={index}
-                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
-                                    visibleNews.includes(index)
-                                        ? 'opacity-100 translate-y-0'
-                                        : 'opacity-0 translate-y-10'
-                                }`}
-                            >
-                                <div className="flex flex-col md:flex-row">
-                                    {/* 图片部分 */}
-                                    <div className="md:w-1/3">
-                                        <img
-                                            src={post.picture}
-                                            alt={post.title}
-                                            className="object-cover w-full h-48 md:h-full"
-                                        />
-                                    </div>
-                                    {/* 标题、发布时间和简介部分 */}
-                                    <div className="p-6 md:w-2/3">
-                                        <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
-                                        <p className="text-sm text-gray-500 mb-4">Published on: {post.date}</p>
-                                        <p className="text-gray-700 dark:text-gray-300">{post.summary}</p>
-                                        <a
-                                            href={`/posts/${post.id}`}
-                                            className="inline-block mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
-                                        >
-                                            Read More
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                {/* Latest News Section */}
+<section className="mt-8">
+    <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">
+        📰 Latest News
+    </h2>
+    <div className="space-y-6">
+        {latestPosts.map((post, index) => (
+            <div
+                key={post.id}
+                ref={(el) => {
+                    newsRefs.current[index] = el; // 绑定新闻引用
+                }}
+                data-index={index}
+                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
+                    visibleNews.includes(index)
+                        ? 'opacity-100 translate-y-0'
+                        : 'opacity-0 translate-y-10'
+                }`}
+            >
+                <div className="flex flex-col md:flex-row transform transition-transform duration-300 hover:scale-105">
+                    {/* 图片部分 */}
+                    <div className="md:w-1/3">
+                        <img
+                            src={post.picture}
+                            alt={post.title}
+                            className="object-cover w-full h-48 md:h-full"
+                        />
                     </div>
-                </section>
+                    {/* 标题、发布时间和简介部分 */}
+                    <div className="p-6 md:w-2/3">
+                        <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
+                        <p className="text-sm text-gray-500 mb-4">Published on: {post.date}</p>
+                        <p className="text-gray-700 dark:text-gray-300">{post.summary}</p>
+                        <a
+                            href={`/posts/${post.id}`}
+                            className="inline-block mt-4 px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                        >
+                            Read More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        ))}
+    </div>
+</section>
             </main>
 
             <Footer />

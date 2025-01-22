@@ -11,14 +11,14 @@
 }
 
 .dark {
-  --background: #0a0a0a;
+  --background: #1f2937cc;
   --foreground: #ffffff;
   --background-image: linear-gradient(90deg, rgba(193, 209, 226, 0.15) 3%, transparent 0), linear-gradient(1turn, rgba(159, 219, 252, 0.15) 3%, transparent 0); /* 夜间模式背景图像 */
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #1f2937cc;
     --foreground: #ededed;
     --background-image: linear-gradient(90deg, rgba(193, 209, 226, 0.15) 3%, transparent 0), linear-gradient(1turn, rgba(159, 219, 252, 0.15) 3%, transparent 0);
   }
@@ -40,6 +40,13 @@ h1, h2, h3, p, a {
 }
 
 .bg-gray-50 {
+  --tw-bg-opacity: 1;
+  background-image: var(--background-image);
+  background-size: var(--background-size);
+  background-position: var(--background-position);
+}
+
+.bg-gray-900 {
   --tw-bg-opacity: 1;
   background-image: var(--background-image);
   background-size: var(--background-size);
