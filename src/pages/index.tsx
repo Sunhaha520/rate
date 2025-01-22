@@ -149,7 +149,9 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         {researchDirections.map((card, index) => (
                             <div
                                 key={card.id}
-                                ref={(el) => (cardRefs.current[index] = el)}
+                                ref={(el) => {
+                                    cardRefs.current[index] = el; // 绑定卡片引用
+                                }}
                                 data-index={index}
                                 className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105 ${
                                     visibleCards.includes(index)
@@ -185,7 +187,9 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         {latestPosts.map((post, index) => (
                             <div
                                 key={post.id}
-                                ref={(el) => (newsRefs.current[index] = el)}
+                                ref={(el) => {
+                                    newsRefs.current[index] = el; // 绑定新闻引用
+                                }}
                                 data-index={index}
                                 className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
                                     visibleNews.includes(index)
