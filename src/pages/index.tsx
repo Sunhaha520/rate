@@ -17,10 +17,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
     const newsRefs = useRef<(HTMLDivElement | null)[]>([]);
     const { theme, setTheme } = useTheme();
 
-    // 切换主题
-    const toggleTheme = () => {
-        setTheme(theme === 'dark' ? 'light' : 'dark');
-    };
+    
 
     // 预加载 Banner 图片
     useEffect(() => {
