@@ -49,7 +49,7 @@ const NotFoundPage: React.FC = () => {
                     {/* 404 标题和描述 */}
                     <div className="text-center">
                         <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8">
-                            Oops! The page you're looking for doesn't exist.
+                        Oops! The page you&apos;re looking for doesn&apos;t exist.
                         </p>
 
                         {/* Go Back Home 按钮 */}
