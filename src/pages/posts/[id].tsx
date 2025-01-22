@@ -1,10 +1,10 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
+import Head from 'next/head'; // 引入 Head 组件
 import { getPostData, getSortedPostsData } from '@/lib/posts';
 import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useTheme } from 'next-themes';
-
 
 export default function Post({ postData }: InferGetStaticPropsType<typeof getStaticProps>) {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -67,6 +67,15 @@ export default function Post({ postData }: InferGetStaticPropsType<typeof getSta
 
   return (
     <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+      {/* 动态设置 Head 内容 */}
+      <Head>
+        <title>{postData.title} - RATE@UM</title>
+        <meta name="description" content={postData.excerpt || 'A news post from RATE@UM.'} />
+        <meta property="og:title" content={`${postData.title} - RATE@UM`} />
+        <meta property="og:description" content={postData.excerpt || 'A news post from RATE@UM.'} />
+        <meta property="og:type" content="article" />
+      </Head>
+
       <header>
         <Header />
       </header>

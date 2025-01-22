@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
+import Head from 'next/head'; // 引入 Head 组件
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { getSortedPostsData, PostData } from '@/lib/posts';
+import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
 
 interface NewsProps {
     allPosts: PostData[];
@@ -12,6 +14,13 @@ const News: React.FC<NewsProps> = ({ allPosts }) => {
     const [visiblePosts, setVisiblePosts] = useState<PostData[]>([]);
     const [loadedCount, setLoadedCount] = useState(5); // 初始加载的新闻数量
     const newsRefs = useRef<(HTMLDivElement | null)[]>([]);
+    const { theme } = useTheme(); // 获取当前主题
+    const [mounted, setMounted] = useState(false); // 确保组件在客户端渲染后再应用主题
+
+    // 确保组件在客户端渲染后再应用主题
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     // 初始加载新闻
     useEffect(() => {
@@ -50,16 +59,35 @@ const News: React.FC<NewsProps> = ({ allPosts }) => {
         };
     }, [visiblePosts]);
 
+    if (!mounted) {
+        return null; // 在服务器端渲染时不渲染内容，避免闪烁
+    }
+
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            {/* 动态设置 Head 内容 */}
+            <Head>
+                <title>All News - RATE@UM</title>
+                <meta name="description" content="Stay updated with the latest news from RATE@UM." />
+                <meta property="og:title" content="All News - RATE@UM" />
+                <meta property="og:description" content="Stay updated with the latest news from RATE@UM." />
+                <meta property="og:type" content="website" />
+            </Head>
+
             <Header />
 
             <main className="container mx-auto px-4 py-8">
                 {/* News Section */}
-                <section className="mt-8">
-                    <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">
-                        📰 All News
-                    </h2>
+                <section className="">
+                    {/* 标题卡片 */}
+                    <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+                        <h2 className="text-3xl font-bold mb-4 text-center">📰 All News</h2>
+                        <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                            Stay updated with the latest news from RATE@UM.
+                        </p>
+                    </div>
+
+                    {/* 新闻列表 */}
                     <div className="space-y-6">
                         {visiblePosts.map((post, index) => (
                             <div

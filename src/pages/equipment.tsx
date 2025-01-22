@@ -1,5 +1,6 @@
 "use client"; // 确保在客户端渲染
 import React, { useState, useEffect, useRef } from 'react';
+import Head from 'next/head'; // 引入 Head 组件
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { devices, Device } from '@/data/devices'; // 引入设备数据
@@ -79,6 +80,15 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
 
     return (
         <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+            {/* 动态设置 Head 内容 */}
+            <Head>
+                <title>Our Equipment - RATE@UM</title>
+                <meta name="description" content="Explore the advanced equipment in our laboratory at RATE@UM." />
+                <meta property="og:title" content="Our Equipment - RATE@UM" />
+                <meta property="og:description" content="Explore the advanced equipment in our laboratory at RATE@UM." />
+                <meta property="og:type" content="website" />
+            </Head>
+
             {/* Loading Overlay */}
             {loading && (
                 <div className={`fixed inset-0 z-50 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 bg-opacity-80' : 'bg-gray-100 bg-opacity-80'}`}>
@@ -93,11 +103,13 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                 <section className="">
                     {/* 标题卡片 */}
                     <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        <h2 className="text-3xl font-bold mb-4">🛠️ Our Equipment</h2>
-                        <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                            Explore the advanced equipment in our laboratory.
-                        </p>
-                    </div>
+    {/* 标题居中 */}
+    <h2 className="text-3xl font-bold mb-4 text-center">🛠️ Our Equipment</h2>
+    {/* 副标题居中 */}
+    <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+        Explore the advanced equipment in our laboratory.
+    </p>
+</div>
 
                     {/* 设备卡片 */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
