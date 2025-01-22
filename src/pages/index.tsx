@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTheme } from 'next-themes';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { researchDirections } from '@/data/researchDirections';
