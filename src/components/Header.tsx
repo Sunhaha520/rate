@@ -18,7 +18,7 @@ interface NavItem {
 
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const { theme, systemTheme } = useTheme(); // 获取当前主题
+    const { theme } = useTheme(); // 获取当前主题
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
