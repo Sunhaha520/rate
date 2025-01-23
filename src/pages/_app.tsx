@@ -25,6 +25,7 @@ export default function App({ Component, pageProps }: AppProps) {
     <ThemeProvider attribute="class" enableSystem>
       {/* 全局 Head 内容 */}
       <Head>
+        <html lang="en" /> {/* 设置 lang 属性 */}
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta name="description" content="RATE@UM - Research Group of Advanced Technologies in Engineering" />
