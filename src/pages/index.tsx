@@ -134,9 +134,9 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
 
                         {/* Text Section */}
                         <div className="p-6 md:w-2/3 order-1 md:order-2">
-                            <h3 className="text-xl font-semibold mb-4 text-center md:text-left dark:text-white">
+                            <h2 className="text-xl font-semibold mb-4 text-center md:text-left dark:text-white">
                                 👋 Here is RATE@UM
-                            </h3>
+                            </h2>
                             <p className="text-gray-700 dark:text-gray-300">
                                 RATE@UM, a research team at the University of Macau, focuses on engineering innovation,
                                 covering architecture, construction, and smart technologies to enhance industry
