@@ -15,10 +15,31 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
     const { theme } = useTheme(); // 获取当前主题
     const [mounted, setMounted] = useState(false); // 确保组件在客户端渲染后再应用主题
     const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null); // 当前选中的论文
+    const [cardHeight, setCardHeight] = useState('80vh'); // 动态卡片高度
 
     // 确保组件在客户端渲染后再应用主题
     useEffect(() => {
         setMounted(true);
+    }, []);
+
+    // 动态调整卡片高度
+    useEffect(() => {
+        const handleResize = () => {
+            const screenHeight = window.innerHeight;
+            // 设置卡片高度为屏幕高度的80%
+            setCardHeight(`${screenHeight * 0.8}px`);
+        };
+
+        // 初始化高度
+        handleResize();
+
+        // 监听窗口大小变化
+        window.addEventListener('resize', handleResize);
+
+        // 清理事件监听
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
     }, []);
 
     // Intersection Observer 配置（用于书本）
@@ -53,6 +74,13 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
     // 关闭论文详情卡片
     const closePaperDetails = () => {
         setSelectedPaper(null);
+    };
+
+    // 点击遮罩层关闭卡片
+    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
+        if (e.target === e.currentTarget) {
+            closePaperDetails();
+        }
     };
 
     if (!mounted) {
@@ -111,9 +139,9 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
                                         {paper.year}
                                     </div>
                                     {/* 👨‍🎓 图标 */}
-        <div className="absolute bottom-2 right-2 text-white text-4xl opacity-30 z-0">
-            👨‍🎓
-        </div>
+                                    <div className="absolute bottom-2 right-2 text-white text-4xl opacity-30 z-0">
+                                        👨‍🎓
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -123,8 +151,17 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
 
             {/* 论文详情卡片 */}
             {selectedPaper && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className={`rounded-xl shadow-md overflow-hidden p-6 w-11/12 max-w-2xl ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+                <div
+                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+                    onClick={handleBackdropClick} // 点击遮罩层关闭卡片
+                >
+                    <div
+                        className={`rounded-xl shadow-md overflow-hidden p-6 w-11/12 max-w-2xl overflow-y-auto ${
+                            theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
+                        }`}
+                        style={{ maxHeight: cardHeight, WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+                        onClick={(e) => e.stopPropagation()} // 阻止事件冒泡，避免点击卡片内容时关闭卡片
+                    >
                         <h2 className="text-2xl font-bold mb-4">{selectedPaper.title}</h2>
                         <p className="mb-2"><strong>Authors:</strong> {selectedPaper.authors.join(', ')}</p>
                         <p className="mb-2"><strong>Published in:</strong> {selectedPaper.journal}</p>
