@@ -1,17 +1,11 @@
 ---
-title: "Exhibition of Open Day Achievements"
-date: "2025-01-12"
-summary: "We showcased VR at the Open Day of the Faculty of Science and Technology at the University of Macau."
+title: "RATE group participates in the UM Open Day event"
+date: "Jan, 2025"
+summary: "On January 12th, 2025, the RATE group at the University of Macau's Open Day demonstrated VR and AR in tower crane operations, highlighting how these technologies revolutionize construction aspects and inspire the next - gen in civil engineering."
 picture: "/post/kaifangri.webp"
 ---
-# 科技學院展出眾多教研成果
 
-澳門大學科技學院今日（1月12日）舉行盛大的2025年開放日，一系列精彩紛呈的活動成功吸引數百名學生、家長及公眾參與，讓他們深入探索澳大科技學院最新的入學資訊和獨具特色的課程內容，親身體驗校園文化的魅力，對澳大科研水平有更深刻的體會。
-
-## 反應熱烈
-開放日現場多個攤位遊戲及互動體驗均氣氛熱烈，活動不僅有豐富的科學知識，參加者還可親身感受科學的魅力與樂趣。活動期間，科技學院提供實驗室導賞服務，包括結構實驗室、人工智慧與機器人中心、物聯網工程實驗室、機器人實驗室等，帶領公眾近距離感受校園不同教學及實驗設施，了解在讀學生日常生活，感受理論與實踐並重的課程特色。
 
 ![虚拟现实展示](/post/kaifangri.webp)
 
-## 多元化校園生活
-此外，學院為公眾舉行了多場入學簡介會、專題講座及工作坊，由學院資深教授親身分享七個學系的課程特色、校園生活及前沿科技發展。不少學生均表示，開放日讓他們對科技學院提供的多元化學位課程有了更加清晰的認識，更堅定確立了未來的升學路向。
+RATE group has participated in the University of Macau's Open Day 2025 on January 12th. We showcased an engaging VR and AR demonstration highlighting advancements in tower crane operations and training. Visitors had the chance to explore how cutting-edge virtual and augmented reality technologies are revolutionizing construction safety, efficiency, and training methodologies. By immersing participants in a realistic construction environment, the demo provided a glimpse into the future of engineering and inspired the next generation to embrace innovative solutions in civil engineering.

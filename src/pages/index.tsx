@@ -138,9 +138,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                 👋 Here is RATE@UM
                             </h2>
                             <p className="text-gray-700 dark:text-gray-300">
-                                RATE@UM, a research team at the University of Macau, focuses on engineering innovation,
-                                covering architecture, construction, and smart technologies to enhance industry
-                                efficiency and sustainability.
+                                RATE@UM (Research Group of Advanced Technologies in Engineering) is a research group in the Department of Civil and Environment Engineering, Faculty of Science and Technology at the University of Macau. We are dedicated to driving innovative research and development in civil engineering and other related interdisciplinary fields. Our vision is to develop and leverage collaborative intelligence technologies to integrate human beings, physical environments, and digital twins seamlessly towards a safer and more sustainable future.
                             </p>
                         </div>
                     </div>
@@ -175,9 +173,8 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                     />
                                 </div>
                                 {/* 内容部分 */}
-                                <div className="p-6 min-h-[200px]">
-                                    <h2 className="text-xl font-semibold mb-2 dark:text-white">{card.title}</h2>
-                                    <p className="text-gray-700 dark:text-gray-300">{card.description}</p>
+                                <div className="p-3 min-h-[100px] flex items-center justify-center"> {/* 减少 padding 并减小 min-h */}
+                                    <h2 className="text-lg font-semibold dark:text-white text-center">{card.title}</h2> {/* 减小 font-size */}
                                 </div>
                             </div>
                         ))}
@@ -185,7 +182,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                 </section>
 
                 {/* Latest News Section */}
-                <section className="mt-8">
+                <section className="mt-55">
                     <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">
                         📰 Latest News
                     </h2>
@@ -197,13 +194,13 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                     newsRefs.current[index] = el; // 绑定新闻引用
                                 }}
                                 data-index={index}
-                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
+                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105 ${
                                     visibleNews.includes(index)
                                         ? 'opacity-100 translate-y-0'
                                         : 'opacity-0 translate-y-10'
-                                }`}
+                                }`} // 将 hover:scale-105 移到这里
                             >
-                                <div className="flex flex-col md:flex-row transform transition-transform duration-300 hover:scale-105">
+                                <div className="flex flex-col md:flex-row">
                                     {/* 图片部分 */}
                                     <div className="md:w-1/3">
                                         <img
