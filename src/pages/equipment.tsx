@@ -12,8 +12,8 @@ interface HomeProps {
 
 const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
     const [loading, setLoading] = useState(true);
-    const [visibleCards, setVisibleCards] = useState<number[]>([]); // 记录已加载的卡片索引
-    const cardRefs = useRef<(HTMLDivElement | null)[]>([]); // 用于存储卡片的引用
+    const [visibleItems, setVisibleItems] = useState<number[]>([]); // 记录已加载的标题和卡片索引
+    const itemRefs = useRef<(HTMLDivElement | null)[]>([]); // 用于存储标题和卡片的引用
     const { theme } = useTheme(); // 获取当前主题
     const [mounted, setMounted] = useState(false); // 确保组件在客户端渲染后再应用主题
 
@@ -43,16 +43,16 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
     useEffect(() => {
         if (mounted) {
             const initialVisibleIndices: number[] = [];
-            cardRefs.current.forEach((card, index) => {
-                if (card && isElementInViewport(card)) {
+            itemRefs.current.forEach((item, index) => {
+                if (item && isElementInViewport(item)) {
                     initialVisibleIndices.push(index);
                 }
             });
-            setVisibleCards(initialVisibleIndices);
+            setVisibleItems(initialVisibleIndices);
         }
     }, [mounted]);
 
-    // Intersection Observer 配置（用于卡片和标题）
+    // Intersection Observer 配置
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
@@ -60,7 +60,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                     if (entry.isIntersecting) {
                         const index = Number(entry.target.getAttribute('data-index'));
                         console.log(`Element ${index} is visible`); // 添加日志
-                        setVisibleCards((prev) => [...prev, index]); // 将可见元素的索引加入状态
+                        setVisibleItems((prev) => [...prev, index]); // 将可见元素的索引加入状态
                         observer.unobserve(entry.target); // 停止观察已加载的元素
                     }
                 });
@@ -71,9 +71,9 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
             }
         );
 
-        // 观察所有卡片和标题
-        cardRefs.current.forEach((card) => {
-            if (card) observer.observe(card);
+        // 观察所有标题和卡片
+        itemRefs.current.forEach((item) => {
+            if (item) observer.observe(item);
         });
 
         // 清理 Observer
@@ -170,15 +170,16 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                             default:
                                 emoji = '';
                         }
+                        const startIndex = categoryIndex + Object.keys(categoryGroups).length * categoryIndex;
                         return (
                             <div key={category}>
                                 <h3
                                     ref={(el) => {
-                                        cardRefs.current[categoryIndex] = el; // 绑定标题引用
+                                        itemRefs.current[startIndex] = el; // 绑定标题引用
                                     }}
-                                    data-index={categoryIndex} // 记录标题索引
+                                    data-index={startIndex} // 记录标题索引
                                     className={`text-2xl font-bold mb-4 text-center mt-8 ${
-                                        visibleCards.includes(categoryIndex)
+                                        visibleItems.includes(startIndex)
                                             ? 'opacity-100 translate-y-0' // 可见时的样式
                                             : 'opacity-0 translate-y-10' // 不可见时的样式
                                     } ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
@@ -186,43 +187,46 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                                     {emoji} {category}
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {categoryGroups[category]?.map((device, index) => (
-                                        <div
-                                            key={device.id}
-                                            ref={(el) => {
-                                                cardRefs.current[categories.length + index] = el; // 绑定卡片引用
-                                            }}
-                                            data-index={categories.length + index} // 记录卡片索引
-                                            className={`rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 ${
-                                                visibleCards.includes(categories.length + index)
-                                                    ? 'opacity-100 translate-y-0' // 可见时的样式
-                                                    : 'opacity-0 translate-y-10' // 不可见时的样式
-                                            } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
-                                            style={{ minHeight: '300px' }} // 确保卡片有最小高度
-                                        >
-                                            {/* 图片部分 */}
-                                            <div className="w-full h-49">
-                                                <img
-                                                    src={device.image}
-                                                    alt={device.name}
-                                                    className="object-cover w-full h-full"
-                                                    loading="lazy"
-                                                    onError={(e) => {
-                                                        e.currentTarget.src = '/path/to/fallback-image.jpg'; // 加载失败时显示回退图片
-                                                    }}
-                                                />
+                                    {categoryGroups[category]?.map((device, index) => {
+                                        const itemIndex = startIndex + index + 1;
+                                        return (
+                                            <div
+                                                key={device.id}
+                                                ref={(el) => {
+                                                    itemRefs.current[itemIndex] = el; // 绑定卡片引用
+                                                }}
+                                                data-index={itemIndex} // 记录卡片索引
+                                                className={`rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 ${
+                                                    visibleItems.includes(itemIndex)
+                                                        ? 'opacity-100 translate-y-0' // 可见时的样式
+                                                        : 'opacity-0 translate-y-10' // 不可见时的样式
+                                                } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
+                                                style={{ minHeight: '300px' }} // 确保卡片有最小高度
+                                            >
+                                                {/* 图片部分 */}
+                                                <div className="w-full h-49">
+                                                    <img
+                                                        src={device.image}
+                                                        alt={device.name}
+                                                        className="object-cover w-full h-full"
+                                                        loading="lazy"
+                                                        onError={(e) => {
+                                                            e.currentTarget.src = '/path/to/fallback-image.jpg'; // 加载失败时显示回退图片
+                                                        }}
+                                                    />
+                                                </div>
+                                                {/* 设备介绍部分 */}
+                                                <div className="p-6">
+                                                    <h2 className="text-xl font-semibold mb-2">{device.name}</h2>
+                                                    {device.features.map((feature, idx) => (
+                                                        <p key={idx} className={`mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                                                            • {feature}
+                                                        </p>
+                                                    ))}
+                                                </div>
                                             </div>
-                                            {/* 设备介绍部分 */}
-                                            <div className="p-6">
-                                                <h2 className="text-xl font-semibold mb-2">{device.name}</h2>
-                                                {device.features.map((feature, idx) => (
-                                                    <p key={idx} className={`mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                                                        • {feature}
-                                                    </p>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         );

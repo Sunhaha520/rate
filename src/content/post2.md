@@ -1,6 +1,6 @@
 ---
 title: "Our student attends the CONVR 2024 conference in Sydney"
-date: "2024-01-12"
+date: "Nov, 2024"
 summary: "This November, student Mark presented his research on automated pavement crack detection using UAV imagery and deep learning at the 24th CONVR 2024 in Sydney, aiming to improve inspection and urban transportation."
 picture: "/post/tupian5.webp"
 ---
