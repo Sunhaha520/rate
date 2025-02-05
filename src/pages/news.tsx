@@ -96,13 +96,13 @@ const News: React.FC<NewsProps> = ({ allPosts }) => {
                                     newsRefs.current[index] = el; // 绑定新闻引用
                                 }}
                                 data-index={index}
-                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
+                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 ${
                                     visibleNews.includes(index)
                                         ? 'opacity-100 translate-y-0'
                                         : 'opacity-0 translate-y-10'
                                 }`}
                             >
-                                <div className="flex flex-col md:flex-row transform transition-transform duration-300 hover:scale-105">
+                                <div className="flex flex-col md:flex-row">
                                     {/* 图片部分 */}
                                     <div className="md:w-1/3">
                                         <img
