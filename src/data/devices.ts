@@ -1,45 +1,34 @@
+// @/data/devices.ts
 export interface Device {
     id: string;
     name: string;
-    model: string;
-    purpose: string;
     image: string;
+    features: string[];
+    category: string;
 }
 
 export const devices: Device[] = [
     {
         id: '1',
-        name: 'Zhiying R100 Integrated LiDAR',
-        model: 'R100',
-        purpose: 'A Full-Scene SLAM 3D Laser Scanner Capable of Modeling, high-precision inertial navigation, and a panoramic camera into one system. It offers both handheld and backpack operation modes for comprehensive data collection.',
+        name: 'Deep Robotics Lite 2 Pro',
         image: '/devices/1.webp',
+        features: ['10-cm step climbing capability', '>7.5kg load capability', 'RGB-D Intel® RealSense™ camera','NVIDIA® Jetson Xavier NX','RoboSense RS-LiDAR-16 3D sensor'],
+        category: 'Construction robots'
     },
     {
         id: '2',
-        name: 'Zhiying R100 Integrated LiDAR',
-        model: 'R100',
-        purpose: 'A Full-Scene SLAM 3D Laser Scanner Capable of Modeling, high-precision inertial navigation, and a panoramic camera into one system. It offers both handheld and backpack operation modes for comprehensive data collection.',
+        name: 'DJI Mavic 3T',
         image: '/devices/2.webp',
+        features: ['Thermal camera, resolution 640x512 920g weight', '61-degree DFOV'],
+        category: 'Construction robots'
     },
     {
         id: '3',
-        name: 'Zhiying R100 Integrated LiDAR',
-        model: 'R100',
-        purpose: 'A Full-Scene SLAM 3D Laser Scanner Capable of Modeling, high-precision inertial navigation, and a panoramic camera into one system. It offers both handheld and backpack operation modes for comprehensive data collection.',
+        name: 'DJI Mini 3 Pro',
         image: '/devices/3.webp',
+        features: ['<250g weight', '34-min max flight time x 3 batteries','4K/60fps video and 4K/30fps HDR video'],
+        category: 'Construction robots'
     },
-    {
-        id: '4',
-        name: 'Zhiying R100 Integrated LiDAR',
-        model: 'R100',
-        purpose: 'A Full-Scene SLAM 3D Laser Scanner Capable of Modeling, high-precision inertial navigation, and a panoramic camera into one system. It offers both handheld and backpack operation modes for comprehensive data collection.',
-        image: '/devices/4.webp',
-    },
-    {
-        id: '5',
-        name: 'Zhiying R100 Integrated LiDAR',
-        model: 'R100',
-        purpose: 'A Full-Scene SLAM 3D Laser Scanner Capable of Modeling, high-precision inertial navigation, and a panoramic camera into one system. It offers both handheld and backpack operation modes for comprehensive data collection.',
-        image: '/devices/5.webp',
-    },
+    // 可以继续添加更多设备信息
 ];
+
