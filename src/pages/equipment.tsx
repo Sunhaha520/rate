@@ -11,33 +11,10 @@ interface HomeProps {
 }
 
 const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
-    const [loading, setLoading] = useState(true);
     const [visibleItems, setVisibleItems] = useState<number[]>([]); // 记录已加载的标题和卡片索引
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]); // 用于存储标题和卡片的引用
     const { theme } = useTheme(); // 获取当前主题
     const [mounted, setMounted] = useState(false); // 确保组件在客户端渲染后再应用主题
-
-    // 预加载图片
-    useEffect(() => {
-        const preloadImages = async () => {
-            try {
-                const imagePromises = devices.map((device) => {
-                    const img = new Image();
-                    img.src = device.image;
-                    return img.decode().catch(() => {
-                        console.error(`Failed to load image: ${device.image}`);
-                    });
-                });
-                await Promise.all(imagePromises);
-            } catch (error) {
-                console.error('Error preloading images:', error);
-            } finally {
-                setLoading(false); // 无论成功与否，都关闭 loading
-            }
-        };
-
-        preloadImages();
-    }, [devices]);
 
     // 检查初始视口内的元素
     useEffect(() => {
@@ -128,13 +105,6 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                 <meta property="og:description" content="Explore the advanced equipment in our laboratory at RATE@UM." />
                 <meta property="og:type" content="website" />
             </Head>
-
-            {/* Loading Overlay */}
-            {loading && (
-                <div className={`fixed inset-0 z-50 flex items-center justify-center ${theme === 'dark' ? 'bg-gray-800 bg-opacity-80' : 'bg-gray-100 bg-opacity-80'}`}>
-                    <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
-                </div>
-            )}
 
             <Header />
 
