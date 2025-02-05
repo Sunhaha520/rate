@@ -25,7 +25,7 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
     // 动态调整卡片高度
     useEffect(() => {
         const handleResize = () => {
-            const screenHeight = window.innerHeight;
+            const screenHeight = document.documentElement.clientHeight;
             // 设置卡片高度为屏幕高度的80%
             setCardHeight(`${screenHeight * 0.8}px`);
         };
@@ -167,7 +167,12 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
                         className={`rounded-xl shadow-md overflow-hidden w-11/12 max-w-2xl ${
                             theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
                         }`}
-                        style={{ maxHeight: cardHeight, WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
+                        style={{ 
+                            maxHeight: cardHeight, 
+                            WebkitOverflowScrolling: 'touch', 
+                            scrollbarWidth: 'none',
+                            overflowY: 'auto'
+                        }}
                         onClick={(e) => e.stopPropagation()} // 阻止事件冒泡，避免点击卡片内容时关闭卡片
                     >
                         <div className="relative h-64 overflow-hidden">
