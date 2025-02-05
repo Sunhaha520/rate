@@ -1,6 +1,6 @@
 ---
 title: "Our research receives FDCT-ITP fund from Macau Government"
-date: "Oct, 2024"
+date: "2024-10-11"
 summary: "The Macau Government's FDCT - ITP Scheme funds our project to enhance road maintenance with BIM and advanced tech. We're developing an AI - based system for pavement disease detection to improve urban assessment efficiency."
 picture: "/post/tupian6.webp"
 ---

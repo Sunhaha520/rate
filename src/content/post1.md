@@ -1,6 +1,6 @@
 ---
 title: "RATE group participates in the UM Open Day event"
-date: "Jan, 2025"
+date: "2025-01-12"
 summary: "On January 12th, 2025, the RATE group at the University of Macau's Open Day demonstrated VR and AR in tower crane operations, highlighting how these technologies revolutionize construction aspects and inspire the next - gen in civil engineering."
 picture: "/post/kaifangri.webp"
 ---
