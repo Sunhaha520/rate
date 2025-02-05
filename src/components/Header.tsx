@@ -58,8 +58,9 @@ const Header = () => {
                 { id: 23, name: 'Former Members', href: '/former-members' },
             ]
         },
-        { id: 3, name: 'Publish', href: '/publish' },
-        { id: 4, name: 'Project', href: '/project' },
+        { id: 3, name: 'Publications', href: '/publications' },
+        { id: 4, name: 'Projects', href: '/project' },
+        { id: 8, name: 'Demo&Resources', href: '/demo' },
         { id: 5, name: 'News', href: '/news' },
         { id: 6, name: 'Equipment', href: '/equipment' },
         { id: 7, name: 'Join Us', href: '/join-us' },
