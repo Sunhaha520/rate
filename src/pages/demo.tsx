@@ -155,22 +155,23 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
                         }}
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {/* 修改头图样式 */}
+                        <div className="relative overflow-hidden">
+                            {selectedResource.isVideo ? (
+                                <video
+                                    src={selectedResource.headImage}
+                                    controls
+                                    className="w-full object-cover rounded-t-xl"
+                                ></video>
+                            ) : (
+                                <img
+                                    src={selectedResource.headImage}
+                                    alt={selectedResource.title}
+                                    className="w-full object-cover rounded-t-xl"
+                                />
+                            )}
+                        </div>
                         <div className="p-6">
-                            <div className="relative h-64 overflow-hidden mb-4">
-                                {selectedResource.isVideo ? (
-                                    <video
-                                        src={selectedResource.headImage}
-                                        controls
-                                        className="w-full h-full object-cover"
-                                    ></video>
-                                ) : (
-                                    <img
-                                        src={selectedResource.headImage}
-                                        alt={selectedResource.title}
-                                        className="w-full h-full object-cover"
-                                    />
-                                )}
-                            </div>
                             <h2 className="text-2xl font-bold mb-4">{selectedResource.title}</h2>
                             <p className="mb-4">{selectedResource.fullDescription}</p>
                             <div className="flex justify-between mt-6"> {/* 按钮布局容器 */}
