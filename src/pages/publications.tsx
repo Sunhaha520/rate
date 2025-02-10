@@ -1,82 +1,70 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Head from 'next/head'; // 引入 Head 组件
+import Head from 'next/head'; 
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { papers, Paper } from '@/data/papers'; // 引入论文数据
-import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
+import { papers, Paper } from '@/data/papers'; 
+import { useTheme } from 'next-themes'; 
 
 interface PapersProps {
     papers: Paper[];
 }
 
 const PapersPage: React.FC<PapersProps> = ({ papers }) => {
-    const [visibleBooks, setVisibleBooks] = useState<number[]>([]); // 记录已加载的书本索引
-    const bookRefs = useRef<(HTMLDivElement | null)[]>([]); // 用于存储书本的引用
-    const { theme } = useTheme(); // 获取当前主题
-    const [mounted, setMounted] = useState(false); // 确保组件在客户端渲染后再应用主题
-    const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null); // 当前选中的论文
-    const [cardHeight, setCardHeight] = useState('80vh'); // 动态卡片高度
+    const [visibleBooks, setVisibleBooks] = useState<number[]>([]); 
+    const bookRefs = useRef<(HTMLDivElement | null)[]>([]); 
+    const { theme } = useTheme(); 
+    const [mounted, setMounted] = useState(false); 
+    const [selectedPaper, setSelectedPaper] = useState<Paper | null>(null); 
+    const [cardHeight, setCardHeight] = useState('80vh'); 
 
-    // 确保组件在客户端渲染后再应用主题
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    // 动态调整卡片高度
     useEffect(() => {
         const handleResize = () => {
             const screenHeight = window.innerHeight;
-            // 设置卡片高度为屏幕高度的80%
             setCardHeight(`${screenHeight * 0.8}px`);
         };
 
-        // 初始化高度
         handleResize();
-
-        // 监听窗口大小变化
         window.addEventListener('resize', handleResize);
 
-        // 清理事件监听
         return () => {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
 
-    // Intersection Observer 配置（用于书本）
     useEffect(() => {
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
                     if (entry.isIntersecting) {
                         const index = Number(entry.target.getAttribute('data-index'));
-                        setVisibleBooks((prev) => [...prev, index]); // 将可见书本的索引加入状态
-                        observer.unobserve(entry.target); // 停止观察已加载的书本
+                        setVisibleBooks((prev) => [...prev, index]); 
+                        observer.unobserve(entry.target); 
                     }
                 });
             },
             {
-                rootMargin: '0px 0px -50px 0px', // 提前50px触发动画
-                threshold: 0.1, // 当元素10%进入视口时触发
+                rootMargin: '0px 0px -50px 0px', 
+                threshold: 0.1, 
             }
         );
 
-        // 观察所有书本
         bookRefs.current.forEach((book) => {
             if (book) observer.observe(book);
         });
 
-        // 清理 Observer
         return () => {
             observer.disconnect();
         };
-    }, [mounted, theme]); // 依赖 mounted 和 theme
+    }, [mounted, theme]);
 
-    // 关闭论文详情卡片
     const closePaperDetails = () => {
         setSelectedPaper(null);
     };
 
-    // 点击遮罩层关闭卡片
     const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target === e.currentTarget) {
             closePaperDetails();
@@ -84,12 +72,11 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
     };
 
     if (!mounted) {
-        return null; // 在服务器端渲染时不渲染内容，避免闪烁
+        return null; 
     }
 
     return (
         <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-            {/* 动态设置 Head 内容 */}
             <Head>
                 <title>Our Papers - RATE@UM</title>
                 <meta name="description" content="Explore our published papers at RATE@UM." />
@@ -101,9 +88,7 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
             <Header />
 
             <main className="container mx-auto px-4 py-8">
-                {/* Papers Section */}
                 <section className="">
-                    {/* 标题卡片 */}
                     <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
                         <h2 className="text-3xl font-bold mb-4 text-center">📚 Our Papers</h2>
                         <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
@@ -111,37 +96,51 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
                         </p>
                     </div>
 
-                    {/* 书本展示 */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {papers.map((paper, index) => (
                             <div
                                 key={paper.id}
                                 ref={(el) => {
-                                    bookRefs.current[index] = el; // 绑定书本引用
+                                    bookRefs.current[index] = el; 
                                 }}
-                                data-index={index} // 记录书本索引
+                                data-index={index} 
                                 className={`rounded-lg shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 cursor-pointer ${
                                     visibleBooks.includes(index)
-                                        ? 'opacity-100 translate-y-0' // 可见时的样式
-                                        : 'opacity-0 translate-y-10' // 不可见时的样式
+                                        ? 'opacity-100 translate-y-0' 
+                                        : 'opacity-0 translate-y-10' 
                                 }`}
-                                style={{ backgroundColor: paper.color }} // 使用论文数据中的颜色
-                                onClick={() => setSelectedPaper(paper)} // 点击书本显示详情
+                                style={{ 
+                                    backgroundColor: paper.color, 
+                                    height: '300px', 
+                                    position: 'relative',
+                                    backfaceVisibility: 'hidden', // 启用硬件加速
+                                    transform: 'translate3d(0,0,0)' // 启用硬件加速
+                                }} 
+                                onClick={() => setSelectedPaper(paper)} 
                             >
-                                {/* 书本封面 */}
-                                <div className="relative h-48 p-6 text-center">
-                                    {/* 封面标题，强制设置为白色 */}
+                                <div className="h-full p-6 text-center">
                                     <h3 className="text-xl font-bold text-white !text-white">
                                         {paper.title}
                                     </h3>
-                                    {/* 年份标签 */}
+                                    <p className="text-sm !text-white mt-2">
+                                        {paper.authors.join(', ')}
+                                    </p>
                                     <div className="absolute bottom-2 left-2 px-3 py-1 bg-blue-500 text-white rounded-full text-sm">
                                         {paper.year}
                                     </div>
-                                    {/* 👨‍🎓 图标 */}
                                     <div className="absolute bottom-2 right-2 text-white text-4xl opacity-30 z-0">
                                         👨‍🎓
                                     </div>
+                                </div>
+                                <div
+                                    className={`absolute inset-0 ${theme === 'dark' ? 'bg-gray-800 bg-opacity-10' : 'bg-white bg-opacity-10'} backdrop-blur-sm flex items-center justify-center opacity-0 transition-opacity duration-300 hover:opacity-100`}
+                                    style={{
+                                        transformOrigin: 'center', // 设置遮罩层的变换中心为中心
+                                        backfaceVisibility: 'hidden', // 启用硬件加速
+                                        transform: 'translate3d(0,0,0)' // 启用硬件加速
+                                    }}
+                                >
+                                    <p className="text-white text-lg font-bold">Click to learn more</p>
                                 </div>
                             </div>
                         ))}
@@ -149,18 +148,17 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
                 </section>
             </main>
 
-            {/* 论文详情卡片 */}
             {selectedPaper && (
                 <div
                     className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                    onClick={handleBackdropClick} // 点击遮罩层关闭卡片
+                    onClick={handleBackdropClick} 
                 >
                     <div
                         className={`rounded-xl shadow-md overflow-hidden p-6 w-11/12 max-w-2xl overflow-y-auto ${
                             theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
                         }`}
                         style={{ maxHeight: cardHeight, WebkitOverflowScrolling: 'touch', scrollbarWidth: 'none' }}
-                        onClick={(e) => e.stopPropagation()} // 阻止事件冒泡，避免点击卡片内容时关闭卡片
+                        onClick={(e) => e.stopPropagation()} 
                     >
                         <h2 className="text-2xl font-bold mb-4">{selectedPaper.title}</h2>
                         <p className="mb-2"><strong>Authors:</strong> {selectedPaper.authors.join(', ')}</p>
@@ -168,7 +166,6 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
                         <p className="mb-2"><strong>Year:</strong> {selectedPaper.year}</p>
                         <p className="mb-4"><strong>Abstract:</strong> {selectedPaper.abstract}</p>
 
-                        {/* 数据关键词 */}
                         <div className="mb-4">
                             <strong>Keywords:</strong>
                             <div className="flex flex-wrap gap-2 mt-2">
@@ -183,7 +180,6 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
                             </div>
                         </div>
 
-                        {/* 论文链接 */}
                         <div className="flex items-center justify-between">
                             <a
                                 href={selectedPaper.link}
@@ -204,13 +200,13 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
                                         d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                                     />
                                 </svg>
-                                <span>在线阅读</span>
+                                <span>Read Online</span>
                             </a>
                             <button
                                 onClick={closePaperDetails}
                                 className="px-4 py-2 bg-red-400 !text-white rounded-full hover:bg-red-600 transition-colors duration-300"
                             >
-                                关闭
+                                Close
                             </button>
                         </div>
                     </div>
@@ -224,11 +220,10 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
 
 export default PapersPage;
 
-// 使用 getStaticProps 获取论文数据
 export async function getStaticProps() {
     return {
         props: {
-            papers, // 直接使用 papers.ts 中的数据
+            papers, 
         },
     };
 }
