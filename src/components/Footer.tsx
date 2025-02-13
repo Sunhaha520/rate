@@ -28,7 +28,7 @@ const Footer: React.FC = () => {
 
                     {/* 额外的装饰性文字或元素 */}
                     <p className={`text-xs font-light italic transition-colors duration-300 ${theme === 'dark' ? 'text-gray-500 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`}>
-                        Designed with ❤️ for a better experience.
+                    Innovating Civil Engineering, Building a Safer Future.
                     </p>
                 </div>
             </div>

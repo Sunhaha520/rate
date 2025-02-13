@@ -194,7 +194,7 @@ const MentorPage: React.FC<MentorPageProps> = ({ mentor, researches }) => {
                                 >
                                     <div className="flex flex-col md:flex-row">
                                         {/* 调整图片容器宽度和高度 */}
-                                        <div className="w-full md:w-1/4 h-28 md:h-auto">
+                                        <div className="w-full md:w-1/3 h-30 md:h-auto">
                                             <img
                                                 src={research.photo}
                                                 alt={research.name}

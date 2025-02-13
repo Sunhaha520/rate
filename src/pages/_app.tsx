@@ -31,6 +31,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <meta name="description" content="RATE@UM - Research Group of Advanced Technologies in Engineering" />
         <link rel="icon" type="image/png" href="/logo.png"></link>
         <title>RATE@UM</title> {/* 默认标题，页面中可以覆盖 */}
+        <link rel="stylesheet" href="https://static.zeoseven.com/zsft/22/main/result.css" />
       </Head>
 
       <main className={`${geistSans.variable} ${geistMono.variable}`}>
