@@ -164,7 +164,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                 }`}
                             >
                                 {/* 图片部分 */}
-                                <div className="h-32 bg-gray-200 rounded-t-xl overflow-hidden relative"> {/* 减小高度 */}
+                                <div className=" bg-gray-200 rounded-t-xl overflow-hidden relative"> {/* 减小高度 */}
                                     <img
                                         src={card.image}
                                         alt={card.title}
