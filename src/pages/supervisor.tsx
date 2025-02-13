@@ -79,10 +79,11 @@ const MentorPage: React.FC<MentorPageProps> = ({ mentor, researches }) => {
     return (
         <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
             <Head>
-                <title>{mentor.name}'s Profile - RATE@UM</title>
-                <meta name="description" content={`Explore the profile and latest research of ${mentor.name} at RATE@UM.`} />
-                <meta property="og:title" content={`${mentor.name}'s Profile - RATE@UM`} />
-                <meta property="og:description" content={`Explore the profile and latest research of ${mentor.name} at RATE@UM.`} />
+                {/* 转义 ' 字符 */}
+                <title>{mentor.name}&apos;s Profile - RATE@UM</title>
+                <meta name="description" content={`Explore the profile and latest research of ${mentor.name}&apos; at RATE@UM.`} />
+                <meta property="og:title" content={`${mentor.name}&apos;s Profile - RATE@UM`} />
+                <meta property="og:description" content={`Explore the profile and latest research of ${mentor.name}&apos; at RATE@UM.`} />
                 <meta property="og:type" content="website" />
             </Head>
 
