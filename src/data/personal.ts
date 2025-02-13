@@ -30,8 +30,8 @@ export const researches: Research[] = [
         intro: "In image-driven 3D building reconstruction, instance segmentation is fundamental to pixel-wise building component detection, which can be fused with 3D data like point clouds and meshes via camera projection for semantic reconstruction. While deep learning-based segmentation has obtained promising results, it relies heavily on large-scale datasets for training. Unfortunately, existing large-scale image datasets often include irrelevant objects that obstruct building components, making them unsuitable for 3D building reconstruction. This paper addresses this gap by introducing a large-scale building image dataset to facilitate building component segmentation for 3D reconstruction. The dataset comprises 3378 images captured from both interiors and exteriors of 36 university buildings, annotated with 49,380 object instances across 11 classes. Rigorous quality control measures were employed during data collection and annotation. Evaluation of five typical deep learning-based instance segmentation models demonstrates the dataset's suitability for training and its value as a benchmark dataset for building component segmentation.",
         photo: '/img/topimg.webp',
         detailsLinks: {
-            github: 'https://github.com/example',
-            paperWebsite: 'https://example.com/research1'
+            github: 'https://github.com/EnochYing/Image2BIM/tree/main/HBD',
+            paperWebsite: 'https://doi.org/10.1016/j.autcon.2024.105558'
         }
     }
 ];
