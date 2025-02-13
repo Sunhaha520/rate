@@ -57,7 +57,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
         return () => {
             observer.disconnect();
         };
-    }, [researchDirections]);
+    }, []); // 移除 researchDirections 依赖
 
     // Intersection Observer 配置（用于新闻）
     useEffect(() => {
@@ -84,7 +84,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
         return () => {
             observer.disconnect();
         };
-    }, [latestPosts]);
+    }, [latestPosts]); // 保留 latestPosts 依赖
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -157,14 +157,14 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                     cardRefs.current[index] = el; // 绑定卡片引用
                                 }}
                                 data-index={index}
-                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105 ${
+                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
                                     visibleCards.includes(index)
                                         ? 'opacity-100 translate-y-0'
                                         : 'opacity-0 translate-y-10'
                                 }`}
                             >
                                 {/* 图片部分 */}
-                                <div className="h-48 bg-gray-200 rounded-t-xl overflow-hidden relative">
+                                <div className="h-32 bg-gray-200 rounded-t-xl overflow-hidden relative"> {/* 减小高度 */}
                                     <img
                                         src={card.image}
                                         alt={card.title}
@@ -173,8 +173,8 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                     />
                                 </div>
                                 {/* 内容部分 */}
-                                <div className="p-3 min-h-[100px] flex items-center justify-center"> {/* 减少 padding 并减小 min-h */}
-                                    <h2 className="text-lg font-semibold dark:text-white text-center">{card.title}</h2> {/* 减小 font-size */}
+                                <div className="p-4 min-h-[80px] flex items-center justify-center"> {/* 减小 padding 和 min-h */}
+                                    <h2 className="text-md font-semibold dark:text-white text-center">{card.title}</h2> {/* 减小字体大小 */}
                                 </div>
                             </div>
                         ))}
@@ -182,7 +182,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                 </section>
 
                 {/* Latest News Section */}
-                <section className="mt-55">
+                <section className="mt-12">
                     <h2 className="text-3xl font-bold text-center mb-6 dark:text-white">
                         📰 Latest News
                     </h2>
@@ -194,11 +194,11 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                     newsRefs.current[index] = el; // 绑定新闻引用
                                 }}
                                 data-index={index}
-                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105 ${
+                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out ${
                                     visibleNews.includes(index)
                                         ? 'opacity-100 translate-y-0'
                                         : 'opacity-0 translate-y-10'
-                                }`} // 将 hover:scale-105 移到这里
+                                }`}
                             >
                                 <div className="flex flex-col md:flex-row">
                                     {/* 图片部分 */}
