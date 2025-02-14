@@ -5,7 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { projects, Project } from '@/data/projects';
 import { useTheme } from 'next-themes';
-
+//jjjj
 interface HomeProps {
     projects: Project[];
 }
