@@ -110,3 +110,27 @@ img {
 .animate-marker {
   animation: marker 2s ease-out infinite;
 }
+
+
+
+/* 针对招聘详情卡片的自定义标题样式 */
+.recruitment-details h1 {
+  font-size: 1.3rem !important;
+  font-weight: bold !important;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+.recruitment-details h2 {
+  font-size: 1.2rem !important;
+  font-weight: bold !important;
+  color: #555;
+  margin-bottom: 0.8rem;
+}
+
+.recruitment-details h3 {
+  font-size: 1.0rem !important;
+  font-weight: bold !important;
+  color: #777;
+  margin-bottom: 0.6rem;
+}

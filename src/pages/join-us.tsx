@@ -6,7 +6,6 @@ import { useTheme } from 'next-themes';
 import { remark } from 'remark';
 import html from 'remark-html';
 import { recruitmentData, addressData } from '@/data/joinus';
-import '@/styles/markdown.css';
 
 const JoinUsPage: React.FC = () => {
     const { theme } = useTheme();
