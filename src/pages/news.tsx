@@ -112,13 +112,20 @@ const News: React.FC<NewsProps> = ({ allPosts }) => {
                                         />
                                     </div>
                                     {/* 标题、发布时间和简介部分 */}
-                                    <div className="p-6 md:w-2/3">
-                                        <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
-                                        <p className="text-sm text-gray-500 mb-4">Published on: {post.date}</p>
-                                        <p className="text-gray-700 dark:text-gray-300">{post.summary}</p>
+                                    <div className="p-6 md:w-2/3 relative flex flex-col justify-between">
+                                        <div>
+                                            <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
+                                            <p className="text-sm text-gray-500 mb-4">Published on: {post.date}</p>
+                                            <p className="text-gray-700 dark:text-gray-300 leading-[1.2em] flex flex-col whitespace-normal sm:max-h-full sm:overflow-visible sm:text-clip md:max-h-[3.6em] md:overflow-hidden md:text-ellipsis">
+                                                <span className="overflow-hidden sm:block sm:-webkit-box sm:-webkit-line-clamp-full sm:-webkit-box-orient-vertical md:block md:-webkit-box md:-webkit-line-clamp-3 md:-webkit-box-orient-vertical">
+                                                    {post.summary}
+                                                </span>
+                                            </p>
+                                        </div>
                                         <a
                                             href={`/posts/${post.id}`}
-                                            className="inline-block mt-4 px-6 py-2 !bg-blue-500 !text-white rounded-lg hover:bg-blue-600 transition-colors duration-300"
+                                            className="mt-4 px-6 py-2 !bg-blue-500 !text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 self-center sm:self-center md:self-end"
+                                            aria-label={`Read more about ${post.title}`}
                                         >
                                             Read More
                                         </a>

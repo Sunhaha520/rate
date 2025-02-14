@@ -173,18 +173,20 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                                                 } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
                                                 style={{ minHeight: '300px' }} // 确保卡片有最小高度
                                             >
-                                                {/* 图片部分 */}
-                                                <div className="w-full h-49">
-                                                    <img
-                                                        src={device.image}
-                                                        alt={device.name}
-                                                        className="object-cover w-full h-full"
-                                                        loading="lazy"
-                                                        onError={(e) => {
-                                                            e.currentTarget.src = '/path/to/fallback-image.jpg'; // 加载失败时显示回退图片
-                                                        }}
-                                                    />
-                                                </div>
+                                                {/* 图片部分，添加条件判断 */}
+                                                {device.image && (
+                                                    <div className="w-full h-49">
+                                                        <img
+                                                            src={device.image}
+                                                            alt={device.name}
+                                                            className="object-cover w-full h-full"
+                                                            loading="lazy"
+                                                            onError={(e) => {
+                                                                e.currentTarget.src = '/path/to/fallback-image.jpg'; // 加载失败时显示回退图片
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )}
                                                 {/* 设备介绍部分 */}
                                                 <div className="p-6">
                                                     <h2 className="text-xl font-semibold mb-2">{device.name}</h2>

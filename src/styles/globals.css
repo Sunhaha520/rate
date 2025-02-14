@@ -100,3 +100,13 @@ img {
 .bg-scrolling-animation-dark {
   animation: bg-scrolling-reverse 0.92s infinite linear;
 }
+
+@keyframes marker {
+  0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.5); opacity: 0.5; }
+  100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+}
+
+.animate-marker {
+  animation: marker 2s ease-out infinite;
+}

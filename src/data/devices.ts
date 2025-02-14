@@ -81,28 +81,28 @@ export const devices: Device[] = [
     {
         id: '12',
         name: 'Z790 workstation',
-        image: '/devices/12.webp',
+        image: '',
         features: ['Intel® I9-14900K, Windows 11 Home', '2x48 GB RAM','NVIDIA® RTX 4090 GPU with 24 GB RAM','NVIDIA® RTX 4060 Ti GPU with 8 GB RAM','2TB SSD + 16TB HDD'],
         category: 'High-performance computers'
     },
     {
         id: '13',
         name: 'Lenovo 9000K Blade 2023 workstation',
-        image: '/devices/13.webp',
+        image: '',
         features: ['Intel® I7-13700K(F), Windows 11 Home', '2x16 GB RAM','NVIDIA® RTX 4080 GPU with 16 GB RAM','1TB SSD','Synology DS423 4-Bay NAS (4 x 4TB HDD)'],
         category: 'High-performance computers'
     },
     {
         id: '14',
         name: 'Lenovo ThinkStation P520c workstation',
-        image: '/devices/14.webp',
+        image: '',
         features: ['Intel® Xeon™ W-2223, Windows 11 Pro 64', '2x16 GB RAM','NVIDIA® RTX A2000 with 12 GB RAM','1TB SSD + 2TB HDD'],
         category: 'High-performance computers'
     },
     {
         id: '15',
         name: 'Lenovo Y9000P 2023 Intel i9 16-inch laptop',
-        image: '/devices/15.webp',
+        image: '',
         features: ['Intel® I9-13900HX CPU, Windows 11 Home', '16 GB RAM','NVIDIA® RTX 4060 GPU with 8 GB RAM','1TB SSD'],
         category: 'High-performance computers'
     },

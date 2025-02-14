@@ -89,7 +89,7 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
 
             <main className="container mx-auto px-4 py-8">
                 <section className="">
-                    <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+                    <div className={`hover:scale-105 rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
                         <h2 className="text-3xl font-bold mb-4 text-center">📚 Demo&Resources</h2>
                         <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             Explore our demos and resources at RATE@UM.
@@ -106,7 +106,7 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
                                         resourceRefs.current[index] = el;
                                     }}
                                     data-index={index}
-                                    className={`rounded-lg shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 cursor-pointer ${
+                                    className={`group rounded-lg shadow-md overflow-hidden transition-all duration-500 ease-out cursor-pointer ${
                                         visibleResources.includes(index)
                                             ? 'opacity-100 translate-y-0'
                                             : 'opacity-0 translate-y-10'
@@ -114,12 +114,16 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
                                     onClick={() => setSelectedResource(resource)}
                                 >
                                     <div className="flex sm:flex-row flex-col relative">
-                                        <div className="w-full sm:w-1/3 h-48 sm:h-auto overflow-hidden">
+                                        <div className="w-full sm:w-1/3 h-48 sm:h-auto overflow-hidden relative">
                                             <img
                                                 src={resource.coverImage}
                                                 alt={resource.title}
                                                 className="w-full h-full object-cover"
                                             />
+                                            {/* 毛玻璃覆盖层 */}
+                                            <div className="absolute inset-0 bg-gray-500 bg-opacity-20 backdrop-blur-sm opacity-0 transition-opacity duration-300 flex items-center justify-center group-hover:opacity-100">
+                                                <p className="text-white text-lg font-bold">Click to learn more</p>
+                                            </div>
                                         </div>
                                         <div className="w-full sm:w-2/3 p-4">
                                             <h3 className="text-xl font-bold mb-2">{resource.title}</h3>

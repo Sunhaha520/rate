@@ -3,14 +3,27 @@ import Head from 'next/head';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useTheme } from 'next-themes';
+import { remark } from 'remark';
+import html from 'remark-html';
+import { recruitmentData, addressData } from '@/data/joinus.ts';
+import '@/styles/markdown.css';
 
 const JoinUsPage: React.FC = () => {
     const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
+    const [markdownContent, setMarkdownContent] = useState('');
 
     // 确保组件在客户端渲染后再应用主题
     useEffect(() => {
         setMounted(true);
+        async function convertMarkdown() {
+            const processedContent = await remark()
+              .use(html)
+              .process(recruitmentData);
+            const contentHtml = processedContent.toString();
+            setMarkdownContent(contentHtml);
+        }
+        convertMarkdown();
     }, []);
 
     if (!mounted) {
@@ -34,27 +47,77 @@ const JoinUsPage: React.FC = () => {
                 {/* 招聘信息部分 */}
                 <section className="">
                     {/* 标题卡片 */}
-                    <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
+                    <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white' : 'bg-gradient-to-r from-white to-gray-100 text-gray-900'}`}>
                         <h2 className="text-3xl font-bold mb-4 text-center">🤝Join Us</h2>
                         <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             Welcome to join us.
                         </p>
                     </div>
 
-                    {/* 招聘详情卡片 */}
-                    <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        <p className="text-xl font-bold mb-4 text-yellow-500">Recruitment is open for AY 2026/2027</p>
-                        <p className={`text-lg ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                            Candidates with backgrounds in <span className="font-bold text-blue-500">Civil Engineering</span>, <span className="font-bold text-blue-500">Construction Management</span>, <span className="font-bold text-blue-500">Computer Science</span>, and/or <span className="font-bold text-blue-500">Automation and Robotics</span> and with strong interests in <span className="font-bold text-green-500">BIM</span>, <span className="font-bold text-green-500">multi - user AR/VR</span>, <span className="font-bold text-green-500">cobots</span>, and <span className="font-bold text-green-500">3D reconstruction</span> in the AECO industries are welcome to apply for <span className="font-bold text-orange-500">Ph.D./research assistant (RA)</span> positions.
-                        </p>
-                        <hr className="my-4 border-gray-400" />
-                        <p className={`text-lg mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                            Please attach your <span className="font-bold text-purple-500">CV</span>, <span className="font-bold text-purple-500">transcripts</span>, and <span className="font-bold text-purple-500">research proposals</span> and send the application to email <a href="mailto:mowong@um.edu.mo" className="text-blue-500 hover:underline">mowong@um.edu.mo</a>.
-                        </p>
-                        <hr className="my-4 border-gray-400" />
-                        <p className={`text-lg mt-4 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                            For more details, please visit the <span className="font-bold text-teal-500"><a href="#" className="text-blue-500 hover:underline">UM application webpage</a></span>.
-                        </p>
+                    {/* 招聘详情卡片，添加自定义类名 */}
+                    <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white' : 'bg-gradient-to-r from-white to-gray-100 text-gray-900'} recruitment-details`}
+                        dangerouslySetInnerHTML={{ __html: markdownContent }}
+                    />
+
+                    {/* 卡片容器，使用 flex 布局 */}
+                    <div className="flex flex-wrap -mx-3">
+                        {/* 地图卡片 */}
+                        <div className="w-full md:w-1/2 px-3 mb-6">
+                            <div className={`flex flex-col md:flex-row border rounded-xl shadow-md overflow-hidden p-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white' : 'bg-gradient-to-r from-white to-gray-100 text-gray-900'}`}>
+                                {/* 地图部分 */}
+                                <a
+                                    href="https://map.baidu.com/poi/%E6%BE%B3%E9%97%A8%E5%A4%A7%E5%AD%A6/@12641274.195,2511304.25,19z?uid=ce12fe3348045569f33cbace&ugc_type=3&ugc_ver=1&device_ratio=2&compat=1&pcevaname=pc4.1&querytype=detailConInfo&da_src=shareurl"
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="w-full md:w-1/2 h-full group relative"
+                                >
+                                    <div className="h-full bg-[url('/img/map.webp')] bg-center bg-cover bg-no-repeat filter grayscale-0 sm:grayscale sm:group-hover:grayscale-0 transition-all rounded-xl" style={{ minHeight: '200px' }}></div>
+                                    <div className="absolute z-30 left-1/2 top-1/2 h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2 animate-marker rounded-full bg-blue-500"></div>
+                                    <div className="absolute left-1/2 top-1/2 z-30 h-[20px] w-[20px] -translate-x-1/2 -translate-y-1/2 rounded-full border-[3px] border-neutral-50 bg-blue-500 shadow-2xl"></div>
+                                </a>
+                                {/* 文字介绍部分 */}
+                                <div className="w-full md:w-1/2 p-4">
+                                    <div className="flex flex-col">
+                                        <h2 className="text-xl font-bold mb-2">{addressData.title}</h2>
+                                        <span className={`text-gray-300 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>{addressData.address}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* 联系信息卡片 */}
+                        <div className="w-full md:w-1/2 px-3 mb-6">
+                            <div className={`flex flex-col justify-between border rounded-xl shadow-md overflow-hidden p-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white' : 'bg-gradient-to-r from-white to-gray-100 text-gray-900'}`} style={{ minHeight: '250px' }}>
+                                <div>
+                                    <h2 className="text-xl font-bold mb-2">Contact Us</h2>
+                                    <p className={`text-gray-300 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                                        If you have any questions, feel free to contact us:
+                                    </p>
+                                    <ul className="list-disc list-inside">
+                                        <li>Email: mowong@um.edu.mo</li>
+                                        <li>Phone: (853) 6647-7522</li>
+                                    </ul>
+                                    <p className={`text-gray-300 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    Certainly, you can also follow our social media platforms and get the latest scientific research progress from us in a timely manner:
+                                    </p>
+
+                                </div>
+                                {/* 社交链接 */}
+                                
+                                <div className="flex space-x-4 justify-center">
+                                    
+                                    <a href="https://github.com/your-repo" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
+                                        <img src="/img/github.svg" alt="GitHub" className="w-7 h-7" />
+                                    </a>
+                                    <a href="https://twitter.com/your-account" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
+                                        <img src="/img/twitter.svg" alt="Twitter" className="w-6 h-6" />
+                                    </a>
+                                    <a href="https://www.youtube.com/your-channel" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
+                                        <img src="/img/youtube.svg" alt="YouTube" className="w-7 h-7" />
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
             </main>
