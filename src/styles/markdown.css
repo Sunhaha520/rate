@@ -1,3 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 /* 原有的全局样式限制 */
 h1, h2, h3, h4, h5, h6 {
     font-size: inherit;
