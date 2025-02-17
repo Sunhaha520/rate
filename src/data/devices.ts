@@ -30,6 +30,13 @@ export const devices: Device[] = [
         category: 'Construction robots'
     },
     {
+        id: '16',
+        name: 'Robotic tower cranes',
+        image: '/devices/16.webp',
+        features: ['Self-developed device', 'Arduino/Unity-based programming controls','3-DoF motion capability','With 3D-printed building blocks'],
+        category: 'Construction robots'
+    },
+    {
         id: '5',
         name: 'HTC VIVE Focus 3 VR headset',
         image: '/devices/5.webp',
