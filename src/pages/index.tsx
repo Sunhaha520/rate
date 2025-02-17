@@ -3,6 +3,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { researchDirections } from '@/data/researchDirections';
 import { getSortedPostsData, PostData } from '@/lib/posts';
+import Link from 'next/link'; // 引入 Link 组件
 
 interface HomeProps {
     latestPosts: PostData[];
@@ -233,13 +234,13 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         ))}
                     </div>
                     {/* 新增的总的 Read More 按钮 */}
-                    <a
+                    <Link
                         href="/news"
                         className="mt-6 block w-fit px-6 py-2 mx-auto !bg-orange-500 !text-white rounded-lg hover:bg-orange-600 transition-colors duration-300 hover:scale-105"
                         aria-label="Read more news"
                     >
                         Read more news
-                    </a>
+                    </Link>
                 </section>
             </main>
 
