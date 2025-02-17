@@ -94,7 +94,6 @@ const JoinUsPage: React.FC = () => {
                                     </p>
                                     <ul className="list-disc list-inside">
                                         <li>Email: mowong@um.edu.mo</li>
-                                        <li>Phone: (853) 6647-7522</li>
                                     </ul>
                                     <p className={`text-gray-300 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                                     Certainly, you can also follow our social media platforms and get the latest scientific research progress from us in a timely manner:
