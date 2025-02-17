@@ -126,7 +126,7 @@ const ProjectsPage: React.FC<HomeProps> = ({ projects }) => {
                                 >
                                     {category}
                                 </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-6">
                                     {categoryGroups[category]?.map((project, index) => {
                                         const itemIndex = startIndex + index + 1;
                                         // 处理年份显示
@@ -145,7 +145,7 @@ const ProjectsPage: React.FC<HomeProps> = ({ projects }) => {
                                                         ? 'opacity-100 translate-y-0'
                                                         : 'opacity-0 translate-y-10'
                                                 } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
-                                                style={{ minHeight: '300px' }}
+                                                style={{ minHeight: '0px' }}
                                             >
                                                 <div className="p-6">
                                                     <h2 className="text-xl font-semibold mb-2">{project.name}</h2>
