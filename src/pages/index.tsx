@@ -222,7 +222,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                         </div>
                                         <a
                                             href={`/posts/${post.id}`}
-                                            className="mt-4 px-6 py-2 !bg-blue-500 !text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 self-center md:self-end"
+                                            className="mt-4 px-6 py-2 !bg-blue-500 !text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 self-center md:self-end "
                                             aria-label={`Read more about ${post.title}`}
                                         >
                                             Read More
@@ -232,6 +232,14 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                             </div>
                         ))}
                     </div>
+                    {/* 新增的总的 Read More 按钮 */}
+                    <a
+                        href="/news"
+                        className="mt-6 block w-fit px-6 py-2 mx-auto !bg-orange-500 !text-white rounded-lg hover:bg-orange-600 transition-colors duration-300 hover:scale-105"
+                        aria-label="Read more news"
+                    >
+                        Read more news
+                    </a>
                 </section>
             </main>
 

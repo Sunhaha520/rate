@@ -81,7 +81,7 @@ const Header = () => {
                         </Link>
 
                         {/* 桌面端菜单 */}
-                        <ul className="hidden lg:flex space-x-8">
+                        <ul className="hidden xl:flex space-x-8">
                             {navItems.map(item => (
                                 <li key={item.id} className="relative group">
                                     <a href={item.href} 
@@ -120,7 +120,7 @@ const Header = () => {
                         {/* 移动端和平板端菜单按钮 */}
                         <button 
                             onClick={toggleMenu} 
-                            className="lg:hidden focus:outline-none"
+                            className="xl:hidden focus:outline-none"
                             aria-label="Toggle Menu"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,7 +132,7 @@ const Header = () => {
 
                 {/* 移动端和平板端菜单面板 */}
                 <div 
-                    className={`lg:hidden fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                    className={`xl:hidden fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
                     onClick={toggleMenu} // 点击空白区域关闭菜单
                 >
                     <div 
