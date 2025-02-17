@@ -49,7 +49,7 @@ const Header = () => {
 
     const navItems: NavItem[] = [
         { id: 1, name: 'Home', href: '/' },
-        { 
+        /* { 
             id: 2, 
             name: 'Research Team',
             children: [
@@ -57,7 +57,8 @@ const Header = () => {
                 { id: 22, name: 'Current Members', href: '/current-members' },
                 { id: 23, name: 'Former Members', href: '/former-members' },
             ]
-        },
+        }, */
+        { id: 2, name: 'Research Team', href: 'current-members' },
         { id: 3, name: 'Publications', href: '/publications' },
         { id: 4, name: 'Projects', href: '/project' },
         { id: 8, name: 'Demo&Resources', href: '/demo' },

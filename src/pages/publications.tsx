@@ -84,7 +84,7 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
                                         : 'opacity-0 translate-y-10'
                                 }`}
                                 style={{
-                                    backgroundColor: theme === 'dark' ? '#374151' : '#ffffff',
+                                    backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
                                     position: 'relative',
                                     backfaceVisibility: 'hidden',
                                     transform: 'translate3d(0,0,0)',

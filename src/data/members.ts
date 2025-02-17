@@ -1,94 +1,92 @@
+// 定义 Member 接口
 export interface Member {
-    id: string;
+    id: string; // 根据新数据，id 类型改为 string
     name: string;
     year: string;
-    researchTopic: string;
+    role: 'PhD' | 'Master' | 'Undergraduate' | 'RA' | 'Supervisor';
     photo: string;
     github?: string;
     homepage?: string;
     email?: string;
-    role: 'PhD' | 'Master' | 'Undergraduate' | 'RA';
+    researchTopic: string[]; // 研究主题为字符串数组
 }
 
+// 定义成员数据数组
 export const members: Member[] = [
     {
         id: '1',
-        name: 'John Doe',
+        name: 'WONG Mun On', // 原数据 name 为空，这里补充示例
         year: '2021',
-        researchTopic: 'Application of Point Clouds in the Construction Field',
-        photo: '/people/1.webp',
+        role: 'Supervisor',
+        photo: '/img/photo.webp',
         github: 'https://github.com/johndoe',
-        homepage: 'https://johndoe.com',
-        email: 'johndoe@example.com',
-        role: 'PhD',
+        homepage: '/supervisor',
+        email: 'mowong@um.edu.mo',
+        researchTopic: [
+            'Construction informatics and building information modeling',
+            'Modular construction and smart construction management',
+            'Virtual design and construction using collaborative AR/VR',
+            'Indoor navigation with multi-sensor data fusion'
+        ]
     },
     {
         id: '2',
         name: 'Jane Smith',
         year: '2022',
-        researchTopic: 'Research and application of BIM and AR-based digital information modeling of bridges: A case study of Macao-Taipa Bridge',
+        role: 'Master',
         photo: '/people/1.webp',
         github: 'https://github.com/janesmith',
-        role: 'Master',
+        researchTopic: [
+            'Research and application of BIM and AR-based digital information modeling of bridges: A case study of Macao - Taipa Bridge'
+        ]
     },
     {
         id: '3',
         name: 'Alice Johnson',
         year: '2020',
-        researchTopic: 'Machine Learning for Structural Health Monitoring',
+        role: 'PhD',
         photo: '/people/2.webp',
         github: 'https://github.com/alicej',
         homepage: 'https://alicej.com',
         email: 'alicej@example.com',
-        role: 'PhD',
+        researchTopic: [
+            'Machine Learning for Structural Health Monitoring'
+        ]
     },
     {
         id: '4',
         name: 'Bob Brown',
         year: '2023',
-        researchTopic: 'Optimization of Construction Scheduling Using AI',
+        role: 'Master',
         photo: '/people/2.webp',
         github: 'https://github.com/bobb',
         email: 'bobb@example.com',
-        role: 'Master',
-    },
-    {
-        id: '5',
-        name: 'Charlie Davis',
-        year: '2022',
-        researchTopic: 'Sustainable Materials in Civil Engineering',
-        photo: '/people/1.webp',
-        github: 'https://github.com/charlied',
-        homepage: 'https://charlied.com',
-        role: 'Undergraduate',
-    },
-    {
-        id: '6',
-        name: 'Diana Evans',
-        year: '2021',
-        researchTopic: 'Geotechnical Analysis of Urban Infrastructure',
-        photo: '/people/2.webp',
-        email: 'dianae@example.com',
-        role: 'RA',
+        researchTopic: [
+            'Optimization of Construction Scheduling Using AI'
+        ]
     },
     {
         id: '7',
         name: 'Ethan Green',
         year: '2023',
-        researchTopic: 'Application of IoT in Smart Buildings',
+        role: 'PhD',
         photo: '/people/1.webp',
         github: 'https://github.com/ethang',
         homepage: 'https://ethang.com',
         email: 'ethang@example.com',
-        role: 'PhD',
+        researchTopic: [
+            'Application of IoT in Smart Buildings'
+        ]
     },
     {
         id: '8',
         name: 'Fiona Harris',
         year: '2022',
-        researchTopic: 'Risk Management in Large-Scale Construction Projects',
+        role: 'Master',
         photo: '/people/1.webp',
         github: 'https://github.com/fionah',
-        role: 'Master',
-    },
+        researchTopic: [
+            'Risk Management in Large - Scale Construction Projects'
+        ]
+    }
 ];
