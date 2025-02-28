@@ -31,13 +31,14 @@ export const members: Member[] = [
     },
     {
         id: '2',
-        name: 'Jane Smith',
-        year: '2022',
+        name: 'Zhenyu Sun',
+        year: '2024',
         role: 'Master',
-        photo: '/people/1.webp',
-        github: 'https://github.com/janesmith',
+        photo: '/people/sunzhenyu.webp',
+        github: 'https://github.com/Sunhaha520',
+        email: 'mc45046@um.edu.mo',
         researchTopic: [
-            'Research and application of BIM and AR-based digital information modeling of bridges: A case study of Macao - Taipa Bridge'
+            '3D point cloud reconstruction',
         ]
     },
     {
