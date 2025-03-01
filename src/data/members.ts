@@ -37,6 +37,7 @@ export const members: Member[] = [
         photo: '/people/sunzhenyu.webp',
         github: 'https://github.com/Sunhaha520',
         email: 'mc45046@um.edu.mo',
+        homepage: 'https://cv.kelejun.cn',
         researchTopic: [
             '3D point cloud reconstruction',
         ]
