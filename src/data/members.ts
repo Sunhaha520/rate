@@ -50,7 +50,7 @@ export const members: Member[] = [
         photo: '/people/zhoushaobin/zhoushaobin.webp',
         homepage: '/members/zhoushaobin',
         researchTopic: [
-            'Multiuser collaboration with Agumented Reality technology'
+            'Multiuser collaboration with Augmented Reality technology'
         ]
     }
 ];
