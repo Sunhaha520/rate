@@ -47,9 +47,9 @@ export default function Home() {
                 />
               </div>
               <div style={styles.experienceInfo}>
-                <h3 style={styles.experienceTitle}>College Students&apos; Innovative Entrepreneurial Training Plan Programme: Smart Site Based on BIM</h3>
+                <h3 style={styles.experienceTitle}>Graduation Thesis : Ecological risk assessment of Coral Island coastal zone based on satellite remote sensing land use monitoring technology(Supervisor: Professor Alex Haymond)</h3>
                 <p style={styles.experienceDescription}>
-                  Committed to setting up buildings through the BIM, employed the Revit software to finish modelling tasks under the guidance of the teacher, and used Thsware software for package pricing and smart site management. Checked various data used in modelling, collected information related to building elements such as material specifications and component parameters, and honoured as the Province-level project.
+                Committed to using ENVI5.3, ArcMap10.6 and other software, employed to pre-process the Landsat satellite remote sensing images of the coral island coastal zone and supervise classification in GIS spatial analysis, land use transfer matrix analysis and other methods, finally supposed to assess and the ecological risk of the coral island coastal zone, honoured as the Outstanding Graduation Thesis Innovation Award.
                 </p>
               </div>
             </div>
