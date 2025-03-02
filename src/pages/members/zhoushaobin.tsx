@@ -71,10 +71,9 @@ export default function Home() {
                 </p>
               </div>
             </div>
-          </div>
-
-          {/* 经历 3 */}
-          <div style={styles.experienceItem}>
+            
+            {/* 经历 3 */}
+            <div style={styles.experienceItem}>
               <div style={styles.experienceImage}>
                 <Image
                   src="/people/zhoushaobin/3.webp" // 替换为你的经历照片路径
@@ -91,6 +90,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
+          </div>
         </section>
       </main>
     </div>
