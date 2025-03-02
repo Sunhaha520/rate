@@ -15,7 +15,7 @@ export default function Home() {
         <section style={styles.intro}>
           <div style={styles.profileImage}>
             <Image
-              src="/people/zhoushaobin.webp" // 替换为你的照片路径
+              src="/people/zhoushaobin/zhoushaobin.webp" // 替换为你的照片路径
               alt="个人照片"
               width={150}
               height={150}
