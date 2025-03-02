@@ -25,7 +25,7 @@ export default function Home() {
           <div style={styles.profileInfo}>
             <h1 style={styles.title}>Shaobin Zhou</h1>
             <p style={styles.description}>
-            I am Zhou Shaobin, majoring in Construction Project Management. Before studying at UM, I earned my bachelor's degree at Guangdong University of Technology, majoring in Construction Management. Notably, my graduation thesis project, titled "Ecological Risk Assessment of Coral Island Coastal Zones Based on Satellite Remote Sensing Land Use Monitoring Technology," was awarded the "Outstanding Graduation Thesis Innovation Award." Additionally, I participated in the College Students' Innovative Entrepreneurial Training Plan Program and was involved in the provincial-level project "Smart Construction Site Based on BIM."
+              I am Zhou Shaobin, majoring in Construction Project Management. Before studying at UM, I earned my bachelor&apos;s degree at Guangdong University of Technology, majoring in Construction Management. Notably, my graduation thesis project, titled &quot;Ecological Risk Assessment of Coral Island Coastal Zones Based on Satellite Remote Sensing Land Use Monitoring Technology,&quot; was awarded the &quot;Outstanding Graduation Thesis Innovation Award.&quot; Additionally, I participated in the College Students&apos; Innovative Entrepreneurial Training Plan Program and was involved in the provincial-level project &quot;Smart Construction Site Based on BIM.&quot;
             </p>
           </div>
         </section>
@@ -48,7 +48,7 @@ export default function Home() {
               <div style={styles.experienceInfo}>
                 <h3 style={styles.experienceTitle}>Graduation Thesis : Ecological risk assessment of Coral Island coastal zone based on satellite remote sensing land use monitoring technology(Supervisor: Professor Alex Haymond)</h3>
                 <p style={styles.experienceDescription}>
-                Committed to using ENVI5.3, ArcMap10.6 and other software, employed to pre-process the Landsat satellite remote sensing images of the coral island coastal zone and supervise classification in GIS spatial analysis, land use transfer matrix analysis and other methods, finally supposed to assess and the ecological risk of the coral island coastal zone, honoured as the Outstanding Graduation Thesis Innovation Award.
+                  Committed to using ENVI5.3, ArcMap10.6 and other software, employed to pre-process the Landsat satellite remote sensing images of the coral island coastal zone and supervise classification in GIS spatial analysis, land use transfer matrix analysis and other methods, finally supposed to assess and the ecological risk of the coral island coastal zone, honoured as the Outstanding Graduation Thesis Innovation Award.
                 </p>
               </div>
             </div>
