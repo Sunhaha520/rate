@@ -5,8 +5,8 @@ export default function Home() {
   return (
     <div style={styles.container}>
       <Head>
-        <title>Shaobin Zhou's Personal Homepage</title>
-        <meta name="description" content="Shaobin Zhou's Personal Homepage" />
+        <title>Shaobin Zhou&apos;s Personal Homepage</title>
+        <meta name="description" content="Shaobin Zhou&apos;s Personal Homepage" />
         <link rel="icon" href="/logo.png" />
       </Head>
 
@@ -25,8 +25,8 @@ export default function Home() {
           <div style={styles.profileInfo}>
             <h1 style={styles.title}>Shaobin Zhou</h1>
             <p style={styles.description}>
-            I am ZhouShaobin from the major of Construction Project Management. Before studying at UM, I attain my bachelor's degree at Guangdong University of Technology, with the major of construction management.  
-            Particularly, my graduation thesis project, "Ecological Risk Assessment of Coral Island Coastal Zones Based on Satellite Remote Sensing Land Use Monitoring Technology," was awarded the "Outstanding Graduation Thesis Innovation Award." Also, I participated in the College Students' Innovative Entrepreneurial Training Plan Programme and immersed myself in the Province-Level project "Smart Construction Site based on BIM".
+              I am ZhouShaobin from the major of Construction Project Management. Before studying at UM, I attain my bachelor&apos;s degree at Guangdong University of Technology, with the major of construction management.  
+              Particularly, my graduation thesis project, &quot;Ecological Risk Assessment of Coral Island Coastal Zones Based on Satellite Remote Sensing Land Use Monitoring Technology,&quot; was awarded the &quot;Outstanding Graduation Thesis Innovation Award.&quot; Also, I participated in the College Students&apos; Innovative Entrepreneurial Training Plan Programme and immersed myself in the Province-Level project &quot;Smart Construction Site based on BIM&quot;.
             </p>
           </div>
         </section>
@@ -47,9 +47,9 @@ export default function Home() {
                 />
               </div>
               <div style={styles.experienceInfo}>
-                <h3 style={styles.experienceTitle}>College Students' Innovative Entrepreneurial Training Plan Programme: Smart Site Based on BIM</h3>
+                <h3 style={styles.experienceTitle}>College Students&apos; Innovative Entrepreneurial Training Plan Programme: Smart Site Based on BIM</h3>
                 <p style={styles.experienceDescription}>
-                Committed to setting up buildings through the BIM, employed the Revit software to finish modelling tasks under the guidance of the teacher, and used Thsware software for package pricing and smart site management. Checked various data used in modelling, collected information related to building elements such as material specifications and component parameters, and honoured as the Province-level project.
+                  Committed to setting up buildings through the BIM, employed the Revit software to finish modelling tasks under the guidance of the teacher, and used Thsware software for package pricing and smart site management. Checked various data used in modelling, collected information related to building elements such as material specifications and component parameters, and honoured as the Province-level project.
                 </p>
               </div>
             </div>
@@ -66,9 +66,9 @@ export default function Home() {
                 />
               </div>
               <div style={styles.experienceInfo}>
-                <h3 style={styles.experienceTitle}>College Students' Innovative Entrepreneurial Training Plan Programme: Smart Site Based on BIM</h3>
+                <h3 style={styles.experienceTitle}>College Students&apos; Innovative Entrepreneurial Training Plan Programme: Smart Site Based on BIM</h3>
                 <p style={styles.experienceDescription}>
-                Committed to setting up buildings through the BIM, employed the Revit software to finish modelling tasks under the guidance of the teacher, and used Thsware software for package pricing and smart site management. Checked various data used in modelling, collected information related to building elements such as material specifications and component parameters, and honoured as the Province-level project.
+                  Committed to setting up buildings through the BIM, employed the Revit software to finish modelling tasks under the guidance of the teacher, and used Thsware software for package pricing and smart site management. Checked various data used in modelling, collected information related to building elements such as material specifications and component parameters, and honoured as the Province-level project.
                 </p>
               </div>
             </div>
@@ -88,7 +88,7 @@ export default function Home() {
               <div style={styles.experienceInfo}>
                 <h3 style={styles.experienceTitle}>University of Macau Team Leader Leads to Victory at First Chinese Collegiate Pickleball Challenge</h3>
                 <p style={styles.experienceDescription}>
-                As the team leader and captain, organized and represented the University of Macau at the First Chinese Collegiate Pickleball Challenge, securing the championship title for UM.
+                  As the team leader and captain, organized and represented the University of Macau at the First Chinese Collegiate Pickleball Challenge, securing the championship title for UM.
                 </p>
               </div>
             </div>
