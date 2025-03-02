@@ -34,61 +34,23 @@ export const members: Member[] = [
         name: 'Zhenyu Sun',
         year: '2024',
         role: 'Master',
-        photo: '/people/sunzhenyu.webp',
+        photo: '/people/sunzhenyu/sunzhenyu.webp',
         github: 'https://github.com/Sunhaha520',
         email: 'mc45046@um.edu.mo',
         homepage: 'https://cv.kelejun.cn',
         researchTopic: [
-            '3D point cloud reconstruction',
+            ' ​Point Cloud Information Completion Based on Photo-Generated Point Clouds',
         ]
     },
     {
         id: '3',
-        name: 'Alice Johnson',
-        year: '2020',
-        role: 'PhD',
-        photo: '/people/2.webp',
-        github: 'https://github.com/alicej',
-        homepage: 'https://alicej.com',
-        email: 'alicej@example.com',
-        researchTopic: [
-            'Machine Learning for Structural Health Monitoring'
-        ]
-    },
-    {
-        id: '4',
-        name: 'Bob Brown',
-        year: '2023',
+        name: 'Shaobin Zhou',
+        year: '2024',
         role: 'Master',
-        photo: '/people/2.webp',
-        github: 'https://github.com/bobb',
-        email: 'bobb@example.com',
+        photo: '/people/zhoushaobin/zhoushaobin.webp',
+        homepage: '/members/zhoushaobin',
         researchTopic: [
-            'Optimization of Construction Scheduling Using AI'
-        ]
-    },
-    {
-        id: '7',
-        name: 'Ethan Green',
-        year: '2023',
-        role: 'PhD',
-        photo: '/people/1.webp',
-        github: 'https://github.com/ethang',
-        homepage: 'https://ethang.com',
-        email: 'ethang@example.com',
-        researchTopic: [
-            'Application of IoT in Smart Buildings'
-        ]
-    },
-    {
-        id: '8',
-        name: 'Fiona Harris',
-        year: '2022',
-        role: 'Master',
-        photo: '/people/1.webp',
-        github: 'https://github.com/fionah',
-        researchTopic: [
-            'Risk Management in Large - Scale Construction Projects'
+            'Multiuser collaboration with Agumented Reality technology'
         ]
     }
 ];
