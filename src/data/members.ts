@@ -31,7 +31,7 @@ export const members: Member[] = [
     },
     {
         id: '2',
-        name: 'Zhenyu Sun',
+        name: 'Zhenyu SUN',
         year: '2024',
         role: 'Master',
         photo: '/people/sunzhenyu/sunzhenyu.webp',
@@ -44,13 +44,27 @@ export const members: Member[] = [
     },
     {
         id: '3',
-        name: 'Shaobin Zhou',
+        name: 'Shaobin ZHOU',
         year: '2024',
         role: 'Master',
         photo: '/people/zhoushaobin/zhoushaobin.webp',
         homepage: '/members/zhoushaobin',
         researchTopic: [
             'Multiuser collaboration with Augmented Reality technology'
+        ]
+    },
+    {
+        id: '4',
+        name: 'Xinzi LENG',
+        year: '2024',
+        role: 'Master',
+        photo: '/people/lengxinzi/lengxinzi.webp',
+        github: 'https://github.com/LychEe-Mor',
+        email: 'mc45368@um.edu.mo',
+        researchTopic: [
+            'Prefabricated construction supply chain',
+            'Multi-agent reinforcement learning',
+            'Optimize management'
         ]
     }
 ];
