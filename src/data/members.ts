@@ -60,6 +60,7 @@ export const members: Member[] = [
         role: 'Master',
         photo: '/people/lengxinzi/lengxinzi.webp',
         github: 'https://github.com/LychEe-Mor',
+        homepage: '/members/LychEe',
         email: 'mc45368@um.edu.mo',
         researchTopic: [
             'Prefabricated construction supply chain',
