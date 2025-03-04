@@ -14,9 +14,9 @@ export default function Home() {
     return (
         <div className="container">
             <Head>
-                <title>{profile.name}'s Personal Homepage</title>
-                <meta name="description" content={`${profile.name}'s Personal Homepage`} />
-                <link rel="icon" href="/logo.png" />
+              <title>{profile.name}&apos;s Personal Homepage</title>
+              <meta name="description" content={`${profile.name}&apos;s Personal Homepage`} />
+              <link rel="icon" href="/logo.png" />
             </Head>
             <main className="main">
                 {/* 第一部分：照片和介绍 */}
