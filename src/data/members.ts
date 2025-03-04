@@ -39,8 +39,7 @@ export const members: Member[] = [
         researchTopic: [
             'Generative design of architectural floor plans',
             'Object detection and transfer learning with deep learning',
-            'Generation of synthetic datasets using virtual environments',
-            'Geographic Information Systems (GIS) in engineering management'
+            'Homepage to learn more directions',
         ]
     },
     {
@@ -104,8 +103,7 @@ export const members: Member[] = [
         researchTopic: [
             'Building information modeling (BIM) throughout building lifecycles',
             'Combining different data types for city information models (CIM)',
-            'Digital twin technology for historic buildings',
-            'City-scale modeling for fire safety'
+            'Homepage to learn more directions',
         ]
     },
 ];

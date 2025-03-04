@@ -1,3 +1,4 @@
+import React from 'react'; // 确保导入 React
 import Head from 'next/head';
 import Image from 'next/image';
 
@@ -33,7 +34,7 @@ export default function Home() {
         {/* 第二部分：研究方向 */}
         <section style={styles.researchDirections}>
           <h2 style={styles.sectionTitle}>Research Directions</h2>
-          <ul style={styles.researchList}>
+          <ul style={styles.researchDirectionsList}>
             <li>Generative design of architectural floor plans</li>
             <li>Object detection and transfer learning with deep learning</li>
             <li>Generation of synthetic datasets using virtual environments</li>
@@ -62,7 +63,7 @@ export default function Home() {
                   <a
                     href="https://www.um.edu.mo" // 澳门大学官网链接
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener noreferrer" // 修复 rel 属性
                     style={styles.link}
                   >
                     University of Macau
@@ -88,7 +89,7 @@ export default function Home() {
                   <a
                     href="https://www.qut.edu.cn" // 青岛理工大学官网链接
                     target="_blank"
-                    rel="noopener noreferrer"
+                    rel="noopener noreferrer" // 修复 rel 属性
                     style={styles.link}
                   >
                     Qingdao University of Technology
@@ -101,44 +102,24 @@ export default function Home() {
 
         {/* 第四部分：最新研究 */}
         <section style={styles.research}>
-          <h2 style={styles.sectionTitle}>Latest Research</h2>
-          <div style={styles.researchList}>
+          <h2 style={styles.sectionTitle}>Selected Latest Research</h2>
+          <div style={styles.researchCardList}>
             {/* 研究 1 */}
             <div style={styles.researchItem}>
               <div style={styles.researchImage}>
                 <Image
-                  src="/research-image-1.jpg" // 替换为研究图片路径
+                  src="/people/sunyifeng/syf1.webp" // 替换为研究图片路径
                   alt="Research Image"
-                  width={150}
-                  height={150}
+                  width={400}
+                  height={200}
                   style={styles.researchImage}
                 />
               </div>
               <div style={styles.researchInfo}>
-                <h3 style={styles.researchTitle}>Deep Learning and Real-Time GNSS for GIS Traffic Sign Management</h3>
-                <p style={styles.researchAuthor}>Authors: Yifeng SUN, Co-Author</p>
+                <h3 style={styles.researchTitle}>Integrating deep learning and real-time GNSS localization for GIS-based traffic sign management.</h3>
+                <p style={styles.researchAuthor}>Sun, Y., Zhao, H., Lam, C. C., Wong, M. O., Liang, H., & Kou, K. P.</p>
                 <p style={styles.researchDescription}>
-                  Developed an efficient and automated traffic sign management system using deep learning (YOLOv8), GNSS, and GIS. The system integrates image and location data, achieving an 85% accuracy in traffic sign detection and a 9.46-meter location error. Published in <i>Automation in Construction</i>.
-                </p>
-              </div>
-            </div>
-
-            {/* 研究 2 */}
-            <div style={styles.researchItem}>
-              <div style={styles.researchImage}>
-                <Image
-                  src="/research-image-2.jpg" // 替换为研究图片路径
-                  alt="Research Image"
-                  width={150}
-                  height={150}
-                  style={styles.researchImage}
-                />
-              </div>
-              <div style={styles.researchInfo}>
-                <h3 style={styles.researchTitle}>Synthetic Dataset Generation for Object Detection</h3>
-                <p style={styles.researchAuthor}>Authors: Yifeng SUN, Co-Author</p>
-                <p style={styles.researchDescription}>
-                  Explored the use of virtual environments to generate synthetic datasets for training deep learning models in object detection tasks, improving model performance in real-world applications.
+                  This study proposes an efficient and highly automated method for traffic sign management by leveraging deep learning, global navigation satellite systems, and geographic information systems. A mobile application is developed to collect sign images and geolocations simultaneously. A YOLOv8 model, through pretraining and transfer learning, is utilized to detect the types of traffic signs, and the results are combined with the geolocations to create a digital map for visualizing the traffic sign distribution. The feasibility of the method is validated using real-world road scenarios, where the results indicate the average precision of sign detection is 85% and the positioning error is 9.46 meters. The proposed method drives an instrumental solution for efficient traffic sign asset management.
                 </p>
               </div>
             </div>
@@ -193,7 +174,7 @@ const styles = {
     width: '100%',
     marginBottom: '2rem',
   },
-  researchList: {
+  researchDirectionsList: {
     listStyleType: 'disc',
     paddingLeft: '1.5rem',
   },
@@ -232,21 +213,27 @@ const styles = {
   research: {
     width: '100%',
   },
+  researchCardList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
   researchItem: {
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column', // 默认手机端上图下文字
     alignItems: 'center',
-    gap: '2rem',
-    padding: '1rem',
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    marginBottom: '1rem',
+    gap: '1rem',
+    padding: '1.5rem',
+    border: '1px solid #ddd', // 边框
+    borderRadius: '8px', // 圆角
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // 阴影
   },
   researchImage: {
     borderRadius: '8px',
   },
   researchInfo: {
-    flex: 2,
+    flex: 1,
+    textAlign: 'center', // 手机端文字居中
   },
   researchTitle: {
     margin: 0,
@@ -283,9 +270,12 @@ const styles = {
       textAlign: 'left',
     },
     researchItem: {
-      flexDirection: 'row',
+      flexDirection: 'row', // 电脑端左图右文字
       alignItems: 'flex-start',
       textAlign: 'left',
+    },
+    researchInfo: {
+      textAlign: 'left', // 电脑端文字左对齐
     },
   },
 } as const; // 使用 `as const` 确保类型推断正确
