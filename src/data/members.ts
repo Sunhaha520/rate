@@ -30,6 +30,20 @@ export const members: Member[] = [
         ]
     },
     {
+        id: '5',
+        name: 'Yifeng SUN',
+        year: '2023',
+        role: 'Master',
+        photo: '/people/sunyifeng/sunyifeng.webp',
+        homepage: '/members/sunyifeng',
+        researchTopic: [
+            'Generative design of architectural floor plans',
+            'Object detection and transfer learning with deep learning',
+            'Generation of synthetic datasets using virtual environments',
+            'Geographic Information Systems (GIS) in engineering management'
+        ]
+    },
+    {
         id: '2',
         name: 'Zhenyu SUN',
         year: '2024',
@@ -67,5 +81,31 @@ export const members: Member[] = [
             'Multi-agent reinforcement learning',
             'Optimize management'
         ]
-    }
+    },
+    {
+        id: '5',
+        name: 'Su YANG',
+        year: '2024',
+        role: 'Master',
+        photo: '/people/yangsu/yangsu.webp',
+        github: 'https://github.com/yangsu666',
+        email: 'mc45365@um.edu.mo',
+        researchTopic: [
+            'Virtual construction training using collaborative VR and EEG',
+        ]
+    },
+    {
+        id: '6',
+        name: 'Yutong QIAO',
+        year: '2023',
+        role: 'PhD',
+        photo: '/people/qiaoyutong/qiaoyutong.webp',
+        homepage: '/members/QiaoYutong',
+        researchTopic: [
+            'Building information modeling (BIM) throughout building lifecycles',
+            'Combining different data types for city information models (CIM)',
+            'Digital twin technology for historic buildings',
+            'City-scale modeling for fire safety'
+        ]
+    },
 ];
