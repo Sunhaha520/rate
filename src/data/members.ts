@@ -29,7 +29,7 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '5',
+        id: '2',
         name: 'Yifeng SUN',
         year: '2023',
         role: 'Master',
@@ -42,7 +42,7 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '2',
+        id: '3',
         name: 'Zhenyu SUN',
         year: '2024',
         role: 'Master',
@@ -55,7 +55,7 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '3',
+        id: '4',
         name: 'Shaobin ZHOU',
         year: '2024',
         role: 'Master',
@@ -66,7 +66,7 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '4',
+        id: '5',
         name: 'Xinzi LENG',
         year: '2024',
         role: 'Master',
@@ -81,7 +81,7 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '5',
+        id: '6',
         name: 'Su YANG',
         year: '2024',
         role: 'Master',
@@ -93,7 +93,7 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '6',
+        id: '7',
         name: 'Yutong QIAO',
         year: '2023',
         role: 'PhD',
@@ -106,7 +106,7 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '7',
+        id: '8',
         name: 'HO Man Hin',
         year: '2023',
         role: 'PhD',
