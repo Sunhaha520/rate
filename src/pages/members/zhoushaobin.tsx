@@ -25,12 +25,70 @@ export default function Home() {
           <div style={styles.profileInfo}>
             <h1 style={styles.title}>Shaobin Zhou</h1>
             <p style={styles.description}>
-              I am Zhou Shaobin, majoring in Construction Project Management. Before studying at UM, I earned my bachelor&apos;s degree at Guangdong University of Technology, majoring in Construction Management. Notably, my graduation thesis project, titled &quot;Ecological Risk Assessment of Coral Island Coastal Zones Based on Satellite Remote Sensing Land Use Monitoring Technology,&quot; was awarded the &quot;Outstanding Graduation Thesis Innovation Award.&quot; Additionally, I participated in the College Students&apos; Innovative Entrepreneurial Training Plan Program and was involved in the provincial-level project &quot;Smart Construction Site Based on BIM.&quot;
+              I am Zhou Shaobin, currently pursuing master degree in Construction Project Management at the University of Macau. Prior to this, I obtained my Bachelor’s degree in Construction Management from Guangdong University of Technology. My current research focus lies in the integration of Augmented Reality (AR) with digital twin-based technologies for applications in construction site management.
             </p>
           </div>
         </section>
 
-        {/* 第二部分：经历 */}
+        {/* 第二部分：教育经历 */}
+        <section style={styles.education}>
+          <h2 style={styles.sectionTitle}>Education</h2>
+          <div style={styles.educationList}>
+            {/* 学历 1 */}
+            <div style={styles.educationItem}>
+              <div style={styles.educationLogo}>
+                <Image
+                  src="/people/lengxinzi/um.webp" // 替换为澳门大学的校徽路径
+                  alt="University of Macau Logo"
+                  width={50}
+                  height={50}
+                  style={styles.educationLogo}
+                />
+              </div>
+              <div style={styles.educationInfo}>
+                <h3 style={styles.educationTitle}>M.Sc. in Construction Project Management</h3>
+                <p style={styles.educationDescription}>
+                  <a
+                    href="https://www.um.edu.mo" // 澳门大学官网链接
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.link}
+                  >
+                    University of Macau
+                  </a>, Macau, China
+                </p>
+              </div>
+            </div>
+
+            {/* 学历 2 */}
+            <div style={styles.educationItem}>
+              <div style={styles.educationLogo}>
+                <Image
+                  src="/people/zhoushaobin/gdgy.webp" // 替换为广东工业大学的校徽路径
+                  alt="Guangdong University of Technology Logo"
+                  width={50}
+                  height={50}
+                  style={styles.educationLogo}
+                />
+              </div>
+              <div style={styles.educationInfo}>
+                <h3 style={styles.educationTitle}>B.Sc. in Construction Management</h3>
+                <p style={styles.educationDescription}>
+                  <a
+                    href="https://www.gdut.edu.cn" // 广东工业大学官网链接
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={styles.link}
+                  >
+                    Guangdong University of Technology
+                  </a>, China
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 第三部分：经历 */}
         <section style={styles.experience}>
           <h2 style={styles.sectionTitle}>Experience​</h2>
           <div style={styles.experienceList}>
@@ -46,7 +104,7 @@ export default function Home() {
                 />
               </div>
               <div style={styles.experienceInfo}>
-                <h3 style={styles.experienceTitle}>Graduation Thesis : Ecological risk assessment of Coral Island coastal zone based on satellite remote sensing land use monitoring technology(Supervisor: Professor Alex Haymond)</h3>
+                <h3 style={styles.experienceTitle}>Graduation Thesis（OGTA） : Ecological risk assessment of Coral Island coastal zone based on satellite Remote Sensing land use monitoring technology(Supervisor: NG，Alex Hay-man)</h3>
                 <p style={styles.experienceDescription}>
                   Committed to using ENVI5.3, ArcMap10.6 and other software, employed to pre-process the Landsat satellite remote sensing images of the coral island coastal zone and supervise classification in GIS spatial analysis, land use transfer matrix analysis and other methods, finally supposed to assess and the ecological risk of the coral island coastal zone, honoured as the Outstanding Graduation Thesis Innovation Award.
                 </p>
@@ -71,7 +129,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            
+
             {/* 经历 3 */}
             <div style={styles.experienceItem}>
               <div style={styles.experienceImage}>
@@ -137,6 +195,38 @@ const styles = {
     fontSize: '1.2rem',
     color: '#666',
   },
+  education: {
+    width: '100%',
+    marginBottom: '2rem',
+  },
+  educationList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '1rem',
+  },
+  educationItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '1rem',
+    padding: '1rem',
+    border: '1px solid #ddd',
+    borderRadius: '8px',
+  },
+  educationLogo: {
+    borderRadius: '50%',
+  },
+  educationInfo: {
+    flex: 1,
+  },
+  educationTitle: {
+    margin: 0,
+    fontSize: '1.2rem',
+  },
+  educationDescription: {
+    margin: '0.5rem 0',
+    fontSize: '1rem',
+    color: '#666',
+  },
   experience: {
     width: '100%',
   },
@@ -173,11 +263,21 @@ const styles = {
     fontSize: '1rem',
     color: '#666',
   },
+  link: {
+    color: '#0070f3', // 链接颜色
+    textDecoration: 'none', // 去掉下划线
+    fontWeight: 'bold', // 加粗
+  },
   '@media (min-width: 768px)': {
     intro: {
       flexDirection: 'row',
       alignItems: 'center',
       gap: '2rem',
+    },
+    educationItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      textAlign: 'left',
     },
     experienceItem: {
       flexDirection: 'row',

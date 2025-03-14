@@ -105,4 +105,17 @@ export const members: Member[] = [
             'Homepage to learn more directions',
         ]
     },
+    {
+        id: '7',
+        name: 'HO Man Hin',
+        year: '2023',
+        role: 'PhD',
+        photo: '/people/hewenxuan/mark.webp',
+        homepage: '/members/homanhin',
+        researchTopic: [
+            'AI-driven automation for construction data extraction',
+            'Programmatic BIM/digital twin development for lifecycle analytics',
+            'UAV/robotics integration for autonomous site monitoring',
+        ]
+    },
 ];

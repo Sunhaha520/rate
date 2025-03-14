@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { members } from '@/data/members'; // 引入成员数据
 import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
+import { useRouter } from 'next/router'; // 引入 useRouter 钩子
 
 // 假设 Member 接口中的 researchTopic 改为字符串数组
 interface Member {
@@ -27,6 +28,8 @@ const MembersPage: React.FC<MembersProps> = ({ members }) => {
     const cardRefs = useRef<(HTMLDivElement | null)[]>([]); // 用于存储卡片的引用
     const { theme } = useTheme(); // 获取当前主题
     const [mounted, setMounted] = useState(false); // 确保组件在客户端渲染后再应用主题
+    const [hoveredMember, setHoveredMember] = useState<number | null>(null); // 记录当前悬停的成员 ID
+    const router = useRouter(); // 获取路由对象
 
     // 确保组件在客户端渲染后再应用主题
     useEffect(() => {
@@ -80,6 +83,13 @@ const MembersPage: React.FC<MembersProps> = ({ members }) => {
     const otherRoles = Object.keys(roleGroups).filter(role => !fixedOrder.includes(role));
     const orderedRoles = [...fixedOrder, ...otherRoles].filter(role => roleGroups[role]);
 
+    // 处理头像点击事件
+    const handleAvatarClick = (homepage: string | undefined) => {
+        if (homepage) {
+            router.push(homepage); // 跳转到个人主页
+        }
+    };
+
     return (
         <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
             {/* 动态设置 Head 内容 */}
@@ -131,17 +141,40 @@ const MembersPage: React.FC<MembersProps> = ({ members }) => {
                                                 style={{ minHeight: '400px' }} // 增加卡片最小高度
                                             >
                                                 {/* 照片部分 */}
-                                                <div className="flex justify-center pt-4">
-                                                    <div className="w-40 h-40 aspect-square overflow-hidden rounded-full">
+                                                <div 
+                                                    className="flex justify-center pt-4 relative"
+                                                    onMouseEnter={() => setHoveredMember(member.id)}
+                                                    onMouseLeave={() => setHoveredMember(null)}
+                                                    onClick={() => handleAvatarClick(member.homepage)} // 点击跳转
+                                                >
+                                                    <div className="w-40 h-40 aspect-square overflow-hidden rounded-full relative cursor-pointer"> {/* 添加 cursor-pointer */}
                                                         <img
                                                             src={member.photo}
                                                             alt={member.name}
-                                                            className="object-cover w-full h-full" // 确保图片按比例缩放并裁剪
+                                                            className={`object-cover w-full h-full transition-filter duration-300 ${
+                                                                hoveredMember === member.id ? 'filter blur-sm' : ''
+                                                            }`} // 确保图片按比例缩放并裁剪
                                                             loading="lazy"
                                                             onError={(e) => {
                                                                 e.currentTarget.src = '/path/to/fallback-image.jpg'; // 加载失败时显示回退图片
                                                             }}
                                                         />
+                                                        {hoveredMember === member.id && (
+                                                            <div className="absolute inset-0 flex items-center justify-center">
+                                                                <svg 
+                                                                    className="icon" 
+                                                                    viewBox="0 0 1024 1024" 
+                                                                    version="1.1" 
+                                                                    xmlns="http://www.w3.org/2000/svg" 
+                                                                    p-id="3508" 
+                                                                    width="64" 
+                                                                    height="64"
+                                                                >
+                                                                    <path d="M901.12 836.608H122.88c-22.528 0-40.96-18.432-40.96-40.96v-573.44c0-22.528 18.432-40.96 40.96-40.96h778.24c22.528 0 40.96 18.432 40.96 40.96v573.44c0 22.528-18.432 40.96-40.96 40.96zM122.88 222.208v573.44h778.24v-573.44H122.88z" p-id="3509" fill="#8a8a8a"></path>
+                                                                    <path d="M707.072 497.152c-31.744 0-56.832-31.744-56.832-72.192s25.088-72.192 56.832-72.192c31.744 0 56.832 31.744 56.832 72.192s-24.576 72.192-56.832 72.192z m0-103.424c-6.144 0-15.872 12.288-15.872 31.232 0 18.944 9.728 31.232 15.872 31.232 6.144 0 15.872-12.288 15.872-31.232 0.512-18.944-9.216-31.232-15.872-31.232zM707.072 665.088c-55.808 0-132.608 0-132.608-60.416 0-49.664 58.368-88.064 132.608-88.064s132.608 38.912 132.608 88.064c0 60.416-76.8 60.416-132.608 60.416z m0-107.52c-53.76 0-91.648 25.088-91.648 47.104 0 16.384 34.816 19.456 91.648 19.456 56.32 0 91.648-3.072 91.648-19.456 0-22.016-37.376-47.104-91.648-47.104zM427.52 531.968h-220.16c-12.8 0-23.04-10.24-23.04-23.04s10.24-23.04 23.04-23.04h220.16c12.8 0 23.04 10.24 23.04 23.04s-10.24 23.04-23.04 23.04zM427.52 634.368h-220.16c-12.8 0-23.04-10.24-23.04-23.04s10.24-23.04 23.04-23.04h220.16c12.8 0 23.04 10.24 23.04 23.04s-10.24 23.04-23.04 23.04zM427.52 429.568h-220.16c-12.8 0-23.04-10.24-23.04-23.04s10.24-23.04 23.04-23.04h220.16c12.8 0 23.04 10.24 23.04 23.04s-10.24 23.04-23.04 23.04z" p-id="3510" fill="#8a8a8a"></path>
+                                                                </svg>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
 
@@ -170,7 +203,7 @@ const MembersPage: React.FC<MembersProps> = ({ members }) => {
                                                             </a>
                                                         )}
                                                         {member.email && (
-                                                            <a href={`mailto:${member.email}`}>
+                                                            <a href={`mailto:member.email`}>
                                                                 <svg
                                                                     className="w-5 h-5 fill-current text-gray-500 hover:text-red-500 transition-colors duration-300" // 缩小图标大小
                                                                     viewBox="0 0 24 24"
@@ -245,7 +278,7 @@ export default MembersPage;
 export async function getStaticProps() {
     return {
         props: {
-            members, // 直接使用 members.ts 中的数据
+            members, // 
         },
     };
 }
