@@ -95,14 +95,14 @@ const JoinUsPage: React.FC = () => {
                                     <ul className="list-disc list-inside">
                                         <li>Email: mowong@um.edu.mo</li>
                                     </ul>
-                                    <p className={`text-gray-300 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    {/* <p className={`text-gray-300 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                                     Certainly, you can also follow our social media platforms and get the latest scientific research progress from us in a timely manner:
-                                    </p>
+                                    </p> */}
 
                                 </div>
                                 {/* 社交链接 */}
                                 
-                                <div className="flex space-x-4 justify-center">
+                                {/* <div className="flex space-x-4 justify-center">
                                     
                                     <a href="https://github.com/your-repo" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
                                         <img src="/img/github.svg" alt="GitHub" className="w-7 h-7" />
@@ -113,7 +113,7 @@ const JoinUsPage: React.FC = () => {
                                     <a href="https://www.youtube.com/your-channel" target="_blank" rel="noreferrer" className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white">
                                         <img src="/img/youtube.svg" alt="YouTube" className="w-7 h-7" />
                                     </a>
-                                </div>
+                                </div> */}
                             </div>
                         </div>
                     </div>

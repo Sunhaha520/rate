@@ -19,7 +19,6 @@ export const members: Member[] = [
         year: '2021',
         role: 'Supervisor',
         photo: '/img/photo.webp',
-        github: 'https://github.com/johndoe',
         homepage: '/supervisor',
         email: 'mowong@um.edu.mo',
         researchTopic: [
