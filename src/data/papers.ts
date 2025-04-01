@@ -9,6 +9,14 @@ export interface Paper {
 
 export const papers: Paper[] = [
     {
+        id: 22,
+        title: "Image-based scan-to-BIM for interior building component reconstruction",
+        authors: ["Wong, M. O.", "Sun, Y.", "Ying, H.", "Yin, M.", "Zhou, H.", "Brilakis, I.", "Kelly, T.", "Lam, C. C."],
+        journal: "Automation in Construction",
+        year: 2025,
+        link: "https://doi.org/10.1016/j.autcon.2025.106091"
+    },
+    {
         id: 1,
         title: "Semantics-based connectivity graph for indoor pathfinding powered by IFC-Graph.",
         authors: ["Zhu., J.", "Wong, M. O.", "Nisbet, N.", "Xu, J.", "Kelly, T.", "Zlatanova, S.", "Brilakis, I."],
@@ -176,4 +184,5 @@ export const papers: Paper[] = [
         year: 2019,
         link: "http://ceur-ws.org/Vol-2394/paper25.pdf"
     }
+    
 ];
