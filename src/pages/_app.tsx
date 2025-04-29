@@ -32,6 +32,21 @@ export default function App({ Component, pageProps }: AppProps) {
         <link rel="icon" type="image/png" href="/logo.png"></link>
         <title>RATE@UM</title> {/* 默认标题，页面中可以覆盖 */}
         <link rel="stylesheet" href="https://static.zeoseven.com/zsft/22/main/result.css" />
+
+        {/* 插入百度统计脚本 */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              var _hmt = _hmt || [];
+              (function() {
+                var hm = document.createElement("script");
+                hm.src = "https://hm.baidu.com/hm.js?5dd1291981c0ce9262475e9714893674";
+                var s = document.getElementsByTagName("script")[0]; 
+                s.parentNode.insertBefore(hm, s);
+              })();
+            `,
+          }}
+        />
       </Head>
 
       <main className={`${geistSans.variable} ${geistMono.variable}`}>
