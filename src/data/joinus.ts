@@ -1,12 +1,14 @@
 // data.ts
 export const recruitmentData = `
-# Recruitment is open for AY 2026/2027
+...Is close since we have ideal candidates for AY2026. We will post new positions if we have any updates.  
 
-Candidates with backgrounds in **Civil Engineering**, **Construction Management**, **Computer Science**, and/or **Automation and Robotics** and with strong interests in **BIM**, **multi - user AR/VR**, **cobots**, and **3D reconstruction** in the AECO industries are welcome to apply for **Ph.D./research assistant (RA)** positions.
+~~Recruitment is open for AY 2026/2027~~
 
-Please attach your **CV**, **transcripts**, and **research proposals** and send the application to email [mowong@um.edu.mo](mailto:mowong@um.edu.mo).
+~~Candidates with backgrounds in **Civil Engineering**, **Construction Management**, **Computer Science**, and/or **Automation and Robotics** and with strong interests in **BIM**, **multi - user AR/VR**, **cobots**, and **3D reconstruction** in the AECO industries are welcome to apply for **Ph.D./research assistant (RA)** positions.~~
 
-For more details, please visit the [UM application webpage](https://example.com).
+~~Please attach your **CV**, **transcripts**, and **research proposals** and send the application to email [mowong@um.edu.mo](mailto:mowong@um.edu.mo).~~
+
+~~For more details, please visit the [UM application webpage](https://example.com).~~
 `;
 
 export const addressData = {

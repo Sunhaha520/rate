@@ -134,3 +134,29 @@ img {
   color: #777;
   margin-bottom: 0.6rem;
 }
+
+.markdown-content del {
+  text-decoration: line-through;
+  color: inherit;
+  background-color: transparent;
+}
+
+.markdown-content del a {
+  text-decoration: none;
+  position: relative;
+}
+
+.markdown-content del a::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: currentColor;
+}
+
+.markdown-content del strong {
+  font-weight: bold;
+  text-decoration: none;
+}
