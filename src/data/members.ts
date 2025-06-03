@@ -56,17 +56,6 @@ export const members: Member[] = [
     },
     {
         id: '4',
-        name: 'Shaobin ZHOU',
-        year: '2024',
-        role: 'Master',
-        photo: '/people/zhoushaobin/zhoushaobin.webp',
-        homepage: '/members/zhoushaobin',
-        researchTopic: [
-            'Multiuser collaboration with Augmented Reality technology'
-        ]
-    },
-    {
-        id: '5',
         name: 'Xinzi LENG',
         year: '2024',
         role: 'Master',
@@ -81,7 +70,7 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '6',
+        id: '5',
         name: 'Su YANG',
         year: '2024',
         role: 'Master',
@@ -90,6 +79,17 @@ export const members: Member[] = [
         email: 'mc45365@um.edu.mo',
         researchTopic: [
             'Virtual construction training using collaborative VR and EEG',
+        ]
+    },
+    {
+        id: '6',
+        name: 'Shaobin ZHOU',
+        year: '2024',
+        role: 'Master',
+        photo: '/people/zhoushaobin/zhoushaobin.webp',
+        homepage: '/members/zhoushaobin',
+        researchTopic: [
+            'Multiuser collaboration with Augmented Reality technology'
         ]
     },
     {
