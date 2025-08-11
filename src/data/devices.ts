@@ -113,6 +113,27 @@ export const devices: Device[] = [
         features: ['Intel® I9-13900HX CPU, Windows 11 Home', '16 GB RAM','NVIDIA® RTX 4060 GPU with 8 GB RAM','1TB SSD'],
         category: 'High-performance computers'
     },
+    {
+        id: '16',
+        name: 'DJI Matrice 350 RTK',
+        image: '/devices/17.webp',
+        features: ['Empty weight ~3.77 kg, max payload 2.7 kg', 'Maximum flight altitude: 7,000 meters','Supports DJI Zenmuse series lenses'],
+        category: 'Construction robots'
+    },
+    {
+        id: '17',
+        name: 'DJI Mavic 4 Pro',
+        image: '/devices/18.webp',
+        features: ['Body weight: 1063g (approx. 2.34 lbs)', '100MP main camera (28mm, 6K/60fps HDR)', '50MP telephoto (168mm, 4K/60fps HDR)', '48MP mid-focal (70mm, 4K/60fps HDR)'],
+        category: 'Construction robots'
+    },
+    {
+        id: '18',
+        name: 'UNICORN HYBRID BLACK',
+        image: '/devices/19.webp',
+        features: ['256 channels, 24-bit resolution, 38.4kHz sampling rate', 'Noise <0.5μV rms, 8.57nV detection', 'Active/passive electrode support, single/bipolar switch'],
+        category: 'Extended reality devices'
+    },
     // 可以继续添加更多设备信息
 ];
 
