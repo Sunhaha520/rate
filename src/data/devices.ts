@@ -133,7 +133,7 @@ export const devices: Device[] = [
         image: '/devices/19.webp',
         features: ['256 channels, 24-bit resolution, 38.4kHz sampling rate', 'Noise <0.5μV rms, 8.57nV detection', 'Active/passive electrode support, single/bipolar switch'],
         category: 'Extended reality devices'
-    },
+    }
     // 可以继续添加更多设备信息
 ];
 
