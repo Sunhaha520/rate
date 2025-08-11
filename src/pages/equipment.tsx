@@ -125,7 +125,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                     </div>
 
                     {/* 按分类渲染设备 */}
-                    {categories.map((category, categoryIndex) => {
+                    {categories.map((category) => {
                         let emoji;
                         switch (category) {
                             case 'Construction robots':
@@ -163,7 +163,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                                     {emoji} {category}
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {categoryGroups[category]?.map((device, index) => {
+                                    {categoryGroups[category]?.map((device) => {
                                         const itemIndex = currentIndex++;
                                         return (
                                             <div
