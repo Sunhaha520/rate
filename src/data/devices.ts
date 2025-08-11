@@ -30,7 +30,7 @@ export const devices: Device[] = [
         category: 'Construction robots'
     },
     {
-        id: '16',
+        id: '4',
         name: 'Robotic tower cranes',
         image: '/devices/16.webp',
         features: ['Self-developed device', 'Arduino/Unity-based programming controls','3-DoF motion capability','With 3D-printed building blocks'],
