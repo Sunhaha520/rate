@@ -11,7 +11,7 @@ interface HomeProps {
 }
 
 const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
-    const [visibleItems, setVisibleItems] = useState<number[]>([]); // 记录已加载的标题和卡片索引
+    const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set()); // 使用 Set 避免重复
     const itemRefs = useRef<(HTMLDivElement | null)[]>([]); // 用于存储标题和卡片的引用
     const { theme } = useTheme(); // 获取当前主题
     const [mounted, setMounted] = useState(false); // 确保组件在客户端渲染后再应用主题
@@ -25,7 +25,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                     initialVisibleIndices.push(index);
                 }
             });
-            setVisibleItems(initialVisibleIndices);
+            setVisibleItems(new Set(initialVisibleIndices));
         }
     }, [mounted]);
 
@@ -37,7 +37,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                     if (entry.isIntersecting) {
                         const index = Number(entry.target.getAttribute('data-index'));
                         console.log(`Element ${index} is visible`); // 添加日志
-                        setVisibleItems((prev) => [...prev, index]); // 将可见元素的索引加入状态
+                        setVisibleItems((prev) => new Set([...prev, index])); // 使用 Set 避免重复
                         observer.unobserve(entry.target); // 停止观察已加载的元素
                     }
                 });
@@ -95,6 +95,9 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
         );
     };
 
+    // 计算累计索引
+    let currentIndex = 0;
+
     return (
         <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
             {/* 动态设置 Head 内容 */}
@@ -140,16 +143,19 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                             default:
                                 emoji = '';
                         }
-                        const startIndex = categoryIndex + Object.keys(categoryGroups).length * categoryIndex;
+                        
+                        // 标题索引
+                        const titleIndex = currentIndex++;
+                        
                         return (
                             <div key={category}>
                                 <h3
                                     ref={(el) => {
-                                        itemRefs.current[startIndex] = el; // 绑定标题引用
+                                        itemRefs.current[titleIndex] = el; // 绑定标题引用
                                     }}
-                                    data-index={startIndex} // 记录标题索引
-                                    className={`text-2xl font-bold mb-4 text-center mt-8 ${
-                                        visibleItems.includes(startIndex)
+                                    data-index={titleIndex} // 记录标题索引
+                                    className={`text-2xl font-bold mb-4 text-center mt-8 transition-all duration-500 ease-out transform ${
+                                        visibleItems.has(titleIndex)
                                             ? 'opacity-100 translate-y-0' // 可见时的样式
                                             : 'opacity-0 translate-y-10' // 不可见时的样式
                                     } ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
@@ -158,7 +164,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {categoryGroups[category]?.map((device, index) => {
-                                        const itemIndex = startIndex + index + 1;
+                                        const itemIndex = currentIndex++;
                                         return (
                                             <div
                                                 key={device.id}
@@ -167,7 +173,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                                                 }}
                                                 data-index={itemIndex} // 记录卡片索引
                                                 className={`rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 ${
-                                                    visibleItems.includes(itemIndex)
+                                                    visibleItems.has(itemIndex)
                                                         ? 'opacity-100 translate-y-0' // 可见时的样式
                                                         : 'opacity-0 translate-y-10' // 不可见时的样式
                                                 } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
