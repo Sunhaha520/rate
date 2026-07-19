@@ -57,19 +57,6 @@ export const members: Member[] = [
         ]
     },
     {
-        id: '4',
-        name: 'Zhenyu SUN',
-        year: '2024',
-        role: 'Master',
-        photo: '/people/sunzhenyu/sunzhenyu.webp',
-        github: 'https://github.com/Sunhaha520',
-        email: 'mc45046@um.edu.mo',
-        homepage: 'https://home.kelejun.cn',
-        researchTopic: [
-            ' ​Point Cloud Information Completion Based on Photo-Generated Point Clouds',
-        ]
-    },
-    {
         id: '5',
         name: 'Su YANG',
         year: '2024',

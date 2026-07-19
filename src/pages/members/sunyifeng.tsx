@@ -1,6 +1,8 @@
 import React from 'react'; // 确保导入 React
 import Head from 'next/head';
 import Image from 'next/image';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 export default function Home() {
   return (
@@ -11,6 +13,7 @@ export default function Home() {
         <link rel="icon" href="/logo.png" />
       </Head>
 
+      <Header />
       <main style={styles.main}>
         {/* 第一部分：照片和介绍 */}
         <section style={styles.intro}>
@@ -126,6 +129,7 @@ export default function Home() {
           </div>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }
@@ -140,7 +144,7 @@ const styles = {
     alignItems: 'center',
   },
   main: {
-    padding: '2rem 0',
+    padding: '0.5rem 0 2rem',
     flex: 1,
     display: 'flex',
     flexDirection: 'column',

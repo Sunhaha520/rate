@@ -14,6 +14,16 @@ export interface PostData {
     summary: string;
     picture: string;
     contentHtml?: string;
+    readingTime?: number;
+}
+
+// 根据正文估算阅读时长（分钟）：英文按 200 词/分钟，中文按 400 字/分钟
+function estimateReadingTime(content: string): number {
+    const text = content.replace(/[#>*`_\-\[\]()!]/g, ' ');
+    const cjkChars = (text.match(/[\u4e00-\u9fa5]/g) || []).length;
+    const words = (text.replace(/[\u4e00-\u9fa5]/g, ' ').match(/\b\w+\b/g) || []).length;
+    const minutes = Math.ceil(cjkChars / 400 + words / 200);
+    return Math.max(1, minutes);
 }
 
 export function getSortedPostsData(): PostData[] {
@@ -36,6 +46,7 @@ export function getSortedPostsData(): PostData[] {
             date: matterResult.data.date,
             summary: matterResult.data.summary,
             picture: matterResult.data.picture,
+            readingTime: estimateReadingTime(matterResult.content),
         };
     });
 
@@ -72,5 +83,6 @@ export async function getPostData(id: string): Promise<PostData> {
         date: matterResult.data.date,
         summary: matterResult.data.summary,
         picture: matterResult.data.picture,
+        readingTime: estimateReadingTime(matterResult.content),
     };
 }

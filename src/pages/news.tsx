@@ -4,6 +4,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { getSortedPostsData, PostData } from '@/lib/posts';
 import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
+import { CalendarDays, Clock } from 'lucide-react';
 
 interface NewsProps {
     allPosts: PostData[];
@@ -81,7 +82,7 @@ const News: React.FC<NewsProps> = ({ allPosts }) => {
                 <section className="">
                     {/* 标题卡片 */}
                     <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        <h2 className="text-3xl font-bold mb-4 text-center">📰 All News</h2>
+                        <h2 className="text-3xl font-bold mb-4 text-center">All News</h2>
                         <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             Stay updated with the latest news from RATE@UM.
                         </p>
@@ -102,35 +103,46 @@ const News: React.FC<NewsProps> = ({ allPosts }) => {
                                         : 'opacity-0 translate-y-10'
                                 }`}
                             >
-                                <div className="flex flex-col md:flex-row">
-                                    {/* 图片部分 */}
-                                    <div className="md:w-1/3">
-                                        <img
-                                            src={post.picture}
-                                            alt={post.title}
-                                            className="object-cover w-full h-48 md:h-full"
-                                        />
-                                    </div>
-                                    {/* 标题、发布时间和简介部分 */}
-                                    <div className="p-6 md:w-2/3 relative flex flex-col justify-between">
-                                        <div>
-                                            <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
-                                            <p className="text-sm text-gray-500 mb-4">Published on: {post.date}</p>
-                                            <p className="text-gray-700 dark:text-gray-300 leading-[1.2em] flex flex-col whitespace-normal sm:max-h-full sm:overflow-visible sm:text-clip md:max-h-[3.6em] md:overflow-hidden md:text-ellipsis">
-                                                <span className="overflow-hidden sm:block sm:-webkit-box sm:-webkit-line-clamp-full sm:-webkit-box-orient-vertical md:block md:-webkit-box md:-webkit-line-clamp-3 md:-webkit-box-orient-vertical">
-                                                    {post.summary}
-                                                </span>
-                                            </p>
+                                <a href={`/posts/${post.id}`} className="block cursor-pointer" aria-label={`Read more about ${post.title}`}>
+                                    <div className="flex flex-col md:flex-row">
+                                        {/* 图片部分 */}
+                                        <div className="md:w-1/3">
+                                            <img
+                                                src={post.picture}
+                                                alt={post.title}
+                                                className="object-cover w-full h-48 md:h-full"
+                                            />
                                         </div>
-                                        <a
-                                            href={`/posts/${post.id}`}
-                                            className="mt-4 px-6 py-2 !bg-blue-500 !text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 self-center sm:self-center md:self-end"
-                                            aria-label={`Read more about ${post.title}`}
-                                        >
-                                            Read More
-                                        </a>
+                                        {/* 标题、发布时间和简介部分 */}
+                                        <div className="p-6 md:w-2/3 relative flex flex-col justify-between">
+                                            <div>
+                                                <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
+                                                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400 mb-4">
+                                                    <span className="flex items-center gap-1.5">
+                                                        <CalendarDays size={14} strokeWidth={2} className="text-teal-500" />
+                                                        <span>{post.date}</span>
+                                                    </span>
+                                                    {post.readingTime && (
+                                                        <span className="flex items-center gap-1.5">
+                                                            <Clock size={14} strokeWidth={2} className="text-teal-500" />
+                                                            <span>{post.readingTime} min read</span>
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-gray-700 dark:text-gray-300 leading-[1.2em] flex flex-col whitespace-normal sm:max-h-full sm:overflow-visible sm:text-clip md:max-h-[3.6em] md:overflow-hidden md:text-ellipsis">
+                                                    <span className="overflow-hidden sm:block sm:-webkit-box sm:-webkit-line-clamp-full sm:-webkit-box-orient-vertical md:block md:-webkit-box md:-webkit-line-clamp-3 md:-webkit-box-orient-vertical">
+                                                        {post.summary}
+                                                    </span>
+                                                </p>
+                                            </div>
+                                            <span
+                                                className="mt-4 px-6 py-2 !bg-blue-500 !text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 self-center sm:self-center md:self-end"
+                                            >
+                                                Read More
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         ))}
                     </div>

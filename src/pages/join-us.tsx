@@ -47,7 +47,7 @@ const JoinUsPage: React.FC = () => {
                     <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${
                         theme === 'dark' ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white' : 'bg-gradient-to-r from-white to-gray-100 text-gray-900'
                     }`}>
-                        <h2 className="text-3xl font-bold mb-4 text-center">🤝Join Us</h2>
+                        <h2 className="text-3xl font-bold mb-4 text-center">Join Us</h2>
                         <p className={`text-lg text-center ${
                             theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                         }`}>
@@ -67,7 +67,7 @@ const JoinUsPage: React.FC = () => {
                     <div className="flex flex-wrap -mx-3">
                         {/* 地图卡片 */}
                         <div className="w-full md:w-1/2 px-3 mb-6">
-                            <div className={`flex flex-col md:flex-row border rounded-xl shadow-md overflow-hidden p-6 transition-all duration-500 ease-out transform hover:scale-105 ${
+                            <div className={`flex flex-col md:flex-row border rounded-xl shadow-md overflow-hidden p-6 transition-all duration-300 ease-out ${
                                 theme === 'dark' ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white' : 'bg-gradient-to-r from-white to-gray-100 text-gray-900'
                             }`}>
                                 {/* 地图部分 */}
@@ -95,7 +95,7 @@ const JoinUsPage: React.FC = () => {
 
                         {/* 联系信息卡片 */}
                         <div className="w-full md:w-1/2 px-3 mb-6">
-                            <div className={`flex flex-col justify-between border rounded-xl shadow-md overflow-hidden p-6 transition-all duration-500 ease-out transform hover:scale-105 ${
+                            <div className={`flex flex-col justify-between border rounded-xl shadow-md overflow-hidden p-6 transition-all duration-300 ease-out ${
                                 theme === 'dark' ? 'bg-gradient-to-r from-gray-800 to-gray-700 text-white' : 'bg-gradient-to-r from-white to-gray-100 text-gray-900'
                             }`} style={{ minHeight: '250px' }}>
                                 <div>

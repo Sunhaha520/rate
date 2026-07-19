@@ -64,7 +64,7 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
             <main className="container mx-auto px-4 py-8">
                 <section className="">
                     <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        <h2 className="text-3xl font-bold mb-4 text-center">📚 Our Papers</h2>
+                        <h2 className="text-3xl font-bold mb-4 text-center">Our Papers</h2>
                         <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             Explore our published papers at RATE@UM.
                         </p>
@@ -84,47 +84,58 @@ const PapersPage: React.FC<PapersProps> = ({ papers }) => {
                                         : 'opacity-0 translate-y-10'
                                 }`}
                                 style={{
-                                    backgroundColor: theme === 'dark' ? '#1f2937' : '#ffffff',
+                                    backgroundColor: theme === 'dark' ? '#171717' : '#ffffff',
                                     position: 'relative',
                                     backfaceVisibility: 'hidden',
                                     transform: 'translate3d(0,0,0)',
-                                    padding: '1.5rem',
                                 }}
                             >
-                                <div className="flex flex-col h-full justify-between">
-                                    <div>
-                                        <h3 className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                            {paper.title}
-                                        </h3>
-                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mt-2`}>
-                                            <strong>Authors: </strong>{paper.authors.join(', ')}
-                                        </p>
-                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mt-2`}>
-                                            <strong>Year: </strong>{paper.year}
-                                        </p>
-                                        <p className={`text-sm ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mt-2`}>
-                                            <strong>Journal: </strong>{paper.journal}
-                                        </p>
-                                    </div>
-                                    <div className="hidden sm:flex justify-end mt-4">
-                                        <a
-                                            href={paper.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="px-4 py-2 bg-blue-500 !text-white rounded-full text-base"
-                                        >
-                                            Read Online
-                                        </a>
-                                    </div>
-                                    <div className="sm:hidden flex justify-center mt-6">
-                                        <a
-                                            href={paper.link}
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="px-4 py-2 bg-blue-500 !text-white rounded-full text-base"
-                                        >
-                                            Read Online
-                                        </a>
+                                <div className="flex flex-col sm:flex-row h-full">
+                                    {/* 主图：仅在设置了 coverImage 时显示，电脑端固定宽高、可裁剪 */}
+                                    {paper.coverImage && (
+                                        <div className="w-full sm:w-80 md:w-96 sm:flex-shrink-0 h-48 sm:h-auto overflow-hidden">
+                                            <img
+                                                src={paper.coverImage}
+                                                alt={paper.title}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    )}
+                                    <div className="flex flex-col flex-1 justify-between p-6 text-left">
+                                        <div>
+                                            <h3 className={`text-xl font-bold text-left ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
+                                                {paper.title}
+                                            </h3>
+                                            <p className={`text-sm text-left ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mt-2`}>
+                                                <strong>Authors: </strong>{paper.authors.join(', ')}
+                                            </p>
+                                            <p className={`text-sm text-left ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mt-2`}>
+                                                <strong>Year: </strong>{paper.year}
+                                            </p>
+                                            <p className={`text-sm text-left ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'} mt-2`}>
+                                                <strong>Journal: </strong>{paper.journal}
+                                            </p>
+                                        </div>
+                                        <div className="hidden sm:flex justify-end mt-4">
+                                            <a
+                                                href={paper.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="px-4 py-2 bg-blue-500 !text-white rounded-full text-base"
+                                            >
+                                                Read Online
+                                            </a>
+                                        </div>
+                                        <div className="sm:hidden flex justify-center mt-6">
+                                            <a
+                                                href={paper.link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="px-4 py-2 bg-blue-500 !text-white rounded-full text-base"
+                                            >
+                                                Read Online
+                                            </a>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

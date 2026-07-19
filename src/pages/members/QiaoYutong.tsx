@@ -1,5 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import {
     profile,
     education,
@@ -18,6 +20,7 @@ export default function Home() {
               <meta name="description" content={`${profile.name}&apos;s Personal Homepage`} />
               <link rel="icon" href="/logo.png" />
             </Head>
+            <Header />
             <main className="main">
                 {/* 第一部分：照片和介绍 */}
                 <section className="intro">
@@ -142,6 +145,7 @@ export default function Home() {
                     </p>
                 </section>
             </main>
+            <Footer />
             <style jsx>{`
                 .container {
                     min-height: 100vh;
@@ -153,7 +157,7 @@ export default function Home() {
                     margin: 0 auto; /* 居中显示 */
                 }
                 .main {
-                    padding: 2rem 0; /* 上下内边距 */
+                    padding: 0.5rem 0 2rem; /* 顶部更小，避免与菜单栏间距过大 */
                     flex: 1;
                     display: flex;
                     flex-direction: column;

@@ -1,6 +1,8 @@
 // pages/index.tsx
 import Head from "next/head";
 import Image from "next/image";
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { profile, researchOverview, publications, awards } from "@/data/mark";
 
 export default function Home() {
@@ -11,6 +13,7 @@ export default function Home() {
                 <meta name="description" content={`${profile.name}'s Personal Homepage`} />
                 <link rel="icon" href="/logo.png" />
             </Head>
+            <Header />
             <main className="main">
                 {/* 头部 */}
                 <section className="header">
@@ -99,6 +102,7 @@ export default function Home() {
                     </div>
                 </section>
             </main>
+            <Footer />
             <style jsx>{`
                 .container {
                     min-height: 100vh;
@@ -110,7 +114,7 @@ export default function Home() {
                     margin: 0 auto;
                 }
                 .main {
-                    padding: 2rem 0;
+                    padding: 0.5rem 0 2rem;
                     flex: 1;
                     display: flex;
                     flex-direction: column;

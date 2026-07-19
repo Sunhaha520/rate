@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { useTheme } from 'next-themes';
+import { CalendarDays, Clock } from 'lucide-react';
 
 export default function Post({ postData }: InferGetStaticPropsType<typeof getStaticProps>) {
   const titleRef = useRef<HTMLHeadingElement>(null);
@@ -65,8 +66,10 @@ export default function Post({ postData }: InferGetStaticPropsType<typeof getSta
     return null;
   }
 
+  const isDark = theme === 'dark';
+
   return (
-    <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
+    <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
       {/* 动态设置 Head 内容 */}
       <Head>
         <title>{postData.title} - RATE@UM</title>
@@ -80,32 +83,52 @@ export default function Post({ postData }: InferGetStaticPropsType<typeof getSta
         <Header />
       </header>
 
-      <main className="container mx-auto px-4 py-8">
-        <h1
-          ref={titleRef}
-          className={`text-3xl font-bold mb-4 opacity-0 translate-y-10 transition-all duration-500 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}
-        >
-          {postData.title}
-        </h1>
+      <main className="container mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-10">
+        <div className="mx-auto w-full max-w-3xl">
+          {/* 文章卡片 */}
+          <article
+            className={`rounded-xl shadow-md overflow-hidden ${
+              isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
+            }`}
+          >
+            <div className="px-6 sm:px-8 md:px-10 pt-0 pb-10 sm:pb-12 md:pb-14">
+              <h1
+                ref={titleRef}
+                className={`text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight mt-0 mb-4 opacity-0 translate-y-10 transition-all duration-500 ${
+                  isDark ? 'text-white' : 'text-gray-900'
+                }`}
+              >
+                {postData.title}
+              </h1>
 
-        <div
-          ref={dateRef}
-          className={`text-gray-500 mb-4 opacity-0 translate-y-10 transition-all duration-500 delay-100 ${
-            theme === 'dark' ? 'text-gray-400' : 'text-gray-500'
-          }`}
-        >
-          {postData.date}
+              <div
+                ref={dateRef}
+                className={`flex flex-wrap items-center gap-x-4 gap-y-2 text-sm mb-8 pb-6 border-b opacity-0 translate-y-10 transition-all duration-500 delay-100 ${
+                  isDark ? 'text-slate-400 border-slate-700/60' : 'text-slate-500 border-slate-200'
+                }`}
+              >
+                <span className="flex items-center gap-1.5">
+                  <CalendarDays size={15} strokeWidth={2} className="text-teal-500" />
+                  <span>{postData.date}</span>
+                </span>
+                {postData.readingTime && (
+                  <span className="flex items-center gap-1.5">
+                    <Clock size={15} strokeWidth={2} className="text-teal-500" />
+                    <span>{postData.readingTime} min read</span>
+                  </span>
+                )}
+              </div>
+
+              <div
+                ref={contentRef}
+                className={`prose prose-slate max-w-none prose-headings:font-bold prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-img:mx-auto opacity-0 translate-y-10 transition-all duration-500 delay-200 ${
+                  isDark ? 'prose-invert prose-a:text-teal-400' : ''
+                }`}
+                dangerouslySetInnerHTML={{ __html: cleanHtml }}
+              />
+            </div>
+          </article>
         </div>
-
-        <div
-          ref={contentRef}
-          className={`prose opacity-0 translate-y-10 transition-all duration-500 delay-200 ${
-            theme === 'dark' ? 'prose-dark' : ''
-          }`}
-          dangerouslySetInnerHTML={{ __html: cleanHtml }}
-        />
       </main>
 
       <footer>

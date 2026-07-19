@@ -18,7 +18,7 @@ export interface Research {
 
 export const mentor: MentorInfo = {
     name: 'WONG Mun On',
-    bio: 'Hi,👋 I am a Research Assistant Professor in the Department of Civil Engineering at the University of Macau. Before joining UM, I obtained my PhD degree in Construction Engineering and Management at the University of Hong Kong and my Bachelor’s degree in Civil Engineering at Shanghai Jiao Tong University. I am particularly interested in new technologies for enhancing construction collaboration, digitalization, and automation, such as building information modelling, multi-user extended reality, and computer vision-based reconstruction. Our vision is to transform the civil engineering industry into a technology-driven, interdisciplinary field dedicated to enhancing worker safety, improving project productivity, and fostering sustainable development for society.',
+    bio: 'Hi,👋 I am an Assistant Professor in the Department of Civil Engineering at the University of Macau. Before joining UM, I obtained my PhD degree in Construction Engineering and Management at the University of Hong Kong and my Bachelor’s degree in Civil Engineering at Shanghai Jiao Tong University. I am particularly interested in new technologies for enhancing construction collaboration, digitalization, and automation, such as building information modelling, multi-user extended reality, and computer vision-based reconstruction. Our vision is to transform the civil engineering industry into a technology-driven, interdisciplinary field dedicated to enhancing worker safety, improving project productivity, and fostering sustainable development for society.',
     photo: '/img/photo.webp'
 };
 

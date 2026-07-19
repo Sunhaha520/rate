@@ -5,6 +5,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { devices, Device } from '@/data/devices'; // 引入设备数据
 import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
+import { Bot, Glasses, Camera, Cpu, type LucideIcon } from 'lucide-react';
 
 interface HomeProps {
     devices: Device[];
@@ -117,7 +118,7 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                     {/* 标题卡片 */}
                     <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
                         {/* 标题居中 */}
-                        <h2 className="text-3xl font-bold mb-4 text-center">🛠️ Our Equipment</h2>
+                        <h2 className="text-3xl font-bold mb-4 text-center">Our Equipment</h2>
                         {/* 副标题居中 */}
                         <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             Explore the advanced equipment in our laboratory.
@@ -126,22 +127,22 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
 
                     {/* 按分类渲染设备 */}
                     {categories.map((category) => {
-                        let emoji;
+                        let CategoryIcon: LucideIcon | null;
                         switch (category) {
                             case 'Construction robots':
-                                emoji = '🤖';
+                                CategoryIcon = Bot;
                                 break;
                             case 'Extended reality devices':
-                                emoji = '👓';
+                                CategoryIcon = Glasses;
                                 break;
                             case 'Reality capture and sensing devices':
-                                emoji = '📷';
+                                CategoryIcon = Camera;
                                 break;
                             case 'High-performance computers':
-                                emoji = '💻';
+                                CategoryIcon = Cpu;
                                 break;
                             default:
-                                emoji = '';
+                                CategoryIcon = null;
                         }
                         
                         // 标题索引
@@ -154,13 +155,14 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
                                         itemRefs.current[titleIndex] = el; // 绑定标题引用
                                     }}
                                     data-index={titleIndex} // 记录标题索引
-                                    className={`text-2xl font-bold mb-4 text-center mt-8 transition-all duration-500 ease-out transform ${
+                                    className={`text-2xl font-bold mb-4 mt-8 flex items-center justify-center gap-2.5 transition-all duration-500 ease-out transform ${
                                         visibleItems.has(titleIndex)
                                             ? 'opacity-100 translate-y-0' // 可见时的样式
                                             : 'opacity-0 translate-y-10' // 不可见时的样式
                                     } ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
                                 >
-                                    {emoji} {category}
+                                    {CategoryIcon && <CategoryIcon size={26} strokeWidth={2} className="text-indigo-500" />}
+                                    <span>{category}</span>
                                 </h3>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                     {categoryGroups[category]?.map((device) => {

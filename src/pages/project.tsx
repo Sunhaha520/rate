@@ -103,7 +103,7 @@ const ProjectsPage: React.FC<HomeProps> = ({ projects }) => {
             <main className="container mx-auto px-4 py-8">
                 <section>
                     <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        <h2 className="text-3xl font-bold mb-4 text-center">📋 Our Projects</h2>
+                        <h2 className="text-3xl font-bold mb-4 text-center">Our Projects</h2>
                         <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             Explore the projects in our laboratory.
                         </p>

@@ -1,26 +1,49 @@
 "use client";
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
+import { useRouter } from 'next/router';
+import { useTheme } from 'next-themes';
+import {
+    Home,
+    Users,
+    BookOpen,
+    FolderKanban,
+    MonitorPlay,
+    Newspaper,
+    Cpu,
+    UserPlus,
+    GraduationCap,
+    UserRound,
+    UsersRound,
+    FlaskConical,
+    ChevronDown,
+    Menu as MenuIcon,
+    X as CloseIcon,
+    type LucideIcon,
+} from 'lucide-react';
 
 interface SubNavItem {
     id: number;
     name: string;
     href: string;
+    icon: LucideIcon;
 }
 
 interface NavItem {
     id: number;
     name: string;
     href?: string;
+    icon: LucideIcon;
     children?: SubNavItem[];
 }
 
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
-    const { theme } = useTheme(); // 获取当前主题
+    const [expandedMobile, setExpandedMobile] = useState<number | null>(null);
+    const { theme } = useTheme();
     const [mounted, setMounted] = useState(false);
-    const menuRef = useRef<HTMLDivElement>(null); // 用于引用菜单面板
+    const menuRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
 
     useEffect(() => {
         setMounted(true);
@@ -30,156 +53,364 @@ const Header = () => {
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-                setMenuOpen(false); // 点击菜单面板外部时关闭菜单
+                setMenuOpen(false);
             }
         };
-
-        // 添加点击事件监听器
         document.addEventListener('mousedown', handleClickOutside);
-
-        // 清理监听器
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [menuRef]);
 
     if (!mounted) {
-        return null; // 或者返回一个加载中的占位符
+        return null;
     }
 
+    const isDark = theme === 'dark';
+
     const navItems: NavItem[] = [
-        { id: 1, name: 'Home', href: '/' },
-        /* { 
-            id: 2, 
+        { id: 1, name: 'Home', href: '/', icon: Home },
+        {
+            id: 2,
             name: 'Research Team',
+            icon: Users,
             children: [
-                { id: 21, name: 'Supervisor', href: '/supervisor' },
-                { id: 22, name: 'Current Members', href: '/current-members' },
-                { id: 23, name: 'Former Members', href: '/former-members' },
-            ]
-        }, */
-        { id: 2, name: 'Research Team', href: 'current-members' },
-        { id: 3, name: 'Publications', href: '/publications' },
-        { id: 4, name: 'Projects', href: '/project' },
-        { id: 8, name: 'Demo&Resources', href: '/demo' },
-        { id: 5, name: 'News', href: '/news' },
-        { id: 6, name: 'Equipment', href: '/equipment' },
-        { id: 7, name: 'Join Us', href: '/join-us' },
+                { id: 21, name: 'Supervisor', href: '/supervisor', icon: GraduationCap },
+                { id: 22, name: 'Current Members', href: '/current-members', icon: UserRound },
+                { id: 23, name: 'Former Members', href: '/former-members', icon: UsersRound },
+            ],
+        },
+        {
+            id: 3,
+            name: 'Research',
+            icon: FlaskConical,
+            children: [
+                { id: 31, name: 'Publications', href: '/publications', icon: BookOpen },
+                { id: 32, name: 'Projects', href: '/project', icon: FolderKanban },
+                { id: 33, name: 'Demo&Resources', href: '/demo', icon: MonitorPlay },
+            ],
+        },
+        { id: 5, name: 'News', href: '/news', icon: Newspaper },
+        { id: 6, name: 'Equipment', href: '/equipment', icon: Cpu },
+        { id: 7, name: 'Join Us', href: '/join-us', icon: UserPlus },
     ];
+
+    // 判断单个路由是否为激活状态
+    const isActive = (href: string) => {
+        if (href === '/') return router.pathname === '/';
+        return router.pathname.startsWith(href);
+    };
+
+    // 判断带子菜单的项是否有任一子项激活
+    const isGroupActive = (item: NavItem) => {
+        if (item.href) return isActive(item.href);
+        return item.children?.some((c) => isActive(c.href)) ?? false;
+    };
 
     const toggleMenu = () => setMenuOpen(!menuOpen);
 
     return (
         <>
-            <header className={`fixed top-0 left-0 right-0 shadow-md z-50 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                <nav className="container mx-auto px-6 py-4">
+            <header
+                className={`fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl border-b transition-colors duration-300 ${
+                    isDark
+                        ? 'bg-slate-900/75 border-slate-700/60 text-white shadow-[0_1px_0_0_rgba(255,255,255,0.04)]'
+                        : 'bg-white/75 border-slate-200/70 text-slate-900 shadow-[0_1px_3px_0_rgba(15,23,42,0.04)]'
+                }`}
+            >
+                <nav className="container mx-auto px-6 py-3">
                     <div className="flex justify-between items-center">
                         {/* Logo */}
-                        <Link href="/">
-                            <div className={`font-bold text-xl cursor-pointer hover:text-blue-500 transition-colors ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                RATE@UM
-                            </div>
+                        <Link href="/" className="group flex items-center gap-2 shrink-0">
+                            <span
+                                className={`font-extrabold text-xl tracking-tight transition-colors duration-300 group-hover:text-indigo-500 ${
+                                    isDark ? 'text-white' : 'text-slate-900'
+                                }`}
+                            >
+                                RATE<span className="transition-transform duration-300 inline-block group-hover:rotate-12">@</span>UM
+                            </span>
                         </Link>
 
                         {/* 桌面端菜单 */}
-                        <ul className="hidden xl:flex space-x-8">
-                            {navItems.map(item => (
-                                <li key={item.id} className="relative group">
-                                    <a href={item.href} 
-                                       className={`block py-2 hover:text-blue-500 transition-colors ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                        {item.name}
-                                        {item.children && (
-                                            <span className="ml-1 inline-block">
-                                                <svg className="w-4 h-4 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                                                </svg>
-                                            </span>
+                        <ul className="hidden xl:flex items-center gap-2">
+                            {navItems.map((item) => {
+                                const Icon = item.icon;
+                                const active = isGroupActive(item);
+                                const hasChildren = !!item.children;
+
+                                return (
+                                    <li key={item.id} className="relative group/nav">
+                                        {hasChildren ? (
+                                            <>
+                                                <button
+                                                    type="button"
+                                                    className={`group relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                                        active
+                                                            ? isDark
+                                                                ? 'bg-indigo-500/15 text-indigo-300'
+                                                                : 'bg-indigo-50 text-indigo-700'
+                                                            : isDark
+                                                            ? 'text-slate-300 hover:text-white hover:bg-white/5'
+                                                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                                                    }`}
+                                                >
+                                                    <Icon
+                                                        size={17}
+                                                        strokeWidth={active ? 2.4 : 2}
+                                                        className={`transition-all duration-200 group-hover:scale-110 ${
+                                                            active ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                        }`}
+                                                    />
+                                                    <span>{item.name}</span>
+                                                    <ChevronDown
+                                                        size={14}
+                                                        className={`transition-transform duration-200 group-hover/nav:rotate-180 ${
+                                                            active ? 'text-indigo-500' : 'text-slate-400'
+                                                        }`}
+                                                    />
+                                                    <span
+                                                        className={`absolute -bottom-[1px] left-3.5 right-3.5 h-0.5 rounded-full bg-indigo-500 transition-transform duration-300 ease-out origin-center ${
+                                                            active ? 'scale-x-100' : 'scale-x-0 group-hover/nav:scale-x-100'
+                                                        }`}
+                                                    />
+                                                </button>
+
+                                                {/* 二级下拉菜单 */}
+                                                <div
+                                                    className={`absolute left-0 top-full pt-4 min-w-[220px] invisible opacity-0 translate-y-3 group-hover/nav:visible group-hover/nav:opacity-100 group-hover/nav:translate-y-0 transition-all duration-200 ease-out`}
+                                                >
+                                                    <ul
+                                                        className={`rounded-xl border p-2 space-y-1.5 shadow-xl backdrop-blur-xl ${
+                                                            isDark
+                                                                ? 'bg-slate-900/95 border-slate-700/60'
+                                                                : 'bg-white/95 border-slate-200/70'
+                                                        }`}
+                                                    >
+                                                        {item.children!.map((child) => {
+                                                            const ChildIcon = child.icon;
+                                                            const childActive = isActive(child.href);
+                                                            return (
+                                                                <li key={child.id}>
+                                                                    <Link
+                                                                        href={child.href}
+                                                                        className={`group/child flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
+                                                                            childActive
+                                                                                ? isDark
+                                                                                    ? 'bg-indigo-500/15 text-indigo-300'
+                                                                                    : 'bg-indigo-50 text-indigo-700'
+                                                                                : isDark
+                                                                                ? 'text-slate-300 hover:bg-white/5 hover:text-white'
+                                                                                : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                                                                        }`}
+                                                                    >
+                                                                        <ChildIcon
+                                                                            size={16}
+                                                                            strokeWidth={childActive ? 2.4 : 2}
+                                                                            className={`transition-colors duration-200 ${
+                                                                                childActive
+                                                                                    ? 'text-indigo-500'
+                                                                                    : 'text-slate-400 group-hover/child:text-indigo-500'
+                                                                            }`}
+                                                                        />
+                                                                        <span>{child.name}</span>
+                                                                    </Link>
+                                                                </li>
+                                                            );
+                                                        })}
+                                                    </ul>
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <Link
+                                                href={item.href!}
+                                                className={`group relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                                    active
+                                                        ? isDark
+                                                            ? 'bg-indigo-500/15 text-indigo-300'
+                                                            : 'bg-indigo-50 text-indigo-700'
+                                                        : isDark
+                                                        ? 'text-slate-300 hover:text-white hover:bg-white/5'
+                                                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                                                }`}
+                                            >
+                                                <Icon
+                                                    size={17}
+                                                    strokeWidth={active ? 2.4 : 2}
+                                                    className={`transition-all duration-200 group-hover:scale-110 group-active:scale-95 ${
+                                                        active ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                    }`}
+                                                />
+                                                <span>{item.name}</span>
+                                                <span
+                                                    className={`absolute -bottom-[1px] left-3.5 right-3.5 h-0.5 rounded-full bg-indigo-500 transition-transform duration-300 ease-out origin-center ${
+                                                        active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
+                                                    }`}
+                                                />
+                                            </Link>
                                         )}
-                                    </a>
-                                    {/* 子菜单 */}
-                                    {item.children && (
-                                        <ul className={`absolute left-0 top-full pt-5 min-w-[200px]
-                                                      invisible opacity-0 translate-y-2
-                                                      group-hover:visible group-hover:opacity-100 group-hover:translate-y-0
-                                                      transition-all duration-300 ease-out `}>
-                                            <div className={`rounded-lg shadow-lg py-2 border ${theme === 'dark' ? 'bg-gray-800' : 'bg-white'} ${theme === 'dark' ? 'border-gray-700' : 'border-gray-200' }`}>
-                                                {item.children.map(child => (
-                                                    <li key={child.id}>
-                                                        <a href={child.href}
-                                                           className={`block px-4 py-2 hover:bg-gray-100 whitespace-nowrap ${theme === 'dark' ? 'text-white hover:bg-gray-700' : 'text-gray-900 hover:bg-gray-100'}`}>
-                                                            {child.name}
-                                                        </a>
-                                                    </li>
-                                                ))}
-                                            </div>
-                                        </ul>
-                                    )}
-                                </li>
-                            ))}
+                                    </li>
+                                );
+                            })}
                         </ul>
 
                         {/* 移动端和平板端菜单按钮 */}
-                        <button 
-                            onClick={toggleMenu} 
-                            className="xl:hidden focus:outline-none"
+                        <button
+                            onClick={toggleMenu}
+                            className={`xl:hidden p-2 rounded-lg transition-colors duration-200 ${
+                                isDark ? 'hover:bg-white/10 text-slate-200' : 'hover:bg-slate-100 text-slate-700'
+                            }`}
                             aria-label="Toggle Menu"
                         >
-                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
+                            <MenuIcon size={24} />
                         </button>
                     </div>
                 </nav>
+            </header>
 
-                {/* 移动端和平板端菜单面板 */}
-                <div 
-                    className={`xl:hidden fixed inset-0 bg-black bg-opacity-50 transition-opacity duration-300 ${menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
-                    onClick={toggleMenu} // 点击空白区域关闭菜单
+            {/* 移动端和平板端菜单面板（放在 header 外，确保固定在视口顶层） */}
+            <div
+                className={`xl:hidden fixed inset-0 z-[110] bg-slate-950/50 backdrop-blur-sm transition-opacity duration-300 ${
+                    menuOpen ? 'opacity-100 visible' : 'opacity-0 invisible'
+                }`}
+                onClick={toggleMenu}
+            >
+                <div
+                    ref={menuRef}
+                    className={`fixed top-0 left-0 h-full w-72 max-w-[80vw] shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+                        menuOpen ? 'translate-x-0' : '-translate-x-full'
+                    } ${isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}`}
+                    onClick={(e) => e.stopPropagation()}
                 >
-                    <div 
-                        ref={menuRef} // 绑定菜单面板的引用
-                        className={`fixed top-0 left-0 h-full w-64 shadow-lg transform transition-transform duration-300 ease-in-out ${menuOpen ? 'translate-x-0' : '-translate-x-full'} ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
-                        onClick={(e) => e.stopPropagation()} // 阻止点击菜单面板内部时冒泡
-                    >
-                        <div className="p-4">
-                            <div className="flex justify-between items-center mb-4">
-                                <span className="font-bold"> Menu</span>
-                                <button onClick={toggleMenu} aria-label="Close Menu">
-                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
-                            <ul className="space-y-4 overflow-y-auto">
-                                {navItems.map(item => (
-                                    <li key={item.id}>
-                                        {item.children ? (
-                                            <div>
-                                                <span className="block py-2 border-b">{item.name}</span>
-                                                <ul className="pl-4 mt-2 space-y-2">
-                                                    {item.children.map(child => (
-                                                        <li key={child.id}>
-                                                            <a href={child.href} 
-                                                               className={`block py-2 hover:text-blue-500 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                                                {child.name}
-                                                            </a>
-                                                        </li>
-                                                    ))}
-                                                </ul>
-                                            </div>
-                                        ) : (
-                                            <a href={item.href} 
-                                               className={`block py-2 hover:text-blue-500 ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}>
-                                                {item.name}
-                                            </a>
-                                        )}
-                                    </li>
-                                ))}
-                            </ul>
+                    <div className="p-4">
+                        <div
+                            className={`flex justify-between items-center mb-6 px-2 pb-4 border-b ${
+                                isDark ? 'border-slate-700/60' : 'border-slate-200'
+                            }`}
+                        >
+                            <span className="font-extrabold text-lg tracking-tight">
+                                RATE<span>@</span>UM
+                            </span>
+                            <button
+                                onClick={toggleMenu}
+                                aria-label="Close Menu"
+                                className={`p-2 rounded-lg transition-colors duration-200 ${
+                                    isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'
+                                }`}
+                            >
+                                <CloseIcon size={22} />
+                            </button>
                         </div>
+                        <ul className="space-y-1">
+                            {navItems.map((item) => {
+                                const Icon = item.icon;
+                                const active = isGroupActive(item);
+                                const hasChildren = !!item.children;
+                                const expanded = expandedMobile === item.id;
+
+                                if (hasChildren) {
+                                    return (
+                                        <li key={item.id}>
+                                            <button
+                                                type="button"
+                                                onClick={() => setExpandedMobile(expanded ? null : item.id)}
+                                                className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                                    active
+                                                        ? isDark
+                                                            ? 'bg-indigo-500/15 text-indigo-300'
+                                                            : 'bg-indigo-50 text-indigo-700'
+                                                        : isDark
+                                                        ? 'text-slate-300 hover:bg-white/5'
+                                                        : 'text-slate-600 hover:bg-slate-100/80'
+                                                }`}
+                                            >
+                                                <Icon
+                                                    size={18}
+                                                    strokeWidth={active ? 2.4 : 2}
+                                                    className={`transition-colors duration-200 ${
+                                                        active ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                    }`}
+                                                />
+                                                <span className="flex-1 text-left">{item.name}</span>
+                                                <ChevronDown
+                                                    size={16}
+                                                    className={`transition-transform duration-200 ${
+                                                        expanded ? 'rotate-180' : ''
+                                                    } ${active ? 'text-indigo-500' : 'text-slate-400'}`}
+                                                />
+                                            </button>
+                                            {/* 移动端二级菜单 */}
+                                            <ul
+                                                className={`overflow-hidden transition-all duration-300 ease-out ${
+                                                    expanded ? 'max-h-60 mt-1' : 'max-h-0'
+                                                }`}
+                                            >
+                                                {item.children!.map((child) => {
+                                                    const ChildIcon = child.icon;
+                                                    const childActive = isActive(child.href);
+                                                    return (
+                                                        <li key={child.id}>
+                                                            <Link
+                                                                href={child.href}
+                                                                onClick={toggleMenu}
+                                                                className={`group flex items-center gap-2.5 pl-11 pr-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                                                    childActive
+                                                                        ? isDark
+                                                                            ? 'bg-indigo-500/15 text-indigo-300'
+                                                                            : 'bg-indigo-50 text-indigo-700'
+                                                                        : isDark
+                                                                        ? 'text-slate-400 hover:bg-white/5 hover:text-white'
+                                                                        : 'text-slate-500 hover:bg-slate-100/80 hover:text-slate-900'
+                                                                }`}
+                                                            >
+                                                                <ChildIcon
+                                                                    size={16}
+                                                                    strokeWidth={childActive ? 2.4 : 2}
+                                                                    className={`transition-colors duration-200 ${
+                                                                        childActive ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                                    }`}
+                                                                />
+                                                                <span>{child.name}</span>
+                                                            </Link>
+                                                        </li>
+                                                    );
+                                                })}
+                                            </ul>
+                                        </li>
+                                    );
+                                }
+
+                                return (
+                                    <li key={item.id}>
+                                        <Link
+                                            href={item.href!}
+                                            onClick={toggleMenu}
+                                            className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
+                                                active
+                                                    ? isDark
+                                                        ? 'bg-indigo-500/15 text-indigo-300'
+                                                        : 'bg-indigo-50 text-indigo-700'
+                                                    : isDark
+                                                    ? 'text-slate-300 hover:bg-white/5 hover:translate-x-1'
+                                                    : 'text-slate-600 hover:bg-slate-100/80 hover:translate-x-1'
+                                            }`}
+                                        >
+                                            <Icon
+                                                size={18}
+                                                strokeWidth={active ? 2.4 : 2}
+                                                className={`transition-colors duration-200 ${
+                                                    active ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                }`}
+                                            />
+                                            <span>{item.name}</span>
+                                        </Link>
+                                    </li>
+                                );
+                            })}
+                        </ul>
                     </div>
                 </div>
-            </header>
+            </div>
+
             {/* 占位符 */}
             <div className="h-16"></div>
         </>

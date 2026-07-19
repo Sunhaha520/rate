@@ -5,6 +5,7 @@ export interface Paper {
     journal: string;
     year: number;
     link: string;
+    coverImage?: string; // 可选主图：设置后在电脑端左侧显示（固定尺寸、可裁剪），未设置则保持原样
 }
 
 export const papers: Paper[] = [
@@ -14,7 +15,8 @@ export const papers: Paper[] = [
         authors: ["Wong, M. O.", "Sun, Y.", "Ying, H.", "Yin, M.", "Zhou, H.", "Brilakis, I.", "Kelly, T.", "Lam, C. C."],
         journal: "Automation in Construction",
         year: 2025,
-        link: "https://doi.org/10.1016/j.autcon.2025.106091"
+        link: "https://doi.org/10.1016/j.autcon.2025.106091",
+        coverImage: "https://www.researchgate.net/profile/Ioannis-Brilakis/publication/389500996/figure/fig1/AS:11431281313372458@1741083849285/nterface-of-the-reconstruction-add-on-718-719.png"
     },
     {
         id: 1,
@@ -22,7 +24,8 @@ export const papers: Paper[] = [
         authors: ["Zhu., J.", "Wong, M. O.", "Nisbet, N.", "Xu, J.", "Kelly, T.", "Zlatanova, S.", "Brilakis, I."],
         journal: "Automation in Construction",
         year: 2025,
-        link: "https://doi.org/10.1016/j.autcon.2025.106019"
+        link: "https://doi.org/10.1016/j.autcon.2025.106019",
+        coverImage: "https://www.researchgate.net/profile/Ioannis-Brilakis/publication/388513622/figure/fig9/AS:11431281306382101@1738249637389/Pathfinding-based-on-subdivided-space-a-The-sub-divided-corridor-for-the-second-floor.png"
     },
     {
         id: 2,
@@ -30,7 +33,8 @@ export const papers: Paper[] = [
         authors: ["Yin, M.", "Wu, Z.", "Li, H.", "Wong, M. O.", "Tang, L.", "Tang, S.", "Zhu, J."],
         journal: "Journal of Intelligent Construction",
         year: 2025,
-        link: "https://doi.org/10.26599/JIC.2025.9180084"
+        link: "https://doi.org/10.26599/JIC.2025.9180084",
+        coverImage: "https://www.researchgate.net/publication/385488103/figure/fig2/AS:11431281288160570@1730575383673/The-displayed-BIM-information-in-XBIM-Xplorer.png"
     },
     {
         id: 3,
@@ -102,7 +106,8 @@ export const papers: Paper[] = [
         authors: ["Wong, M. O.", "Zheng, Z.", "Liang, H.", "Du, J.", "Zhou, S.", "Lee. S."],
         journal: "Journal of Environmental Psychology",
         year: 2023,
-        link: "https://doi.org/10.1016/j.jenvp.2023.102043"
+        link: "https://doi.org/10.1016/j.jenvp.2023.102043",
+        coverImage: "https://www.researchgate.net/profile/Mun-On-Wong/publication/371497139/figure/tbl1/AS:11431281274513707@1724966654397/Number-of-participants-in-different-sequences-422.png"
     },
     {
         id: 12,

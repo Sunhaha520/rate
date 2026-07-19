@@ -90,7 +90,7 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
             <main className="container mx-auto px-4 py-8">
                 <section className="">
                     <div className={`hover:scale-105 rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        <h2 className="text-3xl font-bold mb-4 text-center">📚 Demo&Resources</h2>
+                        <h2 className="text-3xl font-bold mb-4 text-center">Demo&Resources</h2>
                         <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
                             Explore our demos and resources at RATE@UM.
                         </p>
@@ -160,24 +160,25 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* 修改头图样式 */}
-                        <div className="relative overflow-hidden">
+                        <div className="relative overflow-hidden bg-black flex items-center justify-center">
                             {selectedResource.isVideo ? (
                                 <video
                                     src={selectedResource.headImage}
                                     controls
-                                    className="w-full object-cover rounded-t-xl"
+                                    playsInline
+                                    className="w-full max-h-[60vh] object-contain rounded-t-xl bg-black"
                                 ></video>
                             ) : (
                                 <img
                                     src={selectedResource.headImage}
                                     alt={selectedResource.title}
-                                    className="w-full object-cover rounded-t-xl"
+                                    className="w-full max-h-[60vh] object-contain rounded-t-xl"
                                 />
                             )}
                         </div>
                         <div className="p-6">
                             <h2 className="text-2xl font-bold mb-4">{selectedResource.title}</h2>
-                            <p className="mb-4">{selectedResource.fullDescription}</p>
+                            <p className="mb-4 text-justify">{selectedResource.fullDescription}</p>
                             <div className="flex justify-between mt-6"> {/* 按钮布局容器 */}
                                 <button
                                     onClick={closeResourceDetails}

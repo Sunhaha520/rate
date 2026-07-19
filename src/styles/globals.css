@@ -8,23 +8,223 @@
   --background-image: linear-gradient(90deg, rgba(230, 230, 230, 0.15) 3%, transparent 0), linear-gradient(1turn, rgba(200, 200, 200, 0.15) 3%, transparent 0); /* 亮色模式背景图像 */
   --background-size: 20px 20px;
   --background-position: 50%;
+
+  /* ---- 统一主题令牌：清新 + 高科技感的青碧色（teal）系 ---- */
+  --accent: #0d9488;         /* teal-600 主强调色 */
+  --accent-hover: #0f766e;   /* teal-700 hover */
+  --accent-soft: #f0fdfa;    /* teal-50 浅底 */
+  --accent-shadow: rgba(13, 148, 136, 0.28);
+  --accent-shadow-hover: rgba(13, 148, 136, 0.4);
+  --neutral: #64748b;        /* slate-500 中性 */
+  --neutral-hover: #475569;  /* slate-600 */
 }
 
 .dark {
-  --background: #1f2937cc;
-  --foreground: #ffffff;
-  --background-image: linear-gradient(90deg, rgba(193, 209, 226, 0.15) 3%, transparent 0), linear-gradient(1turn, rgba(159, 219, 252, 0.15) 3%, transparent 0); /* 夜间模式背景图像 */
+  --background: #0a0a0aee;   /* 纯黑系深底 */
+  --foreground: #f5f5f5;
+  --background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 3%, transparent 0), linear-gradient(1turn, rgba(255, 255, 255, 0.05) 3%, transparent 0); /* 夜间模式中性网格 */
+
+  --accent: #14b8a6;         /* teal-500 暗色更亮 */
+  --accent-hover: #2dd4bf;   /* teal-400 */
+  --accent-soft: rgba(20, 184, 166, 0.15);
 }
 
+
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: 'LXGW Neo ZhiSong', Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  letter-spacing: 0.01em;
 }
 
 h1, h2, h3, p, a {
   color: var(--foreground) !important;
+}
+
+/* ============================================================
+   移动端全站字号优化 · 收缩过大标题，提升小屏协调性
+   仅在 ≤640px 生效，桌面端保持原样
+   ============================================================ */
+@media (max-width: 640px) {
+  .text-4xl { font-size: 1.75rem !important; line-height: 2.1rem !important; }
+  .text-3xl { font-size: 1.5rem !important; line-height: 1.9rem !important; }
+  .text-2xl { font-size: 1.3rem !important; line-height: 1.7rem !important; }
+  .text-xl { font-size: 1.15rem !important; line-height: 1.6rem !important; }
+  .text-lg { font-size: 1rem !important; line-height: 1.55rem !important; }
+  /* 正文与说明文字在小屏略收，避免拥挤 */
+  main p { font-size: 0.95rem; }
+}
+
+/* ============================================================
+   学术编辑风 · 全站视觉系统优化（在不改结构的前提下统一质感）
+   ============================================================ */
+
+/* 标题字重与字距：更沉稳克制 */
+h1 { letter-spacing: -0.02em; }
+h2 { letter-spacing: -0.015em; }
+h3 { letter-spacing: -0.01em; }
+
+/* 正文行距更舒展，提升可读性 */
+p {
+  line-height: 1.7;
+}
+
+/* --- 卡片系统：细边框 + 柔和阴影，取代厚重阴影 --- */
+.shadow-md {
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 16px -6px rgba(15, 23, 42, 0.08) !important;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+.dark .shadow-md {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25), 0 4px 20px -8px rgba(0, 0, 0, 0.4) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+/* 统一卡片圆角：更方正内敛的学术感 */
+.rounded-xl {
+  border-radius: 0.75rem !important;
+}
+.rounded-lg {
+  border-radius: 0.625rem !important;
+}
+
+/* --- 抑制浮夸的整卡缩放，改为克制的上浮 + 阴影加深 --- */
+.hover\:scale-105:hover {
+  transform: translateY(-3px) !important;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05), 0 12px 28px -8px rgba(15, 23, 42, 0.14) !important;
+}
+.dark .hover\:scale-105:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3), 0 12px 32px -8px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* --- 页面主标题卡片：不参与 hover 放大，保持稳重 --- */
+section > .shadow-md:first-child.hover\:scale-105:hover,
+section > div > .shadow-md:first-child {
+  transform: none;
+}
+
+/* 链接下划线过渡更细腻 */
+a {
+  transition: color 0.2s ease;
+}
+
+/* ============================================================
+   统一配色主题 · 青碧色（teal）为唯一强调色
+   清新 + 高科技感，学术气质。通过 CSS 变量集中固定。
+   覆盖全站散乱的 blue / green / orange / red 等按钮与标签
+   ============================================================ */
+
+/* --- 主行动按钮（含 ! 前缀）：全部统一为青碧实心按钮 --- */
+.bg-blue-500,
+.bg-blue-400,
+.bg-orange-500,
+.\!bg-blue-500,
+.\!bg-orange-500 {
+  background-color: var(--accent) !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 2px var(--accent-shadow);
+  transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.bg-blue-500:hover,
+.bg-blue-400:hover,
+.bg-orange-500:hover,
+.\!bg-blue-500:hover,
+.\!bg-orange-500:hover,
+.hover\:bg-blue-600:hover,
+.hover\:bg-orange-600:hover {
+  background-color: var(--accent-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px -2px var(--accent-shadow-hover);
+}
+
+/* --- 关闭 / 取消类按钮：统一为中性石板色 --- */
+.bg-red-400 {
+  background-color: var(--neutral) !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+}
+.bg-red-400:hover,
+.hover\:bg-red-600:hover {
+  background-color: var(--neutral-hover) !important;
+  transform: translateY(-1px);
+}
+
+/* --- 角色 / 分类标签：收敛到青碧同色相的深浅梯度，去除彩虹感 --- */
+.bg-blue-500 { background-color: var(--accent) !important; }   /* Supervisor / PhD / 主分类 */
+.bg-green-500 { background-color: #0891b2 !important; }        /* 次分类（cyan-600，同色系） */
+.bg-purple-500 { background-color: #0e7490 !important; }       /* Master（cyan-700 深青） */
+.bg-red-500 { background-color: var(--neutral) !important; }    /* → 石板 */
+.bg-yellow-500 { background-color: #64748b !important; }        /* → 石板中性 */
+.bg-orange-500 { background-color: var(--accent) !important; }
+
+/* --- hover 文字色统一为青碧 --- */
+.hover\:text-blue-500:hover,
+.hover\:text-green-500:hover,
+.hover\:\!text-blue-500:hover { color: var(--accent) !important; }
+.hover\:\!stroke-blue-500:hover { stroke: var(--accent) !important; }
+
+/* --- 装饰性标记点统一青碧（排除按钮 hover 位移，避免定位偏移） --- */
+.animate-marker.bg-blue-500,
+.bg-blue-500.shadow-2xl {
+  background-color: var(--accent) !important;
+  box-shadow: none;
+}
+/* 静态定位标记点：hover 时不套用按钮的 translateY，保持居中 */
+.bg-blue-500.shadow-2xl,
+.bg-blue-500.shadow-2xl:hover {
+  transform: translate(-50%, -50%) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* ============================================================
+   菜单栏配色 · 与青碧主题色统一（覆盖 Header 的 indigo 类）
+   ============================================================ */
+/* 图标 / 文字 / logo 强调色 */
+.text-indigo-500 { color: var(--accent) !important; }
+.text-indigo-300 { color: var(--accent) !important; }
+.dark .text-indigo-300 { color: var(--accent-hover) !important; }
+.text-indigo-700 { color: #0f766e !important; }
+.group-hover\:text-indigo-500:hover,
+.group:hover .group-hover\:text-indigo-500,
+.group\/nav:hover .group-hover\/nav\:text-indigo-500,
+.group\/child:hover .group-hover\/child\:text-indigo-500 { color: var(--accent) !important; }
+
+/* 激活态背景 */
+.bg-indigo-50 { background-color: var(--accent-soft) !important; }
+.bg-indigo-500\/15 { background-color: var(--accent-soft) !important; }
+
+/* 底部指示条 */
+.bg-indigo-500 { background-color: var(--accent) !important; }
+
+/* ============================================================
+   段落两端对齐 · 让长段落排版更工整（覆盖全站卡片正文）
+   排除居中 / 右对齐段落，避免误伤副标题等
+   ============================================================ */
+.prose p:not(.text-center):not(.text-right),
+.markdown-content p:not(.text-center):not(.text-right),
+.recruitment-details p:not(.text-center):not(.text-right),
+main p.text-gray-700:not(.text-center):not(.text-right),
+main p.text-lg:not(.text-center):not(.text-right),
+main p[class*="text-gray"]:not(.text-center):not(.text-right),
+main p[class*="leading"]:not(.text-center):not(.text-right) {
+  text-align: justify;
+  text-justify: inter-ideograph;
+  /* 允许在长单词处使用连字符 - 断词，避免两端对齐时字词间距被拉伸出大空隙 */
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .py-8 {
@@ -46,6 +246,58 @@ h1, h2, h3, p, a {
   background-position: var(--background-position);
 }
 
+/* ============================================================
+   暗色模式黑色主题 · 覆盖蓝灰色表面为中性黑色
+   ============================================================ */
+.dark .bg-gray-900 {
+  background-color: #0a0a0a !important;  /* 纯黑底 */
+}
+.dark .bg-gray-800 {
+  background-color: #171717 !important;  /* 黑色卡片表面 */
+}
+.dark .bg-gray-700 {
+  background-color: #262626 !important;  /* 黑色次级表面 */
+}
+/* 渐变卡片（join-us 等）改为黑色渐变 */
+.dark .from-gray-800 { --tw-gradient-from: #171717 var(--tw-gradient-from-position) !important; }
+.dark .to-gray-700 { --tw-gradient-to: #262626 var(--tw-gradient-to-position) !important; }
+
+/* --- 覆盖 Tailwind dark: 转义类（卡片实际使用的类，必须显式覆盖） --- */
+.dark .dark\:bg-gray-900 { background-color: #0a0a0a !important; }
+.dark .dark\:bg-gray-800 { background-color: #171717 !important; }
+.dark .dark\:bg-gray-700 { background-color: #262626 !important; }
+.dark .dark\:from-gray-800 { --tw-gradient-from: #171717 var(--tw-gradient-from-position) !important; }
+.dark .dark\:to-gray-700 { --tw-gradient-to: #262626 var(--tw-gradient-to-position) !important; }
+.dark .dark\:bg-gray-800\/80 { background-color: rgba(23, 23, 23, 0.85) !important; }
+.dark .dark\:bg-gray-800\/70 { background-color: rgba(23, 23, 23, 0.75) !important; }
+
+/* --- 菜单栏（Header）暗色改黑 --- */
+.dark .bg-slate-900\/75 { background-color: rgba(10, 10, 10, 0.8) !important; }
+.dark .bg-slate-900 { background-color: #0a0a0a !important; }
+.dark .border-slate-700\/60 { border-color: rgba(64, 64, 64, 0.6) !important; }
+
+/* --- 悬浮夜间模式切换按钮暗色改黑 --- */
+.dark .bg-slate-800\/70 { background-color: rgba(23, 23, 23, 0.75) !important; }
+.dark .border-slate-700\/60 { border-color: rgba(64, 64, 64, 0.6) !important; }
+
+/* --- 边框统一为中性深灰 --- */
+.dark .border-gray-700 { border-color: #262626 !important; }
+.dark .border-slate-700 { border-color: #262626 !important; }
+
+/* --- Footer（非 dark: 前缀的透明类）--- */
+.dark .bg-gray-800\/80 { background-color: rgba(23, 23, 23, 0.85) !important; }
+.dark .bg-gray-800\/70 { background-color: rgba(23, 23, 23, 0.75) !important; }
+.dark .bg-gray-600 { background-color: #404040 !important; }
+
+/* --- 悬浮夜间模式切换按钮（ThemeToggle 的 dark:bg-slate-800/70）--- */
+.dark .dark\:bg-slate-800\/70 { background-color: rgba(23, 23, 23, 0.8) !important; }
+.dark .dark\:border-slate-700\/60 { border-color: rgba(64, 64, 64, 0.6) !important; }
+.dark .dark\:hover\:bg-slate-600\/50:hover { background-color: rgba(38, 38, 38, 0.6) !important; }
+
+/* --- Header 二级下拉菜单面板 --- */
+.dark .bg-slate-900\/95 { background-color: rgba(10, 10, 10, 0.97) !important; }
+.dark .bg-slate-900\/80 { background-color: rgba(10, 10, 10, 0.85) !important; }
+
 .mt-15 {
   margin-top: 5.6rem;
 }
@@ -57,8 +309,78 @@ h1, h2, h3, p, a {
 
 .prose img {
   border-radius: 0.5rem; /* 圆角 */
-  max-width: 80%; /* 缩小宽度 */
-  margin: 0 auto; /* 居中 */
+  max-width: 100%; /* 不溢出容器 */
+  height: auto;
+  margin: 1.5rem auto; /* 居中 + 上下间距 */
+  display: block;
+}
+
+/* --- 文章正文（prose）响应式与暗色适配 --- */
+.prose {
+  font-size: 1.075rem !important;
+  line-height: 1.85;
+}
+.prose p,
+.prose li {
+  font-size: 1.075rem !important;
+  line-height: 1.85;
+}
+@media (min-width: 768px) {
+  .prose,
+  .prose p,
+  .prose li { font-size: 1.15rem !important; }
+}
+.prose p {
+  text-align: justify;
+  text-justify: inter-ideograph;
+  hyphens: auto;
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+/* 文章内表格 / 代码块 / 视频 移动端不溢出 */
+.prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+}
+.prose pre {
+  overflow-x: auto;
+  border-radius: 0.5rem;
+}
+.prose iframe,
+.prose video {
+  max-width: 100%;
+  border-radius: 0.5rem;
+  margin: 1.5rem auto;
+  display: block;
+}
+/* 暗色模式下正文与标题颜色兜底 */
+.dark .prose,
+.dark .prose p,
+.dark .prose li,
+.dark .prose strong,
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
+  color: #e2e8f0 !important;
+}
+
+/* ============================================================
+   markdown-content 链接 · 用青碧主题色高亮（Join Us 招聘等）
+   ============================================================ */
+.markdown-content a,
+.prose a {
+  color: var(--accent) !important;
+  font-weight: 500;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.markdown-content a:hover,
+.prose a:hover {
+  color: var(--accent-hover) !important;
+  border-bottom-color: var(--accent);
 }
 
 .h-49 {
