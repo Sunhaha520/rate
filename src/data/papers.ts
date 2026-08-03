@@ -33,8 +33,7 @@ export const papers: Paper[] = [
         authors: ["Yin, M.", "Wu, Z.", "Li, H.", "Wong, M. O.", "Tang, L.", "Tang, S.", "Zhu, J."],
         journal: "Journal of Intelligent Construction",
         year: 2025,
-        link: "https://doi.org/10.26599/JIC.2025.9180084",
-        coverImage: "https://www.researchgate.net/publication/385488103/figure/fig2/AS:11431281288160570@1730575383673/The-displayed-BIM-information-in-XBIM-Xplorer.png"
+        link: "https://doi.org/10.26599/JIC.2025.9180084"
     },
     {
         id: 3,
