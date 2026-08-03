@@ -158,7 +158,14 @@ export async function getPublishedPosts(): Promise<NotionPostMeta[]> {
         });
 
     // 去掉内部使用的 published 字段，符合 NotionPostMeta 结构
-    return posts.map(({ published, ...rest }) => rest);
+    return posts.map((p) => ({
+        id: p.id,
+        pageId: p.pageId,
+        title: p.title,
+        date: p.date,
+        summary: p.summary,
+        picture: p.picture,
+    }));
 }
 
 // 根据 slug/id 查找对应的页面元数据
