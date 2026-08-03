@@ -141,7 +141,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                                 Here is RATE@UM
                             </h2>
                             <p className="text-gray-700 dark:text-gray-300">
-                                RATE@UM (Research Group of Advanced Technologies in Engineering) is a research group in the Department of Civil and Environment Engineering, Faculty of Science and Technology at the University of Macau. We are dedicated to driving innovative research and development in civil engineering and other related interdisciplinary fields. Our vision is to develop and leverage collaborative intelligence technologies to integrate human beings, physical environments, and digital twins seamlessly towards a safer and more sustainable future.
+                                RATE@UM (Research Group of Advanced Technologies in Engineering) is a research group in the Department of Civil and Environment Engineering, Faculty of Engineering at the University of Macau. We are dedicated to driving innovative research and development in civil engineering and other related interdisciplinary fields. Our vision is to develop and leverage collaborative intelligence technologies to integrate human beings, physical environments, and digital twins seamlessly towards a safer and more sustainable future.
                             </p>
                         </div>
                     </div>
@@ -265,10 +265,13 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
 export default Home;
 
 export async function getStaticProps() {
-    const latestPosts = getSortedPostsData().slice(0, 3);
+    const allPosts = await getSortedPostsData();
+    const latestPosts = allPosts.slice(0, 3);
     return {
         props: {
             latestPosts,
         },
+        // 每 60 秒增量再生，确保 Notion 更新后网站自动同步
+        revalidate: 60,
     };
 }

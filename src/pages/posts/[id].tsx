@@ -139,14 +139,15 @@ export default function Post({ postData }: InferGetStaticPropsType<typeof getSta
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = getSortedPostsData();
+  const posts = await getSortedPostsData();
   const paths = posts.map((post) => ({
     params: { id: post.id },
   }));
 
   return {
     paths,
-    fallback: false,
+    // Notion 新增文章后可通过 fallback 按需生成，无需重新构建
+    fallback: 'blocking',
   };
 };
 
@@ -156,5 +157,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
     props: {
       postData,
     },
+    // 每 60 秒增量再生，确保 Notion 更新后网站自动同步
+    revalidate: 60,
   };
 };

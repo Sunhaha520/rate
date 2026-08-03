@@ -169,10 +169,12 @@ const News: React.FC<NewsProps> = ({ allPosts }) => {
 export default News;
 
 export async function getStaticProps() {
-    const allPosts = getSortedPostsData();
+    const allPosts = await getSortedPostsData();
     return {
         props: {
             allPosts,
         },
+        // 每 60 秒增量再生，确保 Notion 更新后网站自动同步
+        revalidate: 60,
     };
 }

@@ -1,12 +1,12 @@
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
 import { remark } from 'remark';
 import html from 'remark-html';
+import {
+    getPublishedPosts,
+    getPostMetaById,
+    getPageMarkdown,
+} from './notion';
 
-// 调整路径为 src/content
-const postsDirectory = path.join(process.cwd(), 'src', 'content');
-
+// 保持原有接口不变，页面代码无需修改
 export interface PostData {
     id: string;
     title: string;
@@ -26,39 +26,35 @@ function estimateReadingTime(content: string): number {
     return Math.max(1, minutes);
 }
 
-export function getSortedPostsData(): PostData[] {
-    // 检查目录是否存在
-    if (!fs.existsSync(postsDirectory)) {
-        console.error(`Directory not found: ${postsDirectory}`);
-        return [];
-    }
+// 获取所有已发布新闻的列表（按日期降序，Notion 已排序）
+export async function getSortedPostsData(): Promise<PostData[]> {
+    const posts = await getPublishedPosts();
 
-    const fileNames = fs.readdirSync(postsDirectory);
-    const allPostsData = fileNames.map((fileName) => {
-        const id = fileName.replace(/\.md$/, '');
-        const fullPath = path.join(postsDirectory, fileName);
-        const fileContents = fs.readFileSync(fullPath, 'utf8');
-        const matterResult = matter(fileContents);
+    // 列表页需要 readingTime，因此逐条拉取正文估算（页面数量不多时可接受）
+    const withReadingTime = await Promise.all(
+        posts.map(async (post) => {
+            const markdown = await getPageMarkdown(post.pageId);
+            return {
+                id: post.id,
+                title: post.title,
+                date: post.date,
+                summary: post.summary,
+                picture: post.picture,
+                readingTime: estimateReadingTime(markdown),
+            } as PostData;
+        })
+    );
 
-        return {
-            id,
-            title: matterResult.data.title,
-            date: matterResult.data.date,
-            summary: matterResult.data.summary,
-            picture: matterResult.data.picture,
-            readingTime: estimateReadingTime(matterResult.content),
-        };
-    });
-
-    return allPostsData.sort((a, b) => (a.date < b.date ? 1 : -1));
+    return withReadingTime;
 }
 
+// 根据 id/slug 获取单篇新闻详情（含正文 HTML）
 export async function getPostData(id: string): Promise<PostData> {
-    const fullPath = path.join(postsDirectory, `${id}.md`);
+    const meta = await getPostMetaById(id);
 
-    // 检查文件是否存在
-    if (!fs.existsSync(fullPath)) {
-        console.error(`File not found: ${fullPath}`);
+    // 未找到对应新闻时返回占位内容
+    if (!meta) {
+        console.error(`Post not found in Notion: ${id}`);
         return {
             id,
             title: 'Not Found',
@@ -68,21 +64,20 @@ export async function getPostData(id: string): Promise<PostData> {
         };
     }
 
-    const fileContents = fs.readFileSync(fullPath, 'utf8');
-    const matterResult = matter(fileContents);
+    // 拉取 Notion 正文并转成 Markdown
+    const markdown = await getPageMarkdown(meta.pageId);
 
-    const processedContent = await remark()
-        .use(html)
-        .process(matterResult.content);
+    // 复用现有 remark 流水线，将 Markdown 转成 HTML
+    const processedContent = await remark().use(html).process(markdown);
     const contentHtml = processedContent.toString();
 
     return {
-        id,
+        id: meta.id,
         contentHtml,
-        title: matterResult.data.title,
-        date: matterResult.data.date,
-        summary: matterResult.data.summary,
-        picture: matterResult.data.picture,
-        readingTime: estimateReadingTime(matterResult.content),
+        title: meta.title,
+        date: meta.date,
+        summary: meta.summary,
+        picture: meta.picture,
+        readingTime: estimateReadingTime(markdown),
     };
 }
