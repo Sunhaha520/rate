@@ -79,18 +79,32 @@ function getCheckbox(
     return false;
 }
 
+// 将 Notion 托管的 S3 临时签名图片地址包装成稳定的代理地址。
+// Notion 上传的图片（file 类型）URL 约 1 小时过期，直接嵌入静态页面会破图；
+// 通过 /api/notion-image 代理后地址永不过期。外链图片（external）稳定，保持原样。
+function toStableImageUrl(url: string): string {
+    if (!url) return '';
+    const needsProxy =
+        url.includes('amazonaws.com') ||
+        url.includes('notion.so') ||
+        url.includes('notion-static.com');
+    return needsProxy
+        ? `/api/notion-image?url=${encodeURIComponent(url)}`
+        : url;
+}
+
 // 读取封面图：优先取自定义的 files 属性，其次取页面 cover
 function getPicture(page: PageObjectResponse): string {
     const pictureProp = findProperty(page, ['Picture', 'Cover', '封面', '图片']);
     if (pictureProp && pictureProp.type === 'files' && pictureProp.files.length > 0) {
         const file = pictureProp.files[0];
-        if (file.type === 'external') return file.external.url;
-        if (file.type === 'file') return file.file.url;
+        if (file.type === 'external') return toStableImageUrl(file.external.url);
+        if (file.type === 'file') return toStableImageUrl(file.file.url);
     }
     // 回退到页面封面
     if (page.cover) {
-        if (page.cover.type === 'external') return page.cover.external.url;
-        if (page.cover.type === 'file') return page.cover.file.url;
+        if (page.cover.type === 'external') return toStableImageUrl(page.cover.external.url);
+        if (page.cover.type === 'file') return toStableImageUrl(page.cover.file.url);
     }
     return '';
 }
