@@ -79,32 +79,45 @@ function getCheckbox(
     return false;
 }
 
-// 将 Notion 托管的 S3 临时签名图片地址包装成稳定的代理地址。
-// Notion 上传的图片（file 类型）URL 约 1 小时过期，直接嵌入静态页面会破图；
-// 通过 /api/notion-image 代理后地址永不过期。外链图片（external）稳定，保持原样。
-function toStableImageUrl(url: string): string {
-    if (!url) return '';
-    const needsProxy =
+// 判断某个图片地址是否为 Notion 托管的 S3 临时签名地址（会过期，需要代理）
+function isNotionHostedImage(url: string): boolean {
+    if (!url) return false;
+    return (
         url.includes('amazonaws.com') ||
         url.includes('notion.so') ||
-        url.includes('notion-static.com');
-    return needsProxy
-        ? `/api/notion-image?url=${encodeURIComponent(url)}`
-        : url;
+        url.includes('notion-static.com')
+    );
 }
 
-// 读取封面图：优先取自定义的 files 属性，其次取页面 cover
+// 读取封面图并返回稳定地址。
+// Notion 上传的图片（file 类型）是 S3 临时签名 URL（约 1 小时过期），
+// 若把签名 URL 固化到静态页面或代理参数里，时间一长必然失效。
+// 因此这里对 Notion 托管图片统一返回 /api/notion-image?pageId=<页面ID>，
+// 由代理在“收到请求那一刻”用 Notion API 实时取最新签名图片，永不过期。
+// 用户自填的外链图片（external 且非 Notion 域名）稳定，直接返回原地址。
 function getPicture(page: PageObjectResponse): string {
     const pictureProp = findProperty(page, ['Picture', 'Cover', '封面', '图片']);
     if (pictureProp && pictureProp.type === 'files' && pictureProp.files.length > 0) {
         const file = pictureProp.files[0];
-        if (file.type === 'external') return toStableImageUrl(file.external.url);
-        if (file.type === 'file') return toStableImageUrl(file.file.url);
+        if (file.type === 'external') {
+            return isNotionHostedImage(file.external.url)
+                ? `/api/notion-image?pageId=${page.id}`
+                : file.external.url;
+        }
+        if (file.type === 'file') {
+            return `/api/notion-image?pageId=${page.id}`;
+        }
     }
     // 回退到页面封面
     if (page.cover) {
-        if (page.cover.type === 'external') return toStableImageUrl(page.cover.external.url);
-        if (page.cover.type === 'file') return toStableImageUrl(page.cover.file.url);
+        if (page.cover.type === 'external') {
+            return isNotionHostedImage(page.cover.external.url)
+                ? `/api/notion-image?pageId=${page.id}`
+                : page.cover.external.url;
+        }
+        if (page.cover.type === 'file') {
+            return `/api/notion-image?pageId=${page.id}`;
+        }
     }
     return '';
 }
