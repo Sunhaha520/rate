@@ -210,3 +210,48 @@ export async function getPageMarkdown(pageId: string): Promise<string> {
     // notion-to-md 返回 { parent: string } 结构
     return mdString.parent ?? '';
 }
+
+// 正文图片映射：原始签名 URL -> 对应的图片块 blockId
+export interface ContentImage {
+    url: string; // Notion 返回的原始（会过期的）图片 URL
+    blockId: string; // 该图片块的稳定 ID
+}
+
+// 递归遍历页面所有块，收集其中的图片块（含原始 URL 与 blockId）。
+// 用于把正文 HTML 里会过期的 S3 图片地址替换成 /api/notion-image?blockId=... 代理地址。
+export async function getPageImageBlocks(
+    pageId: string
+): Promise<ContentImage[]> {
+    const images: ContentImage[] = [];
+
+    async function walk(blockId: string): Promise<void> {
+        let cursor: string | undefined = undefined;
+        do {
+            const resp = await notion.blocks.children.list({
+                block_id: blockId,
+                start_cursor: cursor,
+            });
+            for (const block of resp.results) {
+                if (!('type' in block)) continue;
+                const b = block as { id: string; type: string; has_children?: boolean; image?: { type: string; external?: { url: string }; file?: { url: string } } };
+                if (b.type === 'image' && b.image) {
+                    let url = '';
+                    if (b.image.type === 'external' && b.image.external) {
+                        url = b.image.external.url;
+                    } else if (b.image.type === 'file' && b.image.file) {
+                        url = b.image.file.url;
+                    }
+                    if (url) images.push({ url, blockId: b.id });
+                }
+                // 递归处理嵌套子块（如 column、toggle 内的图片）
+                if (b.has_children) {
+                    await walk(b.id);
+                }
+            }
+            cursor = resp.has_more ? (resp.next_cursor ?? undefined) : undefined;
+        } while (cursor);
+    }
+
+    await walk(pageId);
+    return images;
+}

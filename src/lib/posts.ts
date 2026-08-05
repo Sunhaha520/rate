@@ -4,6 +4,7 @@ import {
     getPublishedPosts,
     getPostMetaById,
     getPageMarkdown,
+    getPageImageBlocks,
 } from './notion';
 
 // 保持原有接口不变，页面代码无需修改
@@ -69,7 +70,22 @@ export async function getPostData(id: string): Promise<PostData> {
 
     // 复用现有 remark 流水线，将 Markdown 转成 HTML
     const processedContent = await remark().use(html).process(markdown);
-    const contentHtml = processedContent.toString();
+    let contentHtml = processedContent.toString();
+
+    // 将正文中会过期的 Notion S3 签名图片地址替换成稳定的 blockId 代理地址，
+    // 使正文图片和封面图一样永不失效（无需刷新即可显示）。
+    const imageBlocks = await getPageImageBlocks(meta.pageId);
+    for (const img of imageBlocks) {
+        const proxyUrl = `/api/notion-image?blockId=${img.blockId}`;
+        // Notion 图片 URL 常带查询串（签名），且 HTML 里可能被 HTML 转义，
+        // 因此按“去掉查询串后的基础地址”做匹配替换，覆盖同一张图片的所有变体。
+        const base = img.url.split('?')[0];
+        // 转义正则特殊字符
+        const escaped = base.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // 匹配 src="<base>..." 直到下一个引号，整体替换为代理地址
+        const re = new RegExp(`(src=")${escaped}[^"]*(")`, 'g');
+        contentHtml = contentHtml.replace(re, `$1${proxyUrl}$2`);
+    }
 
     return {
         id: meta.id,
