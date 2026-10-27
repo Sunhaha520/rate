@@ -163,7 +163,7 @@ const DemoResourcesPage: React.FC<DemoResourcesPageProps> = ({ resources }) => {
                                         className="card-enter group cursor-pointer overflow-hidden rounded-xl shadow-md bg-white text-gray-900 transition-all duration-500 ease-out hover:scale-[1.02] dark:bg-gray-800 dark:text-white"
                                     >
                                         {(item.coverImage || item.headImage) && (
-                                            <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                            <div className="relative h-40 overflow-hidden bg-gray-100 dark:bg-gray-700 sm:h-auto sm:aspect-video">
                                                 <DemoCover item={item} />
 
                                                 {item.isVideo && (
@@ -184,7 +184,7 @@ const DemoResourcesPage: React.FC<DemoResourcesPageProps> = ({ resources }) => {
                                             </div>
                                         )}
 
-                                        <div className="p-5">
+                                        <div className="p-4 sm:p-5">
                                             {!(item.coverImage || item.headImage) && (
                                                 <span className="mb-2 inline-flex rounded-full border border-slate-200 px-2.5 py-0.5 text-[0.68rem] font-medium tracking-wide text-slate-600 dark:border-slate-700 dark:text-slate-300">
                                                     {item.tag}
@@ -193,7 +193,7 @@ const DemoResourcesPage: React.FC<DemoResourcesPageProps> = ({ resources }) => {
                                             <h3 className="text-base font-semibold leading-snug">
                                                 {item.title}
                                             </h3>
-                                            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                                            <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300 sm:line-clamp-3">
                                                 {item.description}
                                             </p>
                                             <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-teal-700 dark:text-teal-300">
@@ -213,7 +213,7 @@ const DemoResourcesPage: React.FC<DemoResourcesPageProps> = ({ resources }) => {
 
             {selected && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm"
+                    className="fixed inset-0 z-[150] flex items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm"
                     onClick={() => setSelected(null)}
                     role="dialog"
                     aria-modal="true"
@@ -246,13 +246,13 @@ const DemoResourcesPage: React.FC<DemoResourcesPageProps> = ({ resources }) => {
                                             src={selected.headImage}
                                             controls
                                             playsInline
-                                            className="max-h-[38vh] w-full object-contain"
+                                            className="max-h-[28vh] w-full object-contain sm:max-h-[38vh]"
                                         />
                                     ) : (
                                         <img
                                             src={selected.headImage}
                                             alt={selected.title}
-                                            className="h-56 w-full object-cover sm:h-72"
+                                            className="h-40 w-full object-cover sm:h-72"
                                         />
                                     )}
                                 </div>
