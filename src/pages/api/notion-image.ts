@@ -1,5 +1,4 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import sharp from 'sharp';
 import { notion } from '@/lib/notion';
 import type {
     PageObjectResponse,
@@ -213,12 +212,15 @@ export default async function handler(
             contentType = upstream.headers.get('content-type') || 'image/jpeg';
             buffer = Buffer.from(await upstream.arrayBuffer());
 
-            // 缩略图：只处理常见位图格式，SVG/GIF 保持原样
+            // 缩略图：只处理常见位图格式，SVG/GIF 保持原样。
+            // sharp 动态加载：Vercel 等环境如果缺少原生二进制，也不会让整个接口 500，
+            // 而是降级返回原图。
             if (
                 width > 0 &&
                 /^image\/(jpeg|png|webp|avif|tiff)/i.test(contentType)
             ) {
                 try {
+                    const { default: sharp } = await import('sharp');
                     buffer = await sharp(buffer)
                         .rotate()
                         .resize({ width, withoutEnlargement: true })
@@ -226,7 +228,10 @@ export default async function handler(
                         .toBuffer();
                     contentType = 'image/webp';
                 } catch (err) {
-                    console.warn('Notion 图片压缩失败，返回原图:', err);
+                    console.warn(
+                        'Notion 图片压缩不可用，返回原图:',
+                        err instanceof Error ? err.message : err
+                    );
                 }
             }
 

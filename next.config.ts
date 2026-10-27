@@ -8,6 +8,8 @@ if (process.env.NODE_ENV !== "production") {
 }
 
 const nextConfig: NextConfig = {
+  // sharp 是原生模块，交由 Node 运行时从 node_modules 解析，避免被打包进 serverless bundle
+  serverExternalPackages: ["sharp"],
   images: {
     // 允许加载 Notion 托管的图片域名（封面/正文图片）
     remotePatterns: [
