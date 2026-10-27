@@ -1,22 +1,65 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { notion } from '@/lib/notion';
-import type {
-    PageObjectResponse,
-    BlockObjectResponse,
-} from '@notionhq/client/build/src/api-endpoints';
 
 // Notion 图片代理（实时取图 + 缩略图 + 长缓存）
 //
-// 原理：
-// 1. Notion 上传的图片是约 1 小时过期的 S3 签名 URL，代理在收到请求时
-//    通过 Notion API 实时换取有效地址；签名地址本身缓存 40 分钟，避免每张图都打接口。
-// 2. 支持 ?w= 宽度参数，用 sharp 转成 WebP 缩略图，避免头像/卡片图下载几 MB 原图。
-// 3. 页面生成的图片地址带 ?v=<最后编辑时间>，内容不变时 URL 不变，
-//    因此可以放心设置一年 immutable 缓存；图片更新后 v 变化，自动失效。
+// 这里刻意不引入 @/lib/notion：那条管线包含 notion-to-md / remark / sanitize-html，
+// 在 Vercel 的 serverless 运行时里可能因为外部模块解析失败而导致整个接口 500。
+// 图片接口只需要调用两个 Notion 只读接口，直接用 fetch 更轻、更稳。
 //
 // 请求方式：
 //   页面图：/api/notion-image?pageId=...&w=900&v=...
 //   正文图：/api/notion-image?blockId=...&w=1600&v=...
+
+const NOTION_API = 'https://api.notion.com/v1';
+const NOTION_VERSION = '2022-06-28';
+
+interface NotionFile {
+    type: 'external' | 'file';
+    external?: { url: string };
+    file?: { url: string };
+}
+
+interface NotionProperty {
+    type: string;
+    files?: NotionFile[];
+}
+
+interface NotionPage {
+    properties?: Record<string, NotionProperty>;
+    cover?: NotionFile | null;
+}
+
+interface NotionBlock {
+    type: string;
+    image?: NotionFile;
+}
+
+async function notionApi<T>(path: string): Promise<T> {
+    const token = process.env.NOTION_TOKEN;
+    if (!token) throw new Error('NOTION_TOKEN 未配置');
+
+    const response = await fetch(`${NOTION_API}/${path}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Notion-Version': NOTION_VERSION,
+        },
+        cache: 'no-store',
+    });
+
+    if (!response.ok) {
+        const detail = (await response.text()).slice(0, 200);
+        throw new Error(`Notion API ${response.status}: ${detail}`);
+    }
+
+    return (await response.json()) as T;
+}
+
+function fileUrl(file: NotionFile | null | undefined): string {
+    if (!file) return '';
+    if (file.type === 'external') return file.external?.url ?? '';
+    if (file.type === 'file') return file.file?.url ?? '';
+    return '';
+}
 
 const SIGNED_URL_TTL = 40 * 60 * 1000;
 const signedUrls = new Map<string, { url: string; at: number }>();
@@ -39,7 +82,6 @@ function readVariant(key: string) {
         return null;
     }
 
-    // 刷新 LRU 顺序
     variants.delete(key);
     variants.set(key, hit);
     return hit;
@@ -90,21 +132,13 @@ async function resolveImageUrl(
     let imageUrl = '';
 
     if (blockId) {
-        const block = (await notion.blocks.retrieve({
-            block_id: blockId,
-        })) as BlockObjectResponse;
-        if (block.type === 'image') {
-            const image = block.image;
-            if (image.type === 'external') imageUrl = image.external.url;
-            else if (image.type === 'file') imageUrl = image.file.url;
-        }
+        const block = await notionApi<NotionBlock>(`blocks/${blockId}`);
+        if (block.type === 'image') imageUrl = fileUrl(block.image);
     } else if (pageId) {
-        const page = (await notion.pages.retrieve({
-            page_id: pageId,
-        })) as PageObjectResponse;
+        const page = await notionApi<NotionPage>(`pages/${pageId}`);
+        const props = page.properties ?? {};
 
-        const props = page.properties || {};
-        const candidateKeys = Object.keys(props).filter((key) =>
+        const candidateKeys = Object.keys(props).filter((propKey) =>
             [
                 'picture',
                 'cover',
@@ -120,38 +154,28 @@ async function resolveImageUrl(
                 '\u4e2a\u4eba\u7167\u7247',
                 '\u5730\u56fe',
                 '\u4f4d\u7f6e\u56fe',
-            ].includes(key.toLowerCase())
+            ].includes(propKey.toLowerCase())
         );
 
-        for (const key of candidateKeys) {
-            const prop = props[key];
-            if (prop.type === 'files' && prop.files.length > 0) {
-                const file = prop.files[0];
-                if (file.type === 'external') imageUrl = file.external.url;
-                else if (file.type === 'file') imageUrl = file.file.url;
+        for (const propKey of candidateKeys) {
+            const prop = props[propKey];
+            if (prop.type === 'files' && prop.files?.length) {
+                imageUrl = fileUrl(prop.files[0]);
                 if (imageUrl) break;
             }
         }
 
-        // 列名是自定义的（如 Map Image / Banner）时，退回到页面里第一个文件属性
+        // 自定义图片列名（Map Image / Banner 等）：退回到第一个文件属性
         if (!imageUrl) {
             for (const prop of Object.values(props)) {
-                if (prop.type === 'files' && prop.files.length > 0) {
-                    const file = prop.files[0];
-                    if (file.type === 'external') imageUrl = file.external.url;
-                    else if (file.type === 'file') imageUrl = file.file.url;
+                if (prop.type === 'files' && prop.files?.length) {
+                    imageUrl = fileUrl(prop.files[0]);
                     if (imageUrl) break;
                 }
             }
         }
 
-        if (!imageUrl && page.cover) {
-            if (page.cover.type === 'external') {
-                imageUrl = page.cover.external.url;
-            } else if (page.cover.type === 'file') {
-                imageUrl = page.cover.file.url;
-            }
-        }
+        if (!imageUrl) imageUrl = fileUrl(page.cover);
     }
 
     if (imageUrl) {
@@ -198,7 +222,6 @@ export default async function handler(
 
             let upstream = await fetch(imageUrl);
 
-            // 缓存的签名地址可能刚好过期，强制换一次新签名再试
             if (!upstream.ok) {
                 imageUrl = await resolveImageUrl(page, block, true);
                 if (imageUrl) upstream = await fetch(imageUrl);
@@ -212,9 +235,7 @@ export default async function handler(
             contentType = upstream.headers.get('content-type') || 'image/jpeg';
             buffer = Buffer.from(await upstream.arrayBuffer());
 
-            // 缩略图：只处理常见位图格式，SVG/GIF 保持原样。
-            // sharp 动态加载：Vercel 等环境如果缺少原生二进制，也不会让整个接口 500，
-            // 而是降级返回原图。
+            // 缩略图：动态加载 sharp；Vercel 上不可用时降级返回原图
             if (
                 width > 0 &&
                 /^image\/(jpeg|png|webp|avif|tiff)/i.test(contentType)
@@ -235,7 +256,6 @@ export default async function handler(
                 }
             }
 
-            // 小图才进内存缓存，避免大图占满内存
             if (buffer.length <= 4 * 1024 * 1024) {
                 writeVariant(cacheKey, buffer, contentType);
             }
@@ -251,7 +271,12 @@ export default async function handler(
         );
         res.status(200).send(buffer);
     } catch (err) {
-        console.error('Notion 图片代理失败:', err);
-        res.status(500).json({ error: '图片代理内部错误' });
+        const message = err instanceof Error ? err.message : String(err);
+        console.error('Notion 图片代理失败:', message);
+        res.status(500).json({
+            error: '图片代理内部错误',
+            // 加 ?debug=1 可看到具体原因，便于线上排查（不包含 token）
+            ...(req.query.debug === '1' ? { detail: message } : {}),
+        });
     }
 }
