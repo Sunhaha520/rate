@@ -1,174 +1,177 @@
-"use client";
-import React, { useState, useEffect, useRef } from 'react';
-import Head from 'next/head';
+import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { projects, Project } from '@/data/projects';
-import { useTheme } from 'next-themes';
-//jjjj
-interface HomeProps {
-    projects: Project[];
+import Seo from '@/components/Seo';
+import { itemListJsonLd } from '@/lib/site';
+import { projects } from '@/data/projects';
+import { getProjects, ProjectItem } from '@/lib/notion-projects';
+import {
+    CalendarDays,
+    Users,
+    Building2,
+    ArrowUpRight,
+} from 'lucide-react';
+
+interface ProjectsPageProps {
+    projects: ProjectItem[];
 }
 
-const ProjectsPage: React.FC<HomeProps> = ({ projects }) => {
-    const [visibleItems, setVisibleItems] = useState<number[]>([]);
-    const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const { theme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-
-    // 按项目类型分组项目
-    const categoryGroups: { [key: string]: Project[] } = {
+const ProjectsPage: React.FC<ProjectsPageProps> = ({ projects }) => {
+    const groups: Record<'Active projects' | 'Past projects', ProjectItem[]> = {
         'Active projects': [],
-        'Past projects': []
+        'Past projects': [],
     };
 
     projects.forEach((project) => {
-        if (project.projectCategory === 'Past projects') {
-            categoryGroups['Past projects'].push(project);
-        } else {
-            categoryGroups['Active projects'].push(project);
-        }
+        groups[project.category].push(project);
     });
 
-    // 检查初始视口内的元素
-    useEffect(() => {
-        if (mounted) {
-            const initialVisibleIndices: number[] = [];
-            itemRefs.current.forEach((item, index) => {
-                if (item && isElementInViewport(item)) {
-                    initialVisibleIndices.push(index);
-                }
-            });
-            setVisibleItems(initialVisibleIndices);
-        }
-    }, [mounted]);
-
-    // Intersection Observer 配置
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const index = Number(entry.target.getAttribute('data-index'));
-                        setVisibleItems((prev) => [...prev, index]);
-                        observer.unobserve(entry.target);
-                    }
-                });
-            },
-            {
-                rootMargin: '0px 0px -50px 0px',
-                threshold: 0.1
-            }
-        );
-
-        itemRefs.current.forEach((item) => {
-            if (item) observer.observe(item);
-        });
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [mounted, theme]);
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted) {
-        return null;
-    }
-
-    const isElementInViewport = (el: HTMLElement) => {
-        const rect = el.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
-    };
-
     return (
-        <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-            <Head>
-                <title>Our Projects - RATE@UM</title>
-                <meta name="description" content="Explore the projects in our laboratory at RATE@UM." />
-                <meta property="og:title" content="Our Projects - RATE@UM" />
-                <meta property="og:description" content="Explore the projects in our laboratory at RATE@UM." />
-                <meta property="og:type" content="website" />
-            </Head>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Seo
+                title="Projects"
+                path="/project"
+                description="Research projects at RATE@UM funded by FDCT and other agencies, covering digital twins, AI-driven inspection and construction automation."
+                jsonLd={itemListJsonLd(
+                    projects.map((project) => ({
+                        name: project.name,
+                        path: project.link || '/project',
+                    }))
+                )}
+            />
 
             <Header />
 
-            <main className="container mx-auto px-4 py-8">
+            <main className="container mx-auto px-4 sm:px-6 py-8">
                 <section>
-                    <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        <h2 className="text-3xl font-bold mb-4 text-center">Our Projects</h2>
-                        <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <div className="rounded-xl shadow-md overflow-hidden p-6 mb-8 bg-white text-gray-900 dark:bg-gray-800 dark:text-white">
+                        <h1 className="text-3xl font-bold mb-3 text-center tracking-tight">
+                            Our Projects
+                        </h1>
+                        <div className="mx-auto mb-4 h-px w-12 bg-teal-600/70 dark:bg-teal-400/60" />
+                        <p className="text-lg text-center text-gray-700 dark:text-gray-300">
                             Explore the projects in our laboratory.
                         </p>
                     </div>
 
-                    {Object.keys(categoryGroups).map((category, categoryIndex) => {
-                        const startIndex = categoryIndex + Object.keys(categoryGroups).length * categoryIndex;
-                        return (
-                            <div key={category}>
-                                <h3
-                                    ref={(el) => {
-                                        itemRefs.current[startIndex] = el;
-                                    }}
-                                    data-index={startIndex}
-                                    className={`text-2xl font-bold mb-4 text-center mt-8 ${
-                                        visibleItems.includes(startIndex)
-                                            ? 'opacity-100 translate-y-0'
-                                            : 'opacity-0 translate-y-10'
-                                    } ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
-                                >
-                                    {category}
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-1 gap-6">
-                                    {categoryGroups[category]?.map((project, index) => {
-                                        const itemIndex = startIndex + index + 1;
-                                        // 处理年份显示
-                                        const displayYear = project.startYear === project.endYear
-                                            ? project.startYear
-                                            : `${project.startYear} - ${project.endYear}`;
-                                        return (
-                                            <div
-                                                key={project.id}
-                                                ref={(el) => {
-                                                    itemRefs.current[itemIndex] = el;
-                                                }}
-                                                data-index={itemIndex}
-                                                className={`rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 ${
-                                                    visibleItems.includes(itemIndex)
-                                                        ? 'opacity-100 translate-y-0'
-                                                        : 'opacity-0 translate-y-10'
-                                                } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
-                                                style={{ minHeight: '0px' }}
-                                            >
-                                                <div className="p-6">
-                                                    <h2 className="text-xl font-semibold mb-2">{project.name}</h2>
-                                                    <p className={`mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                                                        <strong>Members:</strong> {project.members.join(', ')}
-                                                    </p>
-                                                    <p className={`mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                                                        <strong>Time:</strong> {displayYear}
-                                                    </p>
-                                                    <p className={`mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                                                        <strong>Funding Institution:</strong> {project.fundingInstitution}
-                                                    </p>
-                                                    <p className={`mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                                                        <strong>Project Type:</strong> {project.projectType}
-                                                    </p>
+                    {projects.length === 0 && (
+                        <p className="py-16 text-center text-gray-500 dark:text-gray-400">
+                            No projects yet. Add records in the Notion Projects
+                            table, or edit src/data/projects.ts.
+                        </p>
+                    )}
+
+                    {(['Active projects', 'Past projects'] as const).map((category) =>
+                        groups[category].length > 0 ? (
+                            <div key={category} className="mt-10 first:mt-0">
+                                <div className="mb-5 flex items-center gap-3">
+                                    <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white whitespace-nowrap">
+                                        {category}
+                                    </h2>
+                                    <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700/70" />
+                                    <span className="text-xs font-medium tabular-nums text-slate-400 dark:text-slate-500">
+                                        {groups[category].length}
+                                    </span>
+                                </div>
+
+                                <div className="space-y-5">
+                                    {groups[category].map((project) => (
+                                        <article
+                                            key={project.id}
+                                            className="card-enter overflow-hidden rounded-xl shadow-md bg-white text-gray-900 dark:bg-gray-800 dark:text-white"
+                                        >
+                                            {project.photo && (
+                                                <div className="relative h-44 w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                                    <img
+                                                        src={project.photo}
+                                                        alt={project.name}
+                                                        loading="lazy"
+                                                        decoding="async"
+                                                        className="absolute inset-0 h-full w-full object-cover"
+                                                    />
                                                 </div>
+                                            )}
+
+                                            <div className="p-6">
+                                                <div className="flex flex-wrap items-center gap-2 text-xs">
+                                                    {project.projectType && (
+                                                        <span className="rounded-full border border-teal-600/25 dark:border-teal-400/25 bg-teal-50 dark:bg-teal-500/10 px-2.5 py-0.5 font-medium text-teal-700 dark:text-teal-300">
+                                                            {project.projectType}
+                                                        </span>
+                                                    )}
+                                                    {project.period && (
+                                                        <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 text-slate-500 dark:text-slate-400">
+                                                            <CalendarDays size={12} />
+                                                            {project.period}
+                                                        </span>
+                                                    )}
+                                                </div>
+
+                                                <h3 className="mt-3 text-lg font-semibold leading-snug">
+                                                    {project.name}
+                                                </h3>
+
+                                                {project.summary && (
+                                                    <p className="mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                                                        {project.summary}
+                                                    </p>
+                                                )}
+
+                                                <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                                                    {project.members && (
+                                                        <div className="flex gap-2">
+                                                            <Users
+                                                                size={15}
+                                                                className="mt-0.5 shrink-0 text-teal-600 dark:text-teal-400"
+                                                            />
+                                                            <div>
+                                                                <dt className="text-[0.7rem] uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
+                                                                    Members
+                                                                </dt>
+                                                                <dd className="mt-0.5 text-gray-700 dark:text-gray-300">
+                                                                    {project.members}
+                                                                </dd>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {project.funding && (
+                                                        <div className="flex gap-2">
+                                                            <Building2
+                                                                size={15}
+                                                                className="mt-0.5 shrink-0 text-teal-600 dark:text-teal-400"
+                                                            />
+                                                            <div>
+                                                                <dt className="text-[0.7rem] uppercase tracking-[0.14em] text-slate-400 dark:text-slate-500">
+                                                                    Funding
+                                                                </dt>
+                                                                <dd className="mt-0.5 text-gray-700 dark:text-gray-300">
+                                                                    {project.funding}
+                                                                </dd>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </dl>
+
+                                                {project.link && (
+                                                    <div className="pt-4 text-sm">
+                                                        <a
+                                                            href={project.link}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1 font-medium text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 transition-colors"
+                                                        >
+                                                            Project details
+                                                            <ArrowUpRight size={14} />
+                                                        </a>
+                                                    </div>
+                                                )}
                                             </div>
-                                        );
-                                    })}
+                                        </article>
+                                    ))}
                                 </div>
                             </div>
-                        );
-                    })}
+                        ) : null
+                    )}
                 </section>
             </main>
 
@@ -179,10 +182,47 @@ const ProjectsPage: React.FC<HomeProps> = ({ projects }) => {
 
 export default ProjectsPage;
 
+// 本地兜底数据（Notion 项目表为空或尚未创建时使用）
+const localProjects: ProjectItem[] = projects.map((project) => {
+    const period =
+        project.startYear === project.endYear
+            ? project.startYear
+            : `${project.startYear} - ${project.endYear}`;
+
+    return {
+        id: String(project.id),
+        name: project.name,
+        members: project.members.join(', '),
+        period,
+        startYear: project.startYear,
+        endYear: project.endYear,
+        funding: project.fundingInstitution,
+        projectType: project.projectType,
+        category: project.projectCategory,
+        summary: '',
+        link: '',
+        photo: '',
+        order: 0,
+    };
+});
+
 export async function getStaticProps() {
+    let projectItems: ProjectItem[] = [];
+
+    try {
+        projectItems = await getProjects();
+    } catch (err) {
+        console.error('读取 Notion 项目表失败，已回退到本地数据:', err);
+    }
+
+    if (projectItems.length === 0) {
+        projectItems = localProjects;
+    }
+
     return {
         props: {
-            projects
-        }
+            projects: projectItems,
+        },
+        revalidate: 60,
     };
 }

@@ -1,210 +1,232 @@
-"use client"; // 确保在客户端渲染
-import React, { useState, useEffect, useRef } from 'react';
-import Head from 'next/head'; // 引入 Head 组件
+import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { devices, Device } from '@/data/devices'; // 引入设备数据
-import { useTheme } from 'next-themes'; // 引入 useTheme 钩子
-import { Bot, Glasses, Camera, Cpu, type LucideIcon } from 'lucide-react';
+import Seo from '@/components/Seo';
+import { devices } from '@/data/devices';
+import { getEquipment, EquipmentItem } from '@/lib/notion-equipment';
+import {
+    Bot,
+    Glasses,
+    Camera,
+    Cpu,
+    Wrench,
+    ArrowUpRight,
+    type LucideIcon,
+} from 'lucide-react';
 
-interface HomeProps {
-    devices: Device[];
+interface EquipmentPageProps {
+    equipment: EquipmentItem[];
 }
 
-const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
-    const [visibleItems, setVisibleItems] = useState<Set<number>>(new Set()); // 使用 Set 避免重复
-    const itemRefs = useRef<(HTMLDivElement | null)[]>([]); // 用于存储标题和卡片的引用
-    const { theme } = useTheme(); // 获取当前主题
-    const [mounted, setMounted] = useState(false); // 确保组件在客户端渲染后再应用主题
+// 固定分类顺序；Notion 里新增的其他分类排在后面
+const KNOWN_CATEGORIES = [
+    'Construction robots',
+    'Extended reality devices',
+    'Reality capture and sensing devices',
+    'High-performance computers',
+];
 
-    // 检查初始视口内的元素
-    useEffect(() => {
-        if (mounted) {
-            const initialVisibleIndices: number[] = [];
-            itemRefs.current.forEach((item, index) => {
-                if (item && isElementInViewport(item)) {
-                    initialVisibleIndices.push(index);
-                }
-            });
-            setVisibleItems(new Set(initialVisibleIndices));
-        }
-    }, [mounted]);
+function categoryIcon(category: string): LucideIcon {
+    const value = category.toLowerCase();
+    if (/robot|drone|无人机|机器人/.test(value)) return Bot;
+    if (/reality|xr|vr|ar|glasses|头显|眼镜/.test(value)) return Glasses;
+    if (/capture|sens|camera|lidar|相机|传感|扫描/.test(value)) return Camera;
+    if (/computer|workstation|pc|电脑|工作站/.test(value)) return Cpu;
+    return Wrench;
+}
 
-    // Intersection Observer 配置
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const index = Number(entry.target.getAttribute('data-index'));
-                        console.log(`Element ${index} is visible`); // 添加日志
-                        setVisibleItems((prev) => new Set([...prev, index])); // 使用 Set 避免重复
-                        observer.unobserve(entry.target); // 停止观察已加载的元素
-                    }
-                });
-            },
-            {
-                rootMargin: '0px 0px -50px 0px', // 提前50px触发动画
-                threshold: 0.1, // 当元素10%进入视口时触发
-            }
-        );
-
-        // 观察所有标题和卡片
-        itemRefs.current.forEach((item) => {
-            if (item) observer.observe(item);
-        });
-
-        // 清理 Observer
-        return () => {
-            observer.disconnect();
-        };
-    }, [mounted, theme]); // 依赖 mounted 和 theme
-
-    // 确保组件在客户端渲染后再应用主题
-    useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    if (!mounted) {
-        return null; // 在服务器端渲染时不渲染内容，避免闪烁
+function statusBadgeClass(status: string): string {
+    const value = status.toLowerCase();
+    if (/available|idle|ok|normal|可用|正常|空闲/.test(value)) {
+        return 'border-teal-600/25 bg-teal-50 text-teal-700 dark:border-teal-400/25 dark:bg-teal-500/10 dark:text-teal-300';
     }
+    if (/maintenance|repair|broken|故障|维修/.test(value)) {
+        return 'border-rose-500/25 bg-rose-50 text-rose-700 dark:border-rose-400/25 dark:bg-rose-500/10 dark:text-rose-300';
+    }
+    if (/use|busy|loan|占用|借出|使用中/.test(value)) {
+        return 'border-amber-500/25 bg-amber-50 text-amber-700 dark:border-amber-400/25 dark:bg-amber-500/10 dark:text-amber-300';
+    }
+    return 'border-slate-200 bg-white/90 text-slate-600 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300';
+}
 
-    // 按分类分组设备
-    const categoryGroups: { [key: string]: Device[] } = {};
-    const categories = [
-        'Construction robots',
-        'Extended reality devices',
-        'Reality capture and sensing devices',
-        'High-performance computers'
-    ];
-
-    devices.forEach((device) => {
-        if (!categoryGroups[device.category]) {
-            categoryGroups[device.category] = [];
-        }
-        categoryGroups[device.category].push(device);
+const EquipmentPage: React.FC<EquipmentPageProps> = ({ equipment }) => {
+    // 按分类分组
+    const groups: Record<string, EquipmentItem[]> = {};
+    equipment.forEach((item) => {
+        (groups[item.category] ||= []).push(item);
     });
 
-    // 辅助函数：检查元素是否在视口内
-    const isElementInViewport = (el: HTMLElement) => {
-        const rect = el.getBoundingClientRect();
-        return (
-            rect.top >= 0 &&
-            rect.left >= 0 &&
-            rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-            rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-        );
-    };
-
-    // 计算累计索引
-    let currentIndex = 0;
+    const categories = [
+        ...KNOWN_CATEGORIES.filter((category) => groups[category]?.length),
+        ...Object.keys(groups)
+            .filter((category) => !KNOWN_CATEGORIES.includes(category))
+            .sort(),
+    ];
 
     return (
-        <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-            {/* 动态设置 Head 内容 */}
-            <Head>
-                <title>Our Equipment - RATE@UM</title>
-                <meta name="description" content="Explore the advanced equipment in our laboratory at RATE@UM." />
-                <meta property="og:title" content="Our Equipment - RATE@UM" />
-                <meta property="og:description" content="Explore the advanced equipment in our laboratory at RATE@UM." />
-                <meta property="og:type" content="website" />
-            </Head>
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Seo
+                title="Equipment"
+                path="/equipment"
+                description="Laboratory equipment at RATE@UM: construction robots, UAVs, XR headsets, LiDAR, 360 cameras and high-performance workstations."
+            />
 
             <Header />
 
-            <main className="container mx-auto px-4 py-8">
-                {/* Devices Section */}
-                <section className="">
+            <main className="container mx-auto px-4 sm:px-6 py-8">
+                <section>
                     {/* 标题卡片 */}
-                    <div className={`rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out transform hover:scale-105 ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        {/* 标题居中 */}
-                        <h2 className="text-3xl font-bold mb-4 text-center">Our Equipment</h2>
-                        {/* 副标题居中 */}
-                        <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <div className="rounded-xl shadow-md overflow-hidden p-6 mb-8 bg-white text-gray-900 dark:bg-gray-800 dark:text-white">
+                        <h1 className="text-3xl font-bold mb-3 text-center tracking-tight">
+                            Our Equipment
+                        </h1>
+                        <div className="mx-auto mb-4 h-px w-12 bg-teal-600/70 dark:bg-teal-400/60" />
+                        <p className="text-lg text-center text-gray-700 dark:text-gray-300">
                             Explore the advanced equipment in our laboratory.
                         </p>
                     </div>
 
-                    {/* 按分类渲染设备 */}
+                    {categories.length === 0 && (
+                        <p className="py-16 text-center text-gray-500 dark:text-gray-400">
+                            No equipment yet. Add records in the Notion
+                            <span className="mx-1 font-medium">Equipment</span>
+                            table, or edit src/data/devices.ts.
+                        </p>
+                    )}
+
                     {categories.map((category) => {
-                        let CategoryIcon: LucideIcon | null;
-                        switch (category) {
-                            case 'Construction robots':
-                                CategoryIcon = Bot;
-                                break;
-                            case 'Extended reality devices':
-                                CategoryIcon = Glasses;
-                                break;
-                            case 'Reality capture and sensing devices':
-                                CategoryIcon = Camera;
-                                break;
-                            case 'High-performance computers':
-                                CategoryIcon = Cpu;
-                                break;
-                            default:
-                                CategoryIcon = null;
-                        }
-                        
-                        // 标题索引
-                        const titleIndex = currentIndex++;
-                        
+                        const Icon = categoryIcon(category);
+                        const items = groups[category] ?? [];
+
                         return (
-                            <div key={category}>
-                                <h3
-                                    ref={(el) => {
-                                        itemRefs.current[titleIndex] = el; // 绑定标题引用
-                                    }}
-                                    data-index={titleIndex} // 记录标题索引
-                                    className={`text-2xl font-bold mb-4 mt-8 flex items-center justify-center gap-2.5 transition-all duration-500 ease-out transform ${
-                                        visibleItems.has(titleIndex)
-                                            ? 'opacity-100 translate-y-0' // 可见时的样式
-                                            : 'opacity-0 translate-y-10' // 不可见时的样式
-                                    } ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
-                                >
-                                    {CategoryIcon && <CategoryIcon size={26} strokeWidth={2} className="text-indigo-500" />}
-                                    <span>{category}</span>
-                                </h3>
-                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    {categoryGroups[category]?.map((device) => {
-                                        const itemIndex = currentIndex++;
+                            <div key={category} className="mt-10 first:mt-0">
+                                <div className="mb-5 flex items-center gap-3">
+                                    <Icon
+                                        size={20}
+                                        strokeWidth={2}
+                                        className="shrink-0 text-teal-600 dark:text-teal-400"
+                                    />
+                                    <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white whitespace-nowrap">
+                                        {category}
+                                    </h2>
+                                    <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700/70" />
+                                    <span className="text-xs font-medium tabular-nums text-slate-400 dark:text-slate-500">
+                                        {items.length}
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                                    {items.map((item) => {
+                                        const quantity = Number(item.quantity);
+                                        const showQuantity =
+                                            Number.isFinite(quantity) && quantity > 1;
+                                        const subtitle = [item.brand, item.model]
+                                            .filter(Boolean)
+                                            .join(' · ');
+
                                         return (
-                                            <div
-                                                key={device.id}
-                                                ref={(el) => {
-                                                    itemRefs.current[itemIndex] = el; // 绑定卡片引用
-                                                }}
-                                                data-index={itemIndex} // 记录卡片索引
-                                                className={`rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out transform hover:scale-105 ${
-                                                    visibleItems.has(itemIndex)
-                                                        ? 'opacity-100 translate-y-0' // 可见时的样式
-                                                        : 'opacity-0 translate-y-10' // 不可见时的样式
-                                                } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
-                                                style={{ minHeight: '300px' }} // 确保卡片有最小高度
+                                            <article
+                                                key={item.id}
+                                                className="card-enter group flex flex-col overflow-hidden rounded-xl shadow-md bg-white text-gray-900 transition-all duration-500 ease-out hover:scale-105 dark:bg-gray-800 dark:text-white"
                                             >
-                                                {/* 图片部分，添加条件判断 */}
-                                                {device.image && (
-                                                    <div className="w-full h-49">
+                                                {item.image && (
+                                                    <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100 dark:bg-gray-700">
                                                         <img
-                                                            src={device.image}
-                                                            alt={device.name}
-                                                            className="object-cover w-full h-full"
+                                                            src={item.image}
+                                                            alt={item.name}
                                                             loading="lazy"
-                                                            onError={(e) => {
-                                                                e.currentTarget.src = '/path/to/fallback-image.jpg'; // 加载失败时显示回退图片
-                                                            }}
+                                                            decoding="async"
+                                                            className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
                                                         />
+
+                                                        {item.status && (
+                                                            <span
+                                                                className={`absolute left-3 top-3 inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.7rem] font-medium backdrop-blur ${statusBadgeClass(
+                                                                    item.status
+                                                                )}`}
+                                                            >
+                                                                {item.status}
+                                                            </span>
+                                                        )}
+                                                        {showQuantity && (
+                                                            <span className="absolute right-3 top-3 inline-flex items-center rounded-full bg-white/90 px-2.5 py-0.5 text-[0.7rem] font-medium tabular-nums text-slate-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200">
+                                                                × {item.quantity}
+                                                            </span>
+                                                        )}
                                                     </div>
                                                 )}
-                                                {/* 设备介绍部分 */}
-                                                <div className="p-6">
-                                                    <h2 className="text-xl font-semibold mb-2">{device.name}</h2>
-                                                    {device.features.map((feature, idx) => (
-                                                        <p key={idx} className={`mb-1 ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
-                                                            • {feature}
+
+                                                <div className="flex flex-1 flex-col p-5">
+                                                    {/* 没有图片时把状态/数量放进正文，不占一块空白图区 */}
+                                                    {!item.image &&
+                                                        (item.status || showQuantity) && (
+                                                            <div className="mb-2 flex flex-wrap items-center gap-2">
+                                                                {item.status && (
+                                                                    <span
+                                                                        className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-[0.7rem] font-medium ${statusBadgeClass(
+                                                                            item.status
+                                                                        )}`}
+                                                                    >
+                                                                        {item.status}
+                                                                    </span>
+                                                                )}
+                                                                {showQuantity && (
+                                                                    <span className="inline-flex items-center rounded-full border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 text-[0.7rem] font-medium tabular-nums text-slate-600 dark:text-slate-300">
+                                                                        × {item.quantity}
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    <h3 className="text-base font-semibold leading-snug">
+                                                        {item.name}
+                                                    </h3>
+                                                    {subtitle && (
+                                                        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                                                            {subtitle}
                                                         </p>
-                                                    ))}
+                                                    )}
+
+                                                    {item.features.length > 0 && (
+                                                        <ul className="mt-3 space-y-1.5 text-sm text-gray-600 dark:text-gray-300">
+                                                            {item.features
+                                                                .slice(0, 5)
+                                                                .map((feature) => (
+                                                                    <li
+                                                                        key={feature}
+                                                                        className="flex gap-2"
+                                                                    >
+                                                                        <span className="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-teal-600 dark:bg-teal-400" />
+                                                                        <span>{feature}</span>
+                                                                    </li>
+                                                                ))}
+                                                        </ul>
+                                                    )}
+                                                    {item.features.length > 5 && (
+                                                        <span className="mt-1.5 text-xs text-slate-400 dark:text-slate-500">
+                                                            +{item.features.length - 5} more
+                                                        </span>
+                                                    )}
+
+                                                    {(item.location || item.link) && (
+                                                        <div className="mt-auto flex items-center justify-between gap-3 pt-4 text-xs">
+                                                            <span className="text-slate-500 dark:text-slate-400">
+                                                                {item.location}
+                                                            </span>
+                                                            {item.link && (
+                                                                <a
+                                                                    href={item.link}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="inline-flex shrink-0 items-center gap-1 font-medium text-teal-700 dark:text-teal-300 hover:text-teal-800 dark:hover:text-teal-200 transition-colors"
+                                                                >
+                                                                    Details
+                                                                    <ArrowUpRight size={13} />
+                                                                </a>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
-                                            </div>
+                                            </article>
                                         );
                                     })}
                                 </div>
@@ -219,13 +241,35 @@ const DevicesPage: React.FC<HomeProps> = ({ devices }) => {
     );
 };
 
-export default DevicesPage;
+export default EquipmentPage;
 
-// 使用 getStaticProps 获取设备数据
+// 本地兜底数据（Notion 设备表为空或尚未创建时使用）
+const localEquipment: EquipmentItem[] = devices.map((device, index) => ({
+    id: device.id,
+    name: device.name,
+    category: device.category,
+    image: device.image,
+    features: device.features,
+    order: index,
+}));
+
 export async function getStaticProps() {
+    let equipment: EquipmentItem[] = [];
+
+    try {
+        equipment = await getEquipment();
+    } catch (err) {
+        console.error('读取 Notion 设备表失败，已回退到本地数据:', err);
+    }
+
+    if (equipment.length === 0) {
+        equipment = localEquipment;
+    }
+
     return {
         props: {
-            devices, // 直接使用 devices.ts 中的数据
+            equipment,
         },
+        revalidate: 60,
     };
 }

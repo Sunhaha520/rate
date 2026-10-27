@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import Seo from '@/components/Seo';
 import { researchDirections } from '@/data/researchDirections';
 import { getSortedPostsData, PostData } from '@/lib/posts';
 import Link from 'next/link'; // 引入 Link 组件
-import { CalendarDays, Clock } from 'lucide-react';
+import { CalendarDays, Clock, ArrowRight } from 'lucide-react';
 
 interface HomeProps {
     latestPosts: PostData[];
@@ -12,10 +13,6 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ latestPosts }) => {
     const [loading, setLoading] = useState(true);
-    const [visibleCards, setVisibleCards] = useState<number[]>([]);
-    const [visibleNews, setVisibleNews] = useState<number[]>([]);
-    const cardRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const newsRefs = useRef<(HTMLDivElement | null)[]>([]);
 
     // 预加载 Banner 图片
     useEffect(() => {
@@ -34,62 +31,14 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
         preloadBanner();
     }, []);
 
-    // Intersection Observer 配置（用于卡片）
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const index = Number(entry.target.getAttribute('data-index'));
-                        setVisibleCards((prev) => [...prev, index]);
-                        observer.unobserve(entry.target);
-                    }
-                });
-            },
-            {
-                rootMargin: '0px 0px 100px 0px',
-                threshold: 0.1,
-            }
-        );
-
-        cardRefs.current.forEach((card) => {
-            if (card) observer.observe(card);
-        });
-
-        return () => {
-            observer.disconnect();
-        };
-    }, []); // 移除 researchDirections 依赖
-
-    // Intersection Observer 配置（用于新闻）
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const index = Number(entry.target.getAttribute('data-index'));
-                        setVisibleNews((prev) => [...prev, index]);
-                        observer.unobserve(entry.target);
-                    }
-                });
-            },
-            {
-                rootMargin: '0px 0px 100px 0px',
-                threshold: 0.1,
-            }
-        );
-
-        newsRefs.current.forEach((news) => {
-            if (news) observer.observe(news);
-        });
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [latestPosts]); // 保留 latestPosts 依赖
-
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Seo
+                title="RATE@UM"
+                path="/"
+                image="/img/bannercover.webp"
+                description="RATE@UM is a research group at the University of Macau working on BIM, multi-user AR/VR, construction robotics, computer vision and digital twins for the AECO industry."
+            />
             {/* Loading Overlay */}
             {loading && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100 bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80">
@@ -153,18 +102,10 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         Research Directions
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {researchDirections.map((card, index) => (
+                        {researchDirections.map((card) => (
                             <div
                                 key={card.id}
-                                ref={(el) => {
-                                    cardRefs.current[index] = el; // 绑定卡片引用
-                                }}
-                                data-index={index}
-                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105 ${
-                                    visibleCards.includes(index)
-                                        ? 'opacity-100 translate-y-0'
-                                        : 'opacity-0 translate-y-10'
-                                }`}
+                                className="card-enter bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105"
                             >
                                 {/* 图片部分 */}
                                 <div className=" bg-gray-200 rounded-t-xl overflow-hidden relative"> {/* 减小高度 */}
@@ -190,70 +131,89 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         Latest News
                     </h2>
                     <div className="space-y-6">
-                        {latestPosts.map((post, index) => (
-                            <div
+                        {latestPosts.map((post) => (
+                            <article
                                 key={post.id}
-                                ref={(el) => {
-                                    newsRefs.current[index] = el; // 绑定新闻引用
-                                }}
-                                data-index={index}
-                                className={`bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105 ${
-                                    visibleNews.includes(index)
-                                        ? 'opacity-100 translate-y-0'
-                                        : 'opacity-0 translate-y-10'
-                                }`}
+                                className="card-enter group overflow-hidden rounded-xl shadow-md bg-white dark:bg-gray-800 transition-all duration-500 ease-out hover:scale-105"
                             >
-                                <div className="flex flex-col md:flex-row">
-                                    {/* 图片部分 */}
-                                    <div className="md:w-1/3">
-                                        <img
-                                            src={post.picture}
-                                            alt={post.title}
-                                            className="object-cover w-full h-48 md:h-full"
-                                        />
-                                    </div>
-                                    {/* 标题、发布时间和简介部分 */}
-                                    <div className="p-6 md:w-2/3 relative flex flex-col justify-between">
-                                        <div>
-                                            <h3 className="text-lg font-semibold mb-2 dark:text-white">{post.title}</h3>
-                                            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500 dark:text-gray-400 mb-4">
-                                                <span className="flex items-center gap-1.5">
-                                                    <CalendarDays size={14} strokeWidth={2} className="text-teal-500" />
-                                                    <span>{post.date}</span>
-                                                </span>
-                                                {post.readingTime && (
-                                                    <span className="flex items-center gap-1.5">
-                                                        <Clock size={14} strokeWidth={2} className="text-teal-500" />
-                                                        <span>{post.readingTime} min read</span>
-                                                    </span>
-                                                )}
-                                            </div>
-                                            <p className="text-gray-700 dark:text-gray-300 leading-[1.2em] flex flex-col whitespace-normal md:max-h-[3.6em] md:overflow-hidden md:text-ellipsis">
-                                                <span className="overflow-hidden md:block md:-webkit-box md:-webkit-line-clamp-3 md:-webkit-box-orient-vertical">
-                                                    {post.summary}
-                                                </span>
-                                            </p>
+                                <Link
+                                    href={`/posts/${post.id}`}
+                                    className="flex flex-col md:flex-row"
+                                    aria-label={`Read more about ${post.title}`}
+                                >
+                                    {/* 图片部分：有图才显示，避免空白占位 */}
+                                    {post.picture && (
+                                        <div className="relative h-52 w-full shrink-0 overflow-hidden bg-gray-100 dark:bg-gray-700 md:h-auto md:min-h-[13.5rem] md:w-[42%]">
+                                            <img
+                                                src={post.picture}
+                                                alt={post.title}
+                                                loading="lazy"
+                                                decoding="async"
+                                                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+                                            />
+                                            <span className="absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full bg-white/90 px-2.5 py-1 text-[0.7rem] font-medium tracking-wide text-slate-700 shadow-sm backdrop-blur dark:bg-slate-900/80 dark:text-slate-200">
+                                                <CalendarDays size={12} strokeWidth={2} className="text-teal-600 dark:text-teal-400" />
+                                                <time dateTime={post.date}>{post.date}</time>
+                                            </span>
                                         </div>
-                                        <a
-                                            href={`/posts/${post.id}`}
-                                            className="mt-4 px-6 py-2 !bg-blue-500 !text-white rounded-lg hover:bg-blue-600 transition-colors duration-300 self-center md:self-end "
-                                            aria-label={`Read more about ${post.title}`}
-                                        >
-                                            Read More
-                                        </a>
+                                    )}
+
+                                    {/* 标题、摘要与阅读入口 */}
+                                    <div className={`flex w-full flex-col p-6 md:p-7 ${post.picture ? 'md:w-[58%]' : ''}`}>
+                                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+                                            {!post.picture && post.date && (
+                                                <>
+                                                    <span className="inline-flex items-center gap-1.5">
+                                                        <CalendarDays size={13} strokeWidth={2} className="text-teal-600 dark:text-teal-400" />
+                                                        <time dateTime={post.date}>{post.date}</time>
+                                                    </span>
+                                                    <span className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
+                                                </>
+                                            )}
+                                            {post.readingTime && (
+                                                <span className="inline-flex items-center gap-1.5">
+                                                    <Clock size={13} strokeWidth={2} className="text-teal-600 dark:text-teal-400" />
+                                                    <span>{post.readingTime} min read</span>
+                                                </span>
+                                            )}
+                                            <span className="h-3 w-px bg-slate-200 dark:bg-slate-700" />
+                                            <span className="uppercase tracking-[0.16em]">News</span>
+                                        </div>
+
+                                        <h3 className="mt-2 text-lg font-semibold leading-snug text-gray-900 transition-colors group-hover:text-teal-700 dark:text-white dark:group-hover:text-teal-300 md:text-xl">
+                                            {post.title}
+                                        </h3>
+
+                                        <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                                            {post.summary}
+                                        </p>
+
+                                        <span className="mt-auto inline-flex items-center gap-1.5 pt-5 text-sm font-medium text-teal-700 dark:text-teal-300">
+                                            Read article
+                                            <ArrowRight
+                                                size={15}
+                                                className="transition-transform duration-300 group-hover:translate-x-1"
+                                            />
+                                        </span>
                                     </div>
-                                </div>
-                            </div>
+                                </Link>
+                            </article>
                         ))}
                     </div>
                     {/* 新增的总的 Read More 按钮 */}
-                    <Link
-                        href="/news"
-                        className="mt-6 block w-fit px-6 py-2 mx-auto !bg-orange-500 !text-white rounded-lg hover:bg-orange-600 transition-colors duration-300 hover:scale-105"
-                        aria-label="Read more news"
-                    >
-                        Read more news
-                    </Link>
+                    <div className="mt-8 text-center">
+                        <Link
+                            href="/news"
+                            className="group inline-flex items-center gap-2 border-b border-transparent pb-0.5 text-sm font-medium text-teal-700 transition-colors hover:border-teal-600 dark:text-teal-300 dark:hover:border-teal-400"
+                            aria-label="Read more news"
+                        >
+                            Read more news
+                            <ArrowRight
+                                size={16}
+                                className="transition-transform duration-300 group-hover:translate-x-1"
+                            />
+                        </Link>
+                    </div>
                 </section>
             </main>
 

@@ -1,199 +1,280 @@
-import React, { useState, useEffect, useRef } from 'react';
-import Head from 'next/head';
+import React, { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { resources, Resource } from '@/data/resources';
-import { useTheme } from 'next-themes';
+import Seo from '@/components/Seo';
+import { resources } from '@/data/resources';
+import { getDemoResources, DemoItem } from '@/lib/notion-demo';
+import { Play, X, ArrowUpRight, ImageIcon } from 'lucide-react';
 
-interface ResourcesProps {
-    resources: Resource[];
+interface DemoResourcesPageProps {
+    resources: DemoItem[];
 }
 
-const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
-    const [visibleResources, setVisibleResources] = useState<number[]>([]);
-    const resourceRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const { theme } = useTheme();
-    const [mounted, setMounted] = useState(false);
-    const [selectedResource, setSelectedResource] = useState<Resource | null>(null);
-    const [cardHeight, setCardHeight] = useState('80vh');
+// 视频卡片的封面：优先用 Cover；没有封面或封面加载失败时，
+// 直接用视频本身的第一帧当封面（静音、只取元数据，不自动播放）。
+function DemoCover({ item }: { item: DemoItem }) {
+    const [coverFailed, setCoverFailed] = useState(false);
+    const imgRef = useRef<HTMLImageElement>(null);
 
+    // SSR 阶段图片可能已经加载失败，onError 来不及绑定；水合后补一次检查
     useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    useEffect(() => {
-        const handleResize = () => {
-            const screenHeight = document.documentElement.clientHeight;
-            setCardHeight(`${screenHeight * 0.8}px`);
-        };
-
-        handleResize();
-        window.addEventListener('resize', handleResize);
-
-        return () => {
-            window.removeEventListener('resize', handleResize);
-        };
-    }, []);
-
-    useEffect(() => {
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    if (entry.isIntersecting) {
-                        const index = Number(entry.target.getAttribute('data-index'));
-                        setVisibleResources((prev) => [...prev, index]);
-                        observer.unobserve(entry.target);
-                    }
-                });
-            },
-            {
-                rootMargin: '0px 0px -50px 0px',
-                threshold: 0.1,
-            }
-        );
-
-        resourceRefs.current.forEach((resource) => {
-            if (resource) observer.observe(resource);
-        });
-
-        return () => {
-            observer.disconnect();
-        };
-    }, [mounted, theme]);
-
-    const closeResourceDetails = () => {
-        setSelectedResource(null);
-    };
-
-    const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
-        if (e.target === e.currentTarget) {
-            closeResourceDetails();
+        const img = imgRef.current;
+        if (img && img.complete && img.naturalWidth === 0) {
+            setCoverFailed(true);
         }
-    };
+    }, []);
 
-    if (!mounted) {
-        return null;
+    if (item.coverImage && !coverFailed) {
+        return (
+            <img
+                ref={imgRef}
+                src={item.coverImage}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                onError={() => setCoverFailed(true)}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+        );
+    }
+
+    if (item.isVideo && item.headImage) {
+        const src = item.headImage.includes('#')
+            ? item.headImage
+            : `${item.headImage}#t=0.1`;
+        return (
+            <video
+                src={src}
+                muted
+                playsInline
+                preload="metadata"
+                tabIndex={-1}
+                aria-hidden="true"
+                className="absolute inset-0 h-full w-full object-cover"
+            />
+        );
+    }
+
+    if (item.headImage) {
+        return (
+            <img
+                src={item.headImage}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
+            />
+        );
     }
 
     return (
-        <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900' : 'bg-gray-50'}`}>
-            <Head>
-                <title>Demo&Resources - RATE@UM</title>
-                <meta name="description" content="Explore our demos and resources at RATE@UM." />
-                <meta property="og:title" content="Demo&Resources - RATE@UM" />
-                <meta property="og:description" content="Explore our demos and resources at RATE@UM." />
-                <meta property="og:type" content="website" />
-            </Head>
+        <div className="absolute inset-0 flex items-center justify-center">
+            <ImageIcon
+                size={40}
+                strokeWidth={1.4}
+                className="text-slate-300 dark:text-slate-600"
+            />
+        </div>
+    );
+}
+
+const DemoResourcesPage: React.FC<DemoResourcesPageProps> = ({ resources }) => {
+    const [selected, setSelected] = useState<DemoItem | null>(null);
+
+    // Esc 关闭 + 打开弹窗时锁定页面滚动
+    useEffect(() => {
+        if (!selected) return;
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') setSelected(null);
+        };
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        window.addEventListener('keydown', onKeyDown);
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+            window.removeEventListener('keydown', onKeyDown);
+        };
+    }, [selected]);
+
+    const tagGroups = new Map<string, DemoItem[]>();
+    resources.forEach((item) => {
+        const list = tagGroups.get(item.tag);
+        if (list) {
+            list.push(item);
+        } else {
+            tagGroups.set(item.tag, [item]);
+        }
+    });
+
+    const tagOrder = (tag: string) =>
+        tag === 'Demo videos' ? 0 : tag === 'Resources' ? 1 : 2;
+    const tags = [...tagGroups.keys()].sort(
+        (a, b) => tagOrder(a) - tagOrder(b) || a.localeCompare(b)
+    );
+
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            <Seo
+                title="Demo & Resources"
+                path="/demo"
+                description="Demos, videos and open resources from RATE@UM, including BIM and multi-user AR/VR construction systems and research datasets."
+            />
 
             <Header />
 
-            <main className="container mx-auto px-4 py-8">
-                <section className="">
-                    <div className={`hover:scale-105 rounded-xl shadow-md overflow-hidden p-6 mb-6 transition-all duration-500 ease-out ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}>
-                        <h2 className="text-3xl font-bold mb-4 text-center">Demo&Resources</h2>
-                        <p className={`text-lg text-center ${theme === 'dark' ? 'text-gray-300' : 'text-gray-700'}`}>
+            <main className="container mx-auto px-4 sm:px-6 py-8">
+                <section>
+                    <div className="rounded-xl shadow-md overflow-hidden p-6 mb-8 bg-white text-gray-900 dark:bg-gray-800 dark:text-white">
+                        <h1 className="text-3xl font-bold mb-3 text-center tracking-tight">
+                            Demo &amp; Resources
+                        </h1>
+                        <div className="mx-auto mb-4 h-px w-12 bg-teal-600/70 dark:bg-teal-400/60" />
+                        <p className="text-lg text-center text-gray-700 dark:text-gray-300">
                             Explore our demos and resources at RATE@UM.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 gap-6">
-                        {resources.map((resource, index) => {
-                            const tagBgColor = resource.tag === 'Demo videos' ? 'bg-blue-500' : 'bg-green-500';
-                            return (
-                                <div
-                                    key={resource.id}
-                                    ref={(el) => {
-                                        resourceRefs.current[index] = el;
-                                    }}
-                                    data-index={index}
-                                    className={`group rounded-lg shadow-md overflow-hidden transition-all duration-500 ease-out cursor-pointer ${
-                                        visibleResources.includes(index)
-                                            ? 'opacity-100 translate-y-0'
-                                            : 'opacity-0 translate-y-10'
-                                    } ${theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'}`}
-                                    onClick={() => setSelectedResource(resource)}
-                                >
-                                    <div className="flex sm:flex-row flex-col relative">
-                                        <div className="w-full sm:w-1/3 h-48 sm:h-auto overflow-hidden relative">
-                                            <img
-                                                src={resource.coverImage}
-                                                alt={resource.title}
-                                                className="w-full h-full object-cover"
-                                            />
-                                            {/* 毛玻璃覆盖层 */}
-                                            <div className="absolute inset-0 bg-gray-500 bg-opacity-20 backdrop-blur-sm opacity-0 transition-opacity duration-300 flex items-center justify-center group-hover:opacity-100">
-                                                <p className="text-white text-lg font-bold">Click to learn more</p>
+                    {resources.length === 0 && (
+                        <p className="py-16 text-center text-gray-500 dark:text-gray-400">
+                            No demos or resources yet. Add records in the Notion
+                            Demo table, or edit src/data/resources.ts.
+                        </p>
+                    )}
+
+                    {tags.map((tag) => (
+                        <div key={tag} className="mt-10 first:mt-0">
+                            <div className="mb-5 flex items-center gap-3">
+                                <h2 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white whitespace-nowrap">
+                                    {tag}
+                                </h2>
+                                <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700/70" />
+                                <span className="text-xs font-medium tabular-nums text-slate-400 dark:text-slate-500">
+                                    {tagGroups.get(tag)!.length}
+                                </span>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                                {tagGroups.get(tag)!.map((item) => (
+                                    <article
+                                        key={item.id}
+                                        onClick={() => setSelected(item)}
+                                        className="card-enter group cursor-pointer overflow-hidden rounded-xl shadow-md bg-white text-gray-900 transition-all duration-500 ease-out hover:scale-[1.02] dark:bg-gray-800 dark:text-white"
+                                    >
+                                        {(item.coverImage || item.headImage) && (
+                                            <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-gray-700">
+                                                <DemoCover item={item} />
+
+                                                {item.isVideo && (
+                                                    <span className="absolute inset-0 flex items-center justify-center">
+                                                        <span className="flex h-14 w-14 items-center justify-center rounded-full bg-black/45 text-white backdrop-blur-sm transition-transform duration-300 group-hover:scale-110">
+                                                            <Play
+                                                                size={22}
+                                                                className="ml-0.5"
+                                                                fill="currentColor"
+                                                            />
+                                                        </span>
+                                                    </span>
+                                                )}
+
+                                                <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-0.5 text-[0.68rem] font-medium tracking-wide text-slate-700 backdrop-blur dark:bg-slate-900/80 dark:text-slate-200">
+                                                    {item.tag}
+                                                </span>
                                             </div>
-                                        </div>
-                                        <div className="w-full sm:w-2/3 p-4">
-                                            <h3 className="text-xl font-bold mb-2">{resource.title}</h3>
-                                            <p className="text-gray-600 dark:text-gray-300 line-clamp-4">
-                                                {resource.description}
+                                        )}
+
+                                        <div className="p-5">
+                                            {!(item.coverImage || item.headImage) && (
+                                                <span className="mb-2 inline-flex rounded-full border border-slate-200 px-2.5 py-0.5 text-[0.68rem] font-medium tracking-wide text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                                                    {item.tag}
+                                                </span>
+                                            )}
+                                            <h3 className="text-base font-semibold leading-snug">
+                                                {item.title}
+                                            </h3>
+                                            <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                                                {item.description}
                                             </p>
+                                            <span className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-teal-700 dark:text-teal-300">
+                                                {item.isVideo
+                                                    ? 'Watch demo'
+                                                    : 'View details'}
+                                                <ArrowUpRight size={14} />
+                                            </span>
                                         </div>
-                                        <div className={`absolute top-2 left-2 px-4 py-1 rounded-full ${tagBgColor} text-white`}>
-                                            {resource.tag}
-                                        </div>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
+                                    </article>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
                 </section>
             </main>
 
-            {selectedResource && (
+            {selected && (
                 <div
-                    className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
-                    onClick={handleBackdropClick}
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 p-4 backdrop-blur-sm"
+                    onClick={() => setSelected(null)}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={selected.title}
                 >
                     <div
-                        className={`rounded-xl shadow-md overflow-hidden w-11/12 max-w-2xl ${
-                            theme === 'dark' ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
-                        }`}
-                        style={{
-                            maxHeight: cardHeight,
-                            WebkitOverflowScrolling: 'touch',
-                            scrollbarWidth: 'none',
-                            overflowY: 'auto',
-                        }}
-                        onClick={(e) => e.stopPropagation()}
+                        className="relative flex max-h-[88vh] w-full max-w-3xl flex-col overflow-hidden rounded-xl bg-white text-gray-900 shadow-2xl dark:bg-gray-800 dark:text-white"
+                        onClick={(event) => event.stopPropagation()}
                     >
-                        {/* 修改头图样式 */}
-                        <div className="relative overflow-hidden bg-black flex items-center justify-center">
-                            {selectedResource.isVideo ? (
-                                <video
-                                    src={selectedResource.headImage}
-                                    controls
-                                    playsInline
-                                    className="w-full max-h-[60vh] object-contain rounded-t-xl bg-black"
-                                ></video>
-                            ) : (
-                                <img
-                                    src={selectedResource.headImage}
-                                    alt={selectedResource.title}
-                                    className="w-full max-h-[60vh] object-contain rounded-t-xl"
-                                />
-                            )}
+                        {/* 顶栏：标签 + 关闭按钮，不再压在大图上 */}
+                        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-4 py-2.5 dark:border-slate-700/60 sm:px-5">
+                            <span className="rounded-full border border-slate-200 px-2.5 py-0.5 text-[0.68rem] font-medium tracking-wide text-slate-600 dark:border-slate-700 dark:text-slate-300">
+                                {selected.tag}
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setSelected(null)}
+                                aria-label="Close"
+                                className="flex h-8 w-8 items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+                            >
+                                <X size={17} />
+                            </button>
                         </div>
-                        <div className="p-6">
-                            <h2 className="text-2xl font-bold mb-4">{selectedResource.title}</h2>
-                            <p className="mb-4 text-justify">{selectedResource.fullDescription}</p>
-                            <div className="flex justify-between mt-6"> {/* 按钮布局容器 */}
-                                <button
-                                    onClick={closeResourceDetails}
-                                    className="px-4 py-2 bg-red-400 !text-white rounded-full hover:bg-red-600 transition-colors duration-300"
-                                >
-                                    Close
-                                </button>
-                                {selectedResource.link && (
+
+                        <div className="min-h-0 flex-1 overflow-y-auto">
+                            {(selected.isVideo || selected.headImage) && (
+                                <div className="w-full bg-slate-950">
+                                    {selected.isVideo && selected.headImage ? (
+                                        <video
+                                            src={selected.headImage}
+                                            controls
+                                            playsInline
+                                            className="max-h-[38vh] w-full object-contain"
+                                        />
+                                    ) : (
+                                        <img
+                                            src={selected.headImage}
+                                            alt={selected.title}
+                                            className="h-56 w-full object-cover sm:h-72"
+                                        />
+                                    )}
+                                </div>
+                            )}
+
+                            <div className="p-5 sm:p-6">
+                                <h2 className="text-lg font-semibold leading-snug sm:text-xl">
+                                    {selected.title}
+                                </h2>
+                                <p className="mt-2.5 text-justify text-sm leading-relaxed text-gray-600 dark:text-gray-300">
+                                    {selected.fullDescription}
+                                </p>
+
+                                {selected.link && (
                                     <a
-                                        href={selectedResource.link}
+                                        href={selected.link}
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="px-4 py-2 bg-blue-400 !text-white rounded-full hover:bg-blue-600 transition-colors duration-300"
+                                        className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-teal-700 transition-colors hover:text-teal-800 dark:text-teal-300 dark:hover:text-teal-200"
                                     >
-                                        Online View
+                                        Open resource
+                                        <ArrowUpRight size={14} />
                                     </a>
                                 )}
                             </div>
@@ -209,10 +290,37 @@ const DemoResourcesPage: React.FC<ResourcesProps> = ({ resources }) => {
 
 export default DemoResourcesPage;
 
+// 本地兜底数据（Notion Demo 表为空或尚未创建时使用）
+const localDemoResources: DemoItem[] = resources.map((resource) => ({
+    id: String(resource.id),
+    title: resource.title,
+    description: resource.description,
+    fullDescription: resource.fullDescription,
+    coverImage: resource.coverImage,
+    headImage: resource.headImage,
+    isVideo: resource.isVideo,
+    tag: resource.tag,
+    link: resource.link ?? '',
+    order: 0,
+}));
+
 export async function getStaticProps() {
+    let demoResources: DemoItem[] = [];
+
+    try {
+        demoResources = await getDemoResources();
+    } catch (err) {
+        console.error('读取 Notion Demo 表失败，已回退到本地数据:', err);
+    }
+
+    if (demoResources.length === 0) {
+        demoResources = localDemoResources;
+    }
+
     return {
         props: {
-            resources,
+            resources: demoResources,
         },
+        revalidate: 60,
     };
 }

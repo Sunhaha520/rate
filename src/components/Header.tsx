@@ -1,8 +1,6 @@
-"use client";
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useTheme } from 'next-themes';
 import {
     Home,
     Users,
@@ -40,14 +38,8 @@ interface NavItem {
 const Header = () => {
     const [menuOpen, setMenuOpen] = useState(false);
     const [expandedMobile, setExpandedMobile] = useState<number | null>(null);
-    const { theme } = useTheme();
-    const [mounted, setMounted] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
-
-    useEffect(() => {
-        setMounted(true);
-    }, []);
 
     // 监听点击事件，关闭菜单
     useEffect(() => {
@@ -62,11 +54,10 @@ const Header = () => {
         };
     }, [menuRef]);
 
-    if (!mounted) {
-        return null;
-    }
-
-    const isDark = theme === 'dark';
+    // 路由变化时收起移动端菜单
+    useEffect(() => {
+        setMenuOpen(false);
+    }, [router.pathname]);
 
     const navItems: NavItem[] = [
         { id: 1, name: 'Home', href: '/', icon: Home },
@@ -107,26 +98,35 @@ const Header = () => {
         return item.children?.some((c) => isActive(c.href)) ?? false;
     };
 
-    const toggleMenu = () => setMenuOpen(!menuOpen);
+    const toggleMenu = () => setMenuOpen((open) => !open);
+
+    // 导航项的统一配色（激活 / 普通），亮暗两套用 dark: 前缀静态声明，
+    // 这样首屏无需等待客户端挂载即可正确显示主题。
+    const itemBase =
+        'group relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-colors duration-200';
+    // 桌面端激活：不加底色，只保留文字/图标强调 + 一条横贯导航项内容的细线，更接近学术站点的克制感
+    const navActive = 'text-teal-800 dark:text-teal-300 font-semibold';
+    // 下拉菜单 / 移动端抽屉空间更紧凑，保留极浅的底色便于识别
+    const menuActive =
+        'bg-teal-50/70 text-teal-800 dark:bg-teal-500/10 dark:text-teal-300 font-semibold';
+    const itemIdle =
+        'text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white';
+    const iconActive = 'text-teal-600 dark:text-teal-400';
+    const iconIdle =
+        'text-slate-400 group-hover:text-teal-600 dark:group-hover:text-teal-400';
+    const indicator = (active: boolean) =>
+        `absolute -bottom-0.5 left-3 right-3 h-[2px] rounded-full bg-teal-700 dark:bg-teal-400 transition-opacity duration-300 ease-out ${
+            active ? 'opacity-100' : 'opacity-0 group-hover:opacity-40'
+        }`;
 
     return (
         <>
-            <header
-                className={`fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl border-b transition-colors duration-300 ${
-                    isDark
-                        ? 'bg-slate-900/75 border-slate-700/60 text-white shadow-[0_1px_0_0_rgba(255,255,255,0.04)]'
-                        : 'bg-white/75 border-slate-200/70 text-slate-900 shadow-[0_1px_3px_0_rgba(15,23,42,0.04)]'
-                }`}
-            >
+            <header className="fixed top-0 left-0 right-0 z-[100] backdrop-blur-xl border-b transition-colors duration-300 bg-white/75 border-slate-200/70 text-slate-900 dark:bg-slate-900/75 dark:border-slate-700/60 dark:text-white shadow-[0_1px_3px_0_rgba(15,23,42,0.04)] dark:shadow-[0_1px_0_0_rgba(255,255,255,0.04)]">
                 <nav className="container mx-auto px-6 py-3">
                     <div className="flex justify-between items-center">
                         {/* Logo */}
                         <Link href="/" className="group flex items-center gap-2 shrink-0">
-                            <span
-                                className={`font-extrabold text-xl tracking-tight transition-colors duration-300 group-hover:text-indigo-500 ${
-                                    isDark ? 'text-white' : 'text-slate-900'
-                                }`}
-                            >
+                            <span className="font-extrabold text-xl tracking-tight transition-colors duration-300 text-slate-900 group-hover:text-teal-600 dark:text-white dark:group-hover:text-teal-400">
                                 RATE<span className="transition-transform duration-300 inline-block group-hover:rotate-12">@</span>UM
                             </span>
                         </Link>
@@ -144,48 +144,31 @@ const Header = () => {
                                             <>
                                                 <button
                                                     type="button"
-                                                    className={`group relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                                        active
-                                                            ? isDark
-                                                                ? 'bg-indigo-500/15 text-indigo-300'
-                                                                : 'bg-indigo-50 text-indigo-700'
-                                                            : isDark
-                                                            ? 'text-slate-300 hover:text-white hover:bg-white/5'
-                                                            : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                                                    aria-haspopup="true"
+                                                    className={`${itemBase} ${
+                                                        active ? navActive : itemIdle
                                                     }`}
                                                 >
                                                     <Icon
                                                         size={17}
                                                         strokeWidth={active ? 2.4 : 2}
                                                         className={`transition-all duration-200 group-hover:scale-110 ${
-                                                            active ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                            active ? iconActive : iconIdle
                                                         }`}
                                                     />
                                                     <span>{item.name}</span>
                                                     <ChevronDown
                                                         size={14}
                                                         className={`transition-transform duration-200 group-hover/nav:rotate-180 ${
-                                                            active ? 'text-indigo-500' : 'text-slate-400'
+                                                            active ? iconActive : 'text-slate-400'
                                                         }`}
                                                     />
-                                                    <span
-                                                        className={`absolute -bottom-[1px] left-3.5 right-3.5 h-0.5 rounded-full bg-indigo-500 transition-transform duration-300 ease-out origin-center ${
-                                                            active ? 'scale-x-100' : 'scale-x-0 group-hover/nav:scale-x-100'
-                                                        }`}
-                                                    />
+                                                    <span className={indicator(active)} />
                                                 </button>
 
                                                 {/* 二级下拉菜单 */}
-                                                <div
-                                                    className={`absolute left-0 top-full pt-4 min-w-[220px] invisible opacity-0 translate-y-3 group-hover/nav:visible group-hover/nav:opacity-100 group-hover/nav:translate-y-0 transition-all duration-200 ease-out`}
-                                                >
-                                                    <ul
-                                                        className={`rounded-xl border p-2 space-y-1.5 shadow-xl backdrop-blur-xl ${
-                                                            isDark
-                                                                ? 'bg-slate-900/95 border-slate-700/60'
-                                                                : 'bg-white/95 border-slate-200/70'
-                                                        }`}
-                                                    >
+                                                <div className="absolute left-0 top-full pt-4 min-w-[220px] invisible opacity-0 translate-y-3 group-hover/nav:visible group-hover/nav:opacity-100 group-hover/nav:translate-y-0 transition-all duration-200 ease-out">
+                                                    <ul className="rounded-xl border p-2 space-y-1.5 shadow-xl backdrop-blur-xl bg-white/95 border-slate-200/70 dark:bg-slate-900/95 dark:border-slate-700/60">
                                                         {item.children!.map((child) => {
                                                             const ChildIcon = child.icon;
                                                             const childActive = isActive(child.href);
@@ -193,14 +176,11 @@ const Header = () => {
                                                                 <li key={child.id}>
                                                                     <Link
                                                                         href={child.href}
+                                                                        aria-current={childActive ? 'page' : undefined}
                                                                         className={`group/child flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-200 ${
                                                                             childActive
-                                                                                ? isDark
-                                                                                    ? 'bg-indigo-500/15 text-indigo-300'
-                                                                                    : 'bg-indigo-50 text-indigo-700'
-                                                                                : isDark
-                                                                                ? 'text-slate-300 hover:bg-white/5 hover:text-white'
-                                                                                : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                                                                                ? menuActive
+                                                                                : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white'
                                                                         }`}
                                                                     >
                                                                         <ChildIcon
@@ -208,8 +188,8 @@ const Header = () => {
                                                                             strokeWidth={childActive ? 2.4 : 2}
                                                                             className={`transition-colors duration-200 ${
                                                                                 childActive
-                                                                                    ? 'text-indigo-500'
-                                                                                    : 'text-slate-400 group-hover/child:text-indigo-500'
+                                                                                    ? iconActive
+                                                                                    : 'text-slate-400 group-hover/child:text-teal-600 dark:group-hover/child:text-teal-400'
                                                                             }`}
                                                                         />
                                                                         <span>{child.name}</span>
@@ -223,29 +203,18 @@ const Header = () => {
                                         ) : (
                                             <Link
                                                 href={item.href!}
-                                                className={`group relative flex items-center gap-2 px-3.5 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                                    active
-                                                        ? isDark
-                                                            ? 'bg-indigo-500/15 text-indigo-300'
-                                                            : 'bg-indigo-50 text-indigo-700'
-                                                        : isDark
-                                                        ? 'text-slate-300 hover:text-white hover:bg-white/5'
-                                                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
-                                                }`}
+                                                aria-current={active ? 'page' : undefined}
+                                                className={`${itemBase} ${active ? navActive : itemIdle}`}
                                             >
                                                 <Icon
                                                     size={17}
                                                     strokeWidth={active ? 2.4 : 2}
                                                     className={`transition-all duration-200 group-hover:scale-110 group-active:scale-95 ${
-                                                        active ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                        active ? iconActive : iconIdle
                                                     }`}
                                                 />
                                                 <span>{item.name}</span>
-                                                <span
-                                                    className={`absolute -bottom-[1px] left-3.5 right-3.5 h-0.5 rounded-full bg-indigo-500 transition-transform duration-300 ease-out origin-center ${
-                                                        active ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
-                                                    }`}
-                                                />
+                                                <span className={indicator(active)} />
                                             </Link>
                                         )}
                                     </li>
@@ -256,10 +225,9 @@ const Header = () => {
                         {/* 移动端和平板端菜单按钮 */}
                         <button
                             onClick={toggleMenu}
-                            className={`xl:hidden p-2 rounded-lg transition-colors duration-200 ${
-                                isDark ? 'hover:bg-white/10 text-slate-200' : 'hover:bg-slate-100 text-slate-700'
-                            }`}
                             aria-label="Toggle Menu"
+                            aria-expanded={menuOpen}
+                            className="xl:hidden p-2 rounded-lg transition-colors duration-200 hover:bg-slate-100 text-slate-700 dark:hover:bg-white/10 dark:text-slate-200"
                         >
                             <MenuIcon size={24} />
                         </button>
@@ -276,26 +244,20 @@ const Header = () => {
             >
                 <div
                     ref={menuRef}
-                    className={`fixed top-0 left-0 h-full w-72 max-w-[80vw] shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto ${
+                    className={`fixed top-0 left-0 h-full w-72 max-w-[80vw] shadow-2xl transform transition-transform duration-300 ease-in-out overflow-y-auto bg-white text-slate-900 dark:bg-slate-900 dark:text-white ${
                         menuOpen ? 'translate-x-0' : '-translate-x-full'
-                    } ${isDark ? 'bg-slate-900 text-white' : 'bg-white text-slate-900'}`}
+                    }`}
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="p-4">
-                        <div
-                            className={`flex justify-between items-center mb-6 px-2 pb-4 border-b ${
-                                isDark ? 'border-slate-700/60' : 'border-slate-200'
-                            }`}
-                        >
+                        <div className="flex justify-between items-center mb-6 px-2 pb-4 border-b border-slate-200 dark:border-slate-700/60">
                             <span className="font-extrabold text-lg tracking-tight">
                                 RATE<span>@</span>UM
                             </span>
                             <button
                                 onClick={toggleMenu}
                                 aria-label="Close Menu"
-                                className={`p-2 rounded-lg transition-colors duration-200 ${
-                                    isDark ? 'hover:bg-white/10' : 'hover:bg-slate-100'
-                                }`}
+                                className="p-2 rounded-lg transition-colors duration-200 hover:bg-slate-100 dark:hover:bg-white/10"
                             >
                                 <CloseIcon size={22} />
                             </button>
@@ -313,21 +275,18 @@ const Header = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setExpandedMobile(expanded ? null : item.id)}
+                                                aria-expanded={expanded}
                                                 className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                                                     active
-                                                        ? isDark
-                                                            ? 'bg-indigo-500/15 text-indigo-300'
-                                                            : 'bg-indigo-50 text-indigo-700'
-                                                        : isDark
-                                                        ? 'text-slate-300 hover:bg-white/5'
-                                                        : 'text-slate-600 hover:bg-slate-100/80'
+                                                        ? menuActive
+                                                        : 'text-slate-600 hover:bg-slate-100/80 dark:text-slate-300 dark:hover:bg-white/5'
                                                 }`}
                                             >
                                                 <Icon
                                                     size={18}
                                                     strokeWidth={active ? 2.4 : 2}
                                                     className={`transition-colors duration-200 ${
-                                                        active ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                        active ? iconActive : iconIdle
                                                     }`}
                                                 />
                                                 <span className="flex-1 text-left">{item.name}</span>
@@ -335,7 +294,7 @@ const Header = () => {
                                                     size={16}
                                                     className={`transition-transform duration-200 ${
                                                         expanded ? 'rotate-180' : ''
-                                                    } ${active ? 'text-indigo-500' : 'text-slate-400'}`}
+                                                    } ${active ? iconActive : 'text-slate-400'}`}
                                                 />
                                             </button>
                                             {/* 移动端二级菜单 */}
@@ -352,21 +311,18 @@ const Header = () => {
                                                             <Link
                                                                 href={child.href}
                                                                 onClick={toggleMenu}
+                                                                aria-current={childActive ? 'page' : undefined}
                                                                 className={`group flex items-center gap-2.5 pl-11 pr-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
                                                                     childActive
-                                                                        ? isDark
-                                                                            ? 'bg-indigo-500/15 text-indigo-300'
-                                                                            : 'bg-indigo-50 text-indigo-700'
-                                                                        : isDark
-                                                                        ? 'text-slate-400 hover:bg-white/5 hover:text-white'
-                                                                        : 'text-slate-500 hover:bg-slate-100/80 hover:text-slate-900'
+                                                                        ? menuActive
+                                                                        : 'text-slate-500 hover:bg-slate-100/80 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-white/5 dark:hover:text-white'
                                                                 }`}
                                                             >
                                                                 <ChildIcon
                                                                     size={16}
                                                                     strokeWidth={childActive ? 2.4 : 2}
                                                                     className={`transition-colors duration-200 ${
-                                                                        childActive ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                                        childActive ? iconActive : iconIdle
                                                                     }`}
                                                                 />
                                                                 <span>{child.name}</span>
@@ -384,21 +340,18 @@ const Header = () => {
                                         <Link
                                             href={item.href!}
                                             onClick={toggleMenu}
+                                            aria-current={active ? 'page' : undefined}
                                             className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                                                 active
-                                                    ? isDark
-                                                        ? 'bg-indigo-500/15 text-indigo-300'
-                                                        : 'bg-indigo-50 text-indigo-700'
-                                                    : isDark
-                                                    ? 'text-slate-300 hover:bg-white/5 hover:translate-x-1'
-                                                    : 'text-slate-600 hover:bg-slate-100/80 hover:translate-x-1'
+                                                    ? menuActive
+                                                    : 'text-slate-600 hover:bg-slate-100/80 hover:translate-x-1 dark:text-slate-300 dark:hover:bg-white/5'
                                             }`}
                                         >
                                             <Icon
                                                 size={18}
                                                 strokeWidth={active ? 2.4 : 2}
                                                 className={`transition-colors duration-200 ${
-                                                    active ? 'text-indigo-500' : 'text-slate-400 group-hover:text-indigo-500'
+                                                    active ? iconActive : iconIdle
                                                 }`}
                                             />
                                             <span>{item.name}</span>

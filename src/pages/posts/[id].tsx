@@ -1,139 +1,103 @@
 import { GetStaticPaths, GetStaticProps, InferGetStaticPropsType } from 'next';
-import Head from 'next/head'; // 引入 Head 组件
+import Link from 'next/link';
 import { getPostData, getSortedPostsData } from '@/lib/posts';
-import { useEffect, useRef, useState } from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useTheme } from 'next-themes';
-import { CalendarDays, Clock } from 'lucide-react';
+import Seo from '@/components/Seo';
+import { ArticleContent } from '@/components/ArticleContent';
+import { absoluteUrl, breadcrumbJsonLd } from '@/lib/site';
+import { ArrowLeft, CalendarDays, Clock } from 'lucide-react';
 
 export default function Post({ postData }: InferGetStaticPropsType<typeof getStaticProps>) {
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const dateRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const [cleanHtml, setCleanHtml] = useState('');
-  const { theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  // 动态加载 DOMPurify 并清理 HTML 内容
-  useEffect(() => {
-    import('dompurify').then((module) => {
-      const DOMPurify = module.default(window) as {
-        sanitize: (input: string) => string;
-      };
-      if (postData.contentHtml) {
-        setCleanHtml(DOMPurify.sanitize(postData.contentHtml));
-      }
-    });
-  }, [postData.contentHtml]);
-
-  // IntersectionObserver 逻辑
-  useEffect(() => {
-    const titleElement = titleRef.current;
-    const dateElement = dateRef.current;
-    const contentElement = contentRef.current;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add('opacity-100', 'translate-y-0');
-            observer.unobserve(entry.target);
-          }
-        });
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: postData.title,
+    description: postData.summary || undefined,
+    datePublished: postData.date || undefined,
+    dateModified: postData.date || undefined,
+    image: postData.picture ? [absoluteUrl(postData.picture)] : undefined,
+    author: { '@type': 'Organization', name: 'RATE@UM' },
+    publisher: {
+      '@type': 'Organization',
+      name: 'RATE@UM',
+      logo: {
+        '@type': 'ImageObject',
+        url: absoluteUrl('/logo.png'),
       },
-      {
-        rootMargin: '0px 0px -50px 0px',
-        threshold: 0.1,
-      }
-    );
-
-    if (titleElement) observer.observe(titleElement);
-    if (dateElement) observer.observe(dateElement);
-    if (contentElement) observer.observe(contentElement);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [mounted, theme]); // 依赖 mounted 和 theme
-
-  // 确保组件在客户端渲染后再应用主题
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
-  const isDark = theme === 'dark';
+    },
+    mainEntityOfPage: absoluteUrl(`/posts/${postData.id}`),
+  };
 
   return (
-    <div className={`min-h-screen ${isDark ? 'bg-gray-900' : 'bg-gray-50'}`}>
-      {/* 动态设置 Head 内容 */}
-      <Head>
-        <title>{postData.title} - RATE@UM</title>
-        <meta name="description" content={postData.excerpt || 'A news post from RATE@UM.'} />
-        <meta property="og:title" content={`${postData.title} - RATE@UM`} />
-        <meta property="og:description" content={postData.excerpt || 'A news post from RATE@UM.'} />
-        <meta property="og:type" content="article" />
-      </Head>
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      <Seo
+        title={postData.title}
+        path={`/posts/${postData.id}`}
+        description={postData.summary || 'A news post from RATE@UM.'}
+        image={postData.picture || undefined}
+        type="article"
+        publishedTime={postData.date || undefined}
+        jsonLd={[
+          articleJsonLd,
+          breadcrumbJsonLd([
+            { name: 'Home', path: '/' },
+            { name: 'News', path: '/news' },
+            { name: postData.title, path: `/posts/${postData.id}` },
+          ]),
+        ]}
+      />
 
-      <header>
-        <Header />
-      </header>
+      <Header />
 
-      <main className="container mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-6 sm:pb-10">
+      <main className="container mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-10 sm:pb-14">
         <div className="mx-auto w-full max-w-3xl">
-          {/* 文章卡片 */}
-          <article
-            className={`rounded-xl shadow-md overflow-hidden ${
-              isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
-            }`}
+          <Link
+            href="/news"
+            className="inline-flex items-center gap-1.5 text-sm mb-4 text-slate-500 hover:text-teal-600 dark:text-slate-400 dark:hover:text-teal-400 transition-colors"
           >
-            <div className="px-6 sm:px-8 md:px-10 pt-0 pb-10 sm:pb-12 md:pb-14">
-              <h1
-                ref={titleRef}
-                className={`text-2xl sm:text-3xl md:text-4xl font-extrabold leading-tight mt-0 mb-4 opacity-0 translate-y-10 transition-all duration-500 ${
-                  isDark ? 'text-white' : 'text-gray-900'
-                }`}
-              >
+            <ArrowLeft size={15} />
+            Back to News
+          </Link>
+
+          <article className="rounded-xl shadow-md overflow-hidden bg-white dark:bg-gray-800 text-gray-900 dark:text-white">
+            {/* 顶部学术感细装饰线 */}
+            <div className="h-1 w-full bg-gradient-to-r from-teal-600/80 via-teal-500/35 to-transparent" />
+
+            <div className="px-6 sm:px-8 md:px-10 pt-7 sm:pt-9 pb-10 sm:pb-12">
+              <h1 className="text-2xl sm:text-3xl md:text-[2.15rem] font-bold leading-[1.28] tracking-tight text-gray-900 dark:text-white">
                 {postData.title}
               </h1>
 
-              <div
-                ref={dateRef}
-                className={`flex flex-wrap items-center gap-x-4 gap-y-2 text-sm mb-8 pb-6 border-b opacity-0 translate-y-10 transition-all duration-500 delay-100 ${
-                  isDark ? 'text-slate-400 border-slate-700/60' : 'text-slate-500 border-slate-200'
-                }`}
-              >
-                <span className="flex items-center gap-1.5">
-                  <CalendarDays size={15} strokeWidth={2} className="text-teal-500" />
-                  <span>{postData.date}</span>
+              <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm pb-6 mb-8 border-b border-slate-200 dark:border-slate-700/60 text-slate-500 dark:text-slate-400">
+                <span className="inline-flex items-center gap-1.5">
+                  <CalendarDays size={14} strokeWidth={2} className="text-teal-600 dark:text-teal-400" />
+                  <time dateTime={postData.date}>{postData.date}</time>
                 </span>
                 {postData.readingTime && (
-                  <span className="flex items-center gap-1.5">
-                    <Clock size={15} strokeWidth={2} className="text-teal-500" />
+                  <span className="inline-flex items-center gap-1.5">
+                    <Clock size={14} strokeWidth={2} className="text-teal-600 dark:text-teal-400" />
                     <span>{postData.readingTime} min read</span>
                   </span>
                 )}
+                <span className="ml-auto inline-flex items-center rounded-full border border-teal-600/25 dark:border-teal-400/25 bg-teal-50 dark:bg-teal-500/10 px-2.5 py-0.5 text-xs font-medium tracking-wide text-teal-700 dark:text-teal-300">
+                  News
+                </span>
               </div>
 
-              <div
-                ref={contentRef}
-                className={`prose prose-slate max-w-none prose-headings:font-bold prose-a:text-teal-600 prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg prose-img:mx-auto opacity-0 translate-y-10 transition-all duration-500 delay-200 ${
-                  isDark ? 'prose-invert prose-a:text-teal-400' : ''
-                }`}
-                dangerouslySetInnerHTML={{ __html: cleanHtml }}
-              />
+              {postData.contentHtml ? (
+                <ArticleContent html={postData.contentHtml} />
+              ) : (
+                <p className="text-slate-500 dark:text-slate-400">
+                  This page has no content yet.
+                </p>
+              )}
             </div>
           </article>
         </div>
       </main>
 
-      <footer>
-        <Footer />
-      </footer>
+      <Footer />
     </div>
   );
 }

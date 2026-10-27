@@ -4,11 +4,9 @@ export default function Document() {
   return (
     <Html lang="en">
       <Head>
-        {/* 全局自定义字体（自托管 CDN，避免依赖 Google Fonts） */}
-        <link
-          rel="stylesheet"
-          href="https://static.zeoseven.com/zsft/22/main/result.css"
-        />
+        {/* 字体来源预连接：字体样式表由 _app 异步注入，避免阻塞首屏渲染 */}
+        <link rel="preconnect" href="https://static.zeoseven.com" />
+        <link rel="dns-prefetch" href="//static.zeoseven.com" />
         {/* 百度统计 */}
         <script
           dangerouslySetInnerHTML={{
