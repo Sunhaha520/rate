@@ -24,11 +24,11 @@ export function absoluteUrl(path = '/'): string {
     return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export function organizationJsonLd() {
+export function organizationJsonLd(name: string = SITE_NAME) {
     return {
         '@context': 'https://schema.org',
         '@type': 'ResearchOrganization',
-        name: SITE_NAME,
+        name,
         alternateName:
             'Research Group of Advanced Technologies in Engineering',
         url: SITE_URL,
@@ -47,11 +47,11 @@ export function organizationJsonLd() {
     };
 }
 
-export function websiteJsonLd() {
+export function websiteJsonLd(name: string = SITE_NAME) {
     return {
         '@context': 'https://schema.org',
         '@type': 'WebSite',
-        name: SITE_NAME,
+        name,
         alternateName:
             'Research Group of Advanced Technologies in Engineering',
         url: SITE_URL,

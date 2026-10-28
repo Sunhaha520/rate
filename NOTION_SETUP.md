@@ -397,3 +397,39 @@ NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=xxxxxxxx
 - `Research Topic` 填纯文本，**一行一个方向**；站点会自动拆分成列表，行首的 `•`、`-`、`*` 会自动去掉。
 - `Role` 填纯文本，例如 `Supervisor`、`PhD`、`Master`、`Undergraduate`、`RA`；写成 `PhD Student`、`博士生` 也能识别。
 - 如果 Notion 不允许直接转换类型，可以新建一个同名的 Text 属性，把旧值复制过去后删除旧属性，代码按列名读取，不受影响。
+
+
+## 十六、首页与站点设置（Home / Research Directions）
+
+主页的 Banner、Logo、站点名称、关于文字和研究方向都可以在 Notion 里维护，需要两张表。
+
+### 1. Home 表（站点设置，建议只放一行）
+
+| 属性名（列名） | 类型 | 说明 |
+| -------------- | ---- | ---- |
+| `Site Name` | Text 或 Title | 网站名称，用于顶栏、页脚、浏览器标题后缀 |
+| `Logo` | Files & media | 站点 Logo，同时用作 favicon 和首页关于卡片的图标 |
+| `Banner Image` | Files & media | 首页 Banner 大图 |
+| `Banner Title` | Text | Banner 上的主标题（留空则用网站名称） |
+| `Banner Subtitle` | Text | Banner 副标题，如研究组全称 |
+| `About Title` | Text | 首页介绍卡片标题，如 `Here is RATE@UM` |
+| `About Text` | Text | 首页介绍正文 |
+| `Order` | Number | 有多行时取最小的一条 |
+| `Published` | Checkbox | 勾选后生效 |
+
+网站名称会被 Header、Footer、SEO 标题、JSON-LD 同时使用；Logo 也会作为浏览器标签页图标。
+
+### 2. Research Directions 表（首页研究方向卡片）
+
+表名建议用 `Research Directions`（代码也按表名识别）。
+
+| 属性名（列名） | 类型 | 说明 |
+| -------------- | ---- | ---- |
+| `Name` | Title | 方向名称，显示在卡片下方 |
+| `Image` | Files & media | 方向配图 |
+| `Description` | Text | 简介（可选，当前卡片未展示） |
+| `Link` | URL | 点击卡片跳转的链接（可选） |
+| `Order` | Number | 排序 |
+| `Published` | Checkbox | 勾选后显示 |
+
+没有建表或表里没有记录时，页面继续使用 `src/data/researchDirections.ts` 里的本地数据。修改后约 60 秒（ISR 再生）生效；首屏顶栏/页脚的名字随页面再生更新。

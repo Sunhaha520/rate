@@ -1,11 +1,11 @@
 import Head from 'next/head';
 import type { ReactNode } from 'react';
 import {
-    SITE_NAME,
     SITE_DESCRIPTION,
     DEFAULT_OG_IMAGE,
     absoluteUrl,
 } from '@/lib/site';
+import { useSiteSettings } from '@/lib/site-settings';
 
 interface SeoProps {
     title?: string;
@@ -35,8 +35,9 @@ export function Seo({
     jsonLd,
     children,
 }: SeoProps) {
+    const { siteName } = useSiteSettings();
     const fullTitle =
-        !title || title === SITE_NAME ? SITE_NAME : `${title} | ${SITE_NAME}`;
+        !title || title === siteName ? siteName : `${title} | ${siteName}`;
     const desc = (description || SITE_DESCRIPTION).slice(0, 300);
     const canonical = absoluteUrl(path);
     const imageUrl = absoluteUrl(image || DEFAULT_OG_IMAGE);
@@ -56,7 +57,7 @@ export function Seo({
                 content={noindex ? 'noindex,nofollow' : 'index,follow'}
             />
 
-            <meta property="og:site_name" content={SITE_NAME} />
+            <meta property="og:site_name" content={siteName} />
             <meta property="og:type" content={type} />
             <meta property="og:title" content={fullTitle} />
             <meta property="og:description" content={desc} />

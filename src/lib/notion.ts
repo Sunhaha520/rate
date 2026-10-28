@@ -74,6 +74,30 @@ export function createKeyedCache<T>(
     };
 }
 
+
+// Notion API 偶发 ECONNRESET / 5xx 时做几次退避重试，
+// 避免并行构建或 ISR 再生因为一次网络抖动整体失败。
+export async function withRetry<T>(
+    fn: () => Promise<T>,
+    attempts = 3,
+    delayMs = 400
+): Promise<T> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+        try {
+            return await fn();
+        } catch (err) {
+            lastError = err;
+            if (attempt < attempts - 1) {
+                await new Promise((resolve) =>
+                    setTimeout(resolve, delayMs * (attempt + 1))
+                );
+            }
+        }
+    }
+    throw lastError;
+}
+
 // 判断返回对象是否为完整的 Page 对象（含 properties）
 function isFullPage(
     page: QueryDataSourceResponse['results'][number]
@@ -92,7 +116,9 @@ export type ContentKind =
     | 'publications'
     | 'projects'
     | 'demo'
-    | 'joinus';
+    | 'joinus'
+    | 'home'
+    | 'directions';
 
 const MEMBER_PROP_RE = /role|photo|avatar|头像|角色|研究方向|年级|year/i;
 const NEWS_PROP_RE = /date|summary|picture|日期|摘要|封面|title/i;
@@ -105,6 +131,10 @@ const PROJECT_PROP_RE =
 const DEMO_PROP_RE = /demo|resource|dataset|video|演示|资源|视频|数据集/i;
 const JOINUS_PROP_RE =
     /join|recruit|address|contact|map|招聘|加入|地址|联系|地图/i;
+const HOME_PROP_RE =
+    /site name|banner|logo|subtitle|about|网站名称|站名|横幅|标志|关于/i;
+const DIRECTION_PROP_RE =
+    /research direction|research area|direction|研究方向|研究领域|方向/i;
 
 const dataSourceCache = new Map<ContentKind, Promise<string>>();
 
@@ -136,7 +166,9 @@ async function resolveDataSourceId(kind: ContentKind): Promise<string> {
 
     // 情况一：环境变量直接填的就是 data source ID
     try {
-        await notion.dataSources.retrieve({ data_source_id: configured });
+        await withRetry(() =>
+            notion.dataSources.retrieve({ data_source_id: configured })
+        );
         return configured;
     } catch {
         // 不是 data source，继续按 database ID 处理
@@ -144,9 +176,11 @@ async function resolveDataSourceId(kind: ContentKind): Promise<string> {
 
     let database;
     try {
-        database = await notion.databases.retrieve({
-            database_id: configured,
-        });
+        database = await withRetry(() =>
+            notion.databases.retrieve({
+                database_id: configured,
+            })
+        );
     } catch (err) {
         console.error(`无法读取 Notion 数据库 ${configured}:`, err);
         return '';
@@ -164,9 +198,11 @@ async function resolveDataSourceId(kind: ContentKind): Promise<string> {
     const details = await Promise.all(
         sources.map(async (source) => {
             try {
-                const detail = await notion.dataSources.retrieve({
-                    data_source_id: source.id,
-                });
+                const detail = await withRetry(() =>
+                    notion.dataSources.retrieve({
+                        data_source_id: source.id,
+                    })
+                );
                 const props =
                     'properties' in detail
                         ? Object.keys(detail.properties).join(' ')
@@ -268,6 +304,42 @@ async function resolveDataSourceId(kind: ContentKind): Promise<string> {
         return demoHit?.id ?? '';
     }
 
+    if (kind === 'home') {
+        const homeHit =
+            details.find(
+                (d) =>
+                    !isMember(d) &&
+                    matchKind(d, HOME_PROP_RE, [
+                        EQUIPMENT_PROP_RE,
+                        PUBLICATION_PROP_RE,
+                        PROJECT_PROP_RE,
+                        DEMO_PROP_RE,
+                        JOINUS_PROP_RE,
+                    ])
+            ) ?? details.find((d) => byName(d, /home|homepage|首页/i));
+        return homeHit?.id ?? '';
+    }
+
+    if (kind === 'directions') {
+        const directionHit =
+            details.find(
+                (d) =>
+                    !isMember(d) &&
+                    matchKind(d, DIRECTION_PROP_RE, [
+                        EQUIPMENT_PROP_RE,
+                        PUBLICATION_PROP_RE,
+                        PROJECT_PROP_RE,
+                        DEMO_PROP_RE,
+                        JOINUS_PROP_RE,
+                        HOME_PROP_RE,
+                    ])
+            ) ??
+            details.find((d) =>
+                byName(d, /directions?|research areas?|研究方向/i)
+            );
+        return directionHit?.id ?? '';
+    }
+
     if (kind === 'joinus') {
         const joinHit =
             details.find(
@@ -290,7 +362,9 @@ async function resolveDataSourceId(kind: ContentKind): Promise<string> {
         PUBLICATION_PROP_RE.test(props) ||
         PROJECT_PROP_RE.test(props) ||
         DEMO_PROP_RE.test(props) ||
-        JOINUS_PROP_RE.test(props);
+        JOINUS_PROP_RE.test(props) ||
+        HOME_PROP_RE.test(props) ||
+        DIRECTION_PROP_RE.test(props);
 
     const newsHit =
         details.find(
@@ -467,9 +541,11 @@ async function fetchPublishedPosts(): Promise<NotionPostMeta[]> {
         return [];
     }
 
-    const response = await notion.dataSources.query({
-        data_source_id: dataSourceId,
-    });
+    const response = await withRetry(() =>
+        notion.dataSources.query({
+            data_source_id: dataSourceId,
+        })
+    );
 
     const posts = response.results
         .filter(isFullPage)
@@ -535,7 +611,7 @@ const pageMarkdownCache = createKeyedCache<string>(CONTENT_CACHE_TTL);
 
 export function getPageMarkdown(pageId: string): Promise<string> {
     return pageMarkdownCache(pageId, async () => {
-        const mdBlocks = await n2m.pageToMarkdown(pageId);
+        const mdBlocks = await withRetry(() => n2m.pageToMarkdown(pageId));
         const mdString = n2m.toMarkdownString(mdBlocks);
         // notion-to-md 返回 { parent: string } 结构
         return mdString.parent ?? '';
@@ -829,11 +905,13 @@ async function buildPageRouteIndex(): Promise<Map<string, string>> {
 
             let cursor: string | undefined;
             do {
-                const response = await notion.dataSources.query({
-                    data_source_id: dataSourceId,
-                    start_cursor: cursor,
-                    page_size: 100,
-                });
+                const response = await withRetry(() =>
+                    notion.dataSources.query({
+                        data_source_id: dataSourceId,
+                        start_cursor: cursor,
+                        page_size: 100,
+                    })
+                );
                 for (const page of response.results.filter(isFullPage)) {
                     const route = toRoute(page);
                     if (route) index.set(normalizePageId(page.id), route);

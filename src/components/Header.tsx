@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
+import { useSiteSettings } from '@/lib/site-settings';
 import {
     Home,
     Users,
@@ -36,6 +37,7 @@ interface NavItem {
 }
 
 const Header = () => {
+    const { siteName, logo } = useSiteSettings();
     const [menuOpen, setMenuOpen] = useState(false);
     const [expandedMobile, setExpandedMobile] = useState<number | null>(null);
     const menuRef = useRef<HTMLDivElement>(null);
@@ -100,6 +102,20 @@ const Header = () => {
 
     const toggleMenu = () => setMenuOpen((open) => !open);
 
+    const atIndex = siteName.indexOf('@');
+    const wordmark =
+        atIndex === -1 ? (
+            siteName
+        ) : (
+            <>
+                {siteName.slice(0, atIndex)}
+                <span className="transition-transform duration-300 inline-block group-hover:rotate-12">
+                    @
+                </span>
+                {siteName.slice(atIndex + 1)}
+            </>
+        );
+
     // 导航项的统一配色（激活 / 普通），亮暗两套用 dark: 前缀静态声明，
     // 这样首屏无需等待客户端挂载即可正确显示主题。
     const itemBase =
@@ -126,8 +142,15 @@ const Header = () => {
                     <div className="flex justify-between items-center">
                         {/* Logo */}
                         <Link href="/" className="group flex items-center gap-2 shrink-0">
+                            {logo && (
+                                <img
+                                    src={logo}
+                                    alt=""
+                                    className="h-8 w-8 rounded object-contain"
+                                />
+                            )}
                             <span className="font-extrabold text-xl tracking-tight transition-colors duration-300 text-slate-900 group-hover:text-teal-600 dark:text-white dark:group-hover:text-teal-400">
-                                RATE<span className="transition-transform duration-300 inline-block group-hover:rotate-12">@</span>UM
+                                {wordmark}
                             </span>
                         </Link>
 
@@ -251,8 +274,15 @@ const Header = () => {
                 >
                     <div className="p-4">
                         <div className="flex justify-between items-center mb-6 px-2 pb-4 border-b border-slate-200 dark:border-slate-700/60">
-                            <span className="font-extrabold text-lg tracking-tight">
-                                RATE<span>@</span>UM
+                            <span className="flex items-center gap-2 font-extrabold text-lg tracking-tight">
+                                {logo && (
+                                    <img
+                                        src={logo}
+                                        alt=""
+                                        className="h-7 w-7 rounded object-contain"
+                                    />
+                                )}
+                                {wordmark}
                             </span>
                             <button
                                 onClick={toggleMenu}

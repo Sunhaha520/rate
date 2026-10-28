@@ -2,7 +2,7 @@ import type {
     PageObjectResponse,
     QueryDataSourceResponse,
 } from '@notionhq/client';
-import { notion, findProperty, isNotionHostedImage, normalizeSlug, notionImageProxyUrl } from './notion';
+import { notion, findProperty, isNotionHostedImage, normalizeSlug, notionImageProxyUrl, withRetry } from './notion';
 
 export type NotionProperty = PageObjectResponse['properties'][string];
 
@@ -114,10 +114,12 @@ export async function getPublishedPages(
     let cursor: string | undefined;
 
     do {
-        const response = await notion.dataSources.query({
-            data_source_id: dataSourceId,
-            start_cursor: cursor,
-        });
+        const response = await withRetry(() =>
+            notion.dataSources.query({
+                data_source_id: dataSourceId,
+                start_cursor: cursor,
+            })
+        );
         pages.push(...response.results.filter(isFullPage));
         cursor = response.has_more
             ? response.next_cursor ?? undefined

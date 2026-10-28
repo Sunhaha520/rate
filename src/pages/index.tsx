@@ -3,15 +3,22 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Seo from '@/components/Seo';
 import { researchDirections } from '@/data/researchDirections';
+import {
+    getResearchDirections,
+    type DirectionItem,
+} from '@/lib/notion-directions';
+import { useSiteSettings } from '@/lib/site-settings';
 import { getSortedPostsData, PostData } from '@/lib/posts';
 import Link from 'next/link'; // 引入 Link 组件
 import { CalendarDays, Clock, ArrowRight } from 'lucide-react';
 
 interface HomeProps {
     latestPosts: PostData[];
+    directions: DirectionItem[];
 }
 
-const Home: React.FC<HomeProps> = ({ latestPosts }) => {
+const Home: React.FC<HomeProps> = ({ latestPosts, directions }) => {
+    const settings = useSiteSettings();
     const [loading, setLoading] = useState(true);
 
     // 预加载 Banner 图片
@@ -19,7 +26,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
         const preloadBanner = async () => {
             try {
                 const bannerImage = new Image();
-                bannerImage.src = '/img/bannercover.webp';
+                bannerImage.src = settings.bannerImage;
                 await bannerImage.decode();
             } catch (error) {
                 console.error('Error preloading banner image:', error);
@@ -29,14 +36,14 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
         };
 
         preloadBanner();
-    }, []);
+    }, [settings.bannerImage]);
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
             <Seo
-                title="RATE@UM"
+                title={settings.siteName}
                 path="/"
-                image="/img/bannercover.webp"
+                image={settings.bannerImage}
                 description="RATE@UM is a research group at the University of Macau working on BIM, multi-user AR/VR, construction robotics, computer vision and digital twins for the AECO industry."
             />
             {/* Loading Overlay */}
@@ -53,18 +60,18 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                 <section className="relative mb-12">
                     <div className="relative w-full rounded-xl overflow-hidden flex justify-center items-center">
                         <img
-                            src="/img/bannercover.webp"
-                            alt="Banner"
+                            src={settings.bannerImage}
+                            alt={settings.bannerTitle}
                             className="block w-full h-auto"
                         />
                         {/* 渐变遮罩：底部更深，提升文字可读性 */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/30"></div>
                         <div className="absolute z-10 text-center px-6 max-w-3xl mx-auto">
                             <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight !text-white drop-shadow-lg">
-                                RATE@UM
+                                {settings.bannerTitle}
                             </h1>
                             <p className="mt-3 text-base md:text-xl font-medium !text-white/90 text-center tracking-wide drop-shadow">
-                                Research Group of Advanced Technologies in Engineering
+                                {settings.bannerSubtitle}
                             </p>
                         </div>
                     </div>
@@ -77,7 +84,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         <div className="p-6 md:w-1/3 text-center order-1 md:order-1 flex justify-center">
                             <div className="w-24 h-24 flex items-center justify-center rounded-full bg-white shadow-lg transform transition-transform duration-300 hover:scale-110 shrink-0">
                                 <img
-                                    src="/img/logo.png"
+                                    src={settings.logo}
                                     alt="Logo"
                                     className="w-20 h-20 object-contain rounded-full"
                                 />
@@ -87,10 +94,10 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         {/* Text Section */}
                         <div className="p-6 md:w-2/3 order-1 md:order-2">
                             <h2 className="text-xl font-semibold mb-4 text-center md:text-left dark:text-white">
-                                Here is RATE@UM
+                                {settings.aboutTitle}
                             </h2>
                             <p className="text-gray-700 dark:text-gray-300">
-                                RATE@UM (Research Group of Advanced Technologies in Engineering) is a research group in the Department of Civil and Environment Engineering, Faculty of Engineering at the University of Macau. We are dedicated to driving innovative research and development in civil engineering and other related interdisciplinary fields. Our vision is to develop and leverage collaborative intelligence technologies to integrate human beings, physical environments, and digital twins seamlessly towards a safer and more sustainable future.
+                                {settings.aboutText}
                             </p>
                         </div>
                     </div>
@@ -102,25 +109,32 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         Research Directions
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {researchDirections.map((card) => (
-                            <div
+                        {directions.map((card) => (
+                            <a
                                 key={card.id}
-                                className="card-enter bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105"
+                                href={card.link || undefined}
+                                {...(card.link
+                                    ? {
+                                          target: '_blank',
+                                          rel: 'noopener noreferrer',
+                                      }
+                                    : {})}
+                                className="card-enter block bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105"
                             >
                                 {/* 图片部分 */}
                                 <div className=" bg-gray-200 rounded-t-xl overflow-hidden relative"> {/* 减小高度 */}
                                     <img
                                         src={card.image}
-                                        alt={card.title}
+                                        alt={card.name}
                                         className="object-cover w-full h-full"
                                         loading="lazy"
                                     />
                                 </div>
                                 {/* 内容部分 */}
                                 <div className="p-4 min-h-[80px] flex items-center justify-center"> {/* 减小 padding 和 min-h */}
-                                    <h2 className="text-md font-semibold dark:text-white text-center">{card.title}</h2> {/* 减小字体大小 */}
+                                    <h2 className="text-md font-semibold dark:text-white text-center">{card.name}</h2> {/* 减小字体大小 */}
                                 </div>
-                            </div>
+                            </a>
                         ))}
                     </div>
                 </section>
@@ -227,9 +241,29 @@ export default Home;
 export async function getStaticProps() {
     const allPosts = await getSortedPostsData();
     const latestPosts = allPosts.slice(0, 3);
+
+    let directions: DirectionItem[] = [];
+    try {
+        directions = await getResearchDirections();
+    } catch (err) {
+        console.error('读取 Notion 研究方向失败，使用本地数据:', err);
+    }
+
+    if (directions.length === 0) {
+        directions = researchDirections.map((item, index) => ({
+            id: String(item.id),
+            name: item.title,
+            description: item.description,
+            image: item.image,
+            link: '',
+            order: index,
+        }));
+    }
+
     return {
         props: {
             latestPosts,
+            directions,
         },
         // 每 60 秒增量再生，确保 Notion 更新后网站自动同步
         revalidate: 60,

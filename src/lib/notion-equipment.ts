@@ -11,6 +11,7 @@ import {
     createKeyedCache,
     CONTENT_CACHE_TTL,
     normalizeSlug,
+    withRetry,
 } from './notion';
 
 // 设备卡片数据（/equipment 使用）
@@ -130,10 +131,12 @@ async function queryAllPages(dataSourceId: string): Promise<PageObjectResponse[]
     let cursor: string | undefined;
 
     do {
-        const response = await notion.dataSources.query({
-            data_source_id: dataSourceId,
-            start_cursor: cursor,
-        });
+        const response = await withRetry(() =>
+            notion.dataSources.query({
+                data_source_id: dataSourceId,
+                start_cursor: cursor,
+            })
+        );
         pages.push(...response.results.filter(isFullPage));
         cursor = response.has_more
             ? response.next_cursor ?? undefined
