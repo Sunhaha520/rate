@@ -3,7 +3,11 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Seo from '@/components/Seo';
 import { researchDirections } from '@/data/researchDirections';
-import { getHomeLogo } from '@/lib/notion-home';
+import {
+    getHomeInfo,
+    DEFAULT_HOME_INFO,
+    type HomeInfo,
+} from '@/lib/notion-home';
 import {
     getResearchDirections,
     type DirectionItem,
@@ -14,11 +18,11 @@ import { CalendarDays, Clock, ArrowRight } from 'lucide-react';
 
 interface HomeProps {
     latestPosts: PostData[];
-    logo: string;
+    home: HomeInfo;
     directions: DirectionItem[];
 }
 
-const Home: React.FC<HomeProps> = ({ latestPosts, logo, directions }) => {
+const Home: React.FC<HomeProps> = ({ latestPosts, home, directions }) => {
     const [loading, setLoading] = useState(true);
 
     // 预加载 Banner 图片
@@ -84,7 +88,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts, logo, directions }) => {
                         <div className="p-6 md:w-1/3 text-center order-1 md:order-1 flex justify-center">
                             <div className="w-24 h-24 flex items-center justify-center rounded-full bg-white shadow-lg transform transition-transform duration-300 hover:scale-110 shrink-0">
                                 <img
-                                    src={logo}
+                                    src={home.logo}
                                     alt="Logo"
                                     className="w-20 h-20 object-contain rounded-full"
                                 />
@@ -94,10 +98,10 @@ const Home: React.FC<HomeProps> = ({ latestPosts, logo, directions }) => {
                         {/* Text Section */}
                         <div className="p-6 md:w-2/3 order-1 md:order-2">
                             <h2 className="text-xl font-semibold mb-4 text-center md:text-left dark:text-white">
-                                Here is RATE@UM
+                                {home.aboutTitle}
                             </h2>
                             <p className="text-gray-700 dark:text-gray-300">
-                                RATE@UM (Research Group of Advanced Technologies in Engineering) is a research group in the Department of Civil and Environment Engineering, Faculty of Engineering at the University of Macau. We are dedicated to driving innovative research and development in civil engineering and other related interdisciplinary fields. Our vision is to develop and leverage collaborative intelligence technologies to integrate human beings, physical environments, and digital twins seamlessly towards a safer and more sustainable future.
+                                {home.aboutText}
                             </p>
                         </div>
                     </div>
@@ -246,11 +250,11 @@ export async function getStaticProps() {
     } catch (err) {
         console.error('读取 Notion 新闻失败，首页暂不显示新闻:', err);
     }
-    let logo = '/img/logo.png';
+    let home: HomeInfo = DEFAULT_HOME_INFO;
     try {
-        logo = await getHomeLogo();
+        home = await getHomeInfo();
     } catch (err) {
-        console.error('读取 Notion Home Logo 失败，使用本地 Logo:', err);
+        console.error('读取 Notion Home 内容失败，使用默认内容:', err);
     }
 
     let directions: DirectionItem[] = [];
@@ -273,7 +277,7 @@ export async function getStaticProps() {
     return {
         props: {
             latestPosts,
-            logo,
+            home,
             directions,
         },
         // 每 60 秒增量再生，确保 Notion 更新后网站自动同步

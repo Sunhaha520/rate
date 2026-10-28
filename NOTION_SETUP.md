@@ -401,7 +401,7 @@ NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=xxxxxxxx
 
 ## 十六、首页 Logo 与研究方向（Home / Research Directions）
 
-只把首页的 Logo 和研究方向卡片接到 Notion；Banner、站点名称、关于文字仍然在代码里。
+把首页的 Logo、自我介绍和研究方向卡片接到 Notion；Banner 和站点名称仍然在代码里。
 
 ### 1. Home 表（只放 Logo）
 
@@ -410,6 +410,8 @@ NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=xxxxxxxx
 | 属性名（列名） | 类型 | 说明 |
 | -------------- | ---- | ---- |
 | `Logo` | Files & media | 首页「关于」卡片里的 Logo；没有配置时用 `/img/logo.png` |
+| `About Title` | Text | 自我介绍卡片标题，默认 `Here is RATE@UM` |
+| `About Text` | Text | 自我介绍正文（首页那段介绍研究组的文字） |
 | `Order` | Number | 有多行时取最小的一条 |
 | `Published` | Checkbox | 勾选后生效 |
 

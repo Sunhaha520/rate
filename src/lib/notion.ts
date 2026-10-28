@@ -131,7 +131,8 @@ const PROJECT_PROP_RE =
 const DEMO_PROP_RE = /demo|resource|dataset|video|演示|资源|视频|数据集/i;
 const JOINUS_PROP_RE =
     /join|recruit|address|contact|map|招聘|加入|地址|联系|地图/i;
-const HOME_PROP_RE = /site logo|logo|标志|标识/i;
+const HOME_PROP_RE =
+    /site logo|logo|about|intro|description|标志|标识|关于|介绍|简介/i;
 const DIRECTION_PROP_RE =
     /research direction|research area|direction|研究方向|研究领域|方向/i;
 
@@ -308,12 +309,14 @@ async function resolveDataSourceId(kind: ContentKind): Promise<string> {
             details.find(
                 (d) =>
                     !isMember(d) &&
+                    !/directions?|research areas?|研究方向/i.test(d.name) &&
                     matchKind(d, HOME_PROP_RE, [
                         EQUIPMENT_PROP_RE,
                         PUBLICATION_PROP_RE,
                         PROJECT_PROP_RE,
                         DEMO_PROP_RE,
                         JOINUS_PROP_RE,
+                        DIRECTION_PROP_RE,
                     ])
             ) ?? details.find((d) => byName(d, /home|homepage|首页/i));
         return homeHit?.id ?? '';
