@@ -143,7 +143,13 @@ const News: React.FC<NewsProps> = ({ allPosts }) => {
 export default News;
 
 export async function getStaticProps() {
-    const allPosts = await getSortedPostsData();
+    let allPosts: PostData[] = [];
+    try {
+        allPosts = await getSortedPostsData();
+    } catch (err) {
+        console.error('读取 Notion 新闻失败，新闻列表暂为空:', err);
+    }
+
     return {
         props: {
             allPosts,

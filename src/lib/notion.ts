@@ -116,9 +116,7 @@ export type ContentKind =
     | 'publications'
     | 'projects'
     | 'demo'
-    | 'joinus'
-    | 'home'
-    | 'directions';
+    | 'joinus';
 
 const MEMBER_PROP_RE = /role|photo|avatar|头像|角色|研究方向|年级|year/i;
 const NEWS_PROP_RE = /date|summary|picture|日期|摘要|封面|title/i;
@@ -131,10 +129,6 @@ const PROJECT_PROP_RE =
 const DEMO_PROP_RE = /demo|resource|dataset|video|演示|资源|视频|数据集/i;
 const JOINUS_PROP_RE =
     /join|recruit|address|contact|map|招聘|加入|地址|联系|地图/i;
-const HOME_PROP_RE =
-    /site name|banner|logo|subtitle|about|网站名称|站名|横幅|标志|关于/i;
-const DIRECTION_PROP_RE =
-    /research direction|research area|direction|研究方向|研究领域|方向/i;
 
 const dataSourceCache = new Map<ContentKind, Promise<string>>();
 
@@ -304,42 +298,6 @@ async function resolveDataSourceId(kind: ContentKind): Promise<string> {
         return demoHit?.id ?? '';
     }
 
-    if (kind === 'home') {
-        const homeHit =
-            details.find(
-                (d) =>
-                    !isMember(d) &&
-                    matchKind(d, HOME_PROP_RE, [
-                        EQUIPMENT_PROP_RE,
-                        PUBLICATION_PROP_RE,
-                        PROJECT_PROP_RE,
-                        DEMO_PROP_RE,
-                        JOINUS_PROP_RE,
-                    ])
-            ) ?? details.find((d) => byName(d, /home|homepage|首页/i));
-        return homeHit?.id ?? '';
-    }
-
-    if (kind === 'directions') {
-        const directionHit =
-            details.find(
-                (d) =>
-                    !isMember(d) &&
-                    matchKind(d, DIRECTION_PROP_RE, [
-                        EQUIPMENT_PROP_RE,
-                        PUBLICATION_PROP_RE,
-                        PROJECT_PROP_RE,
-                        DEMO_PROP_RE,
-                        JOINUS_PROP_RE,
-                        HOME_PROP_RE,
-                    ])
-            ) ??
-            details.find((d) =>
-                byName(d, /directions?|research areas?|研究方向/i)
-            );
-        return directionHit?.id ?? '';
-    }
-
     if (kind === 'joinus') {
         const joinHit =
             details.find(
@@ -362,9 +320,7 @@ async function resolveDataSourceId(kind: ContentKind): Promise<string> {
         PUBLICATION_PROP_RE.test(props) ||
         PROJECT_PROP_RE.test(props) ||
         DEMO_PROP_RE.test(props) ||
-        JOINUS_PROP_RE.test(props) ||
-        HOME_PROP_RE.test(props) ||
-        DIRECTION_PROP_RE.test(props);
+        JOINUS_PROP_RE.test(props);
 
     const newsHit =
         details.find(

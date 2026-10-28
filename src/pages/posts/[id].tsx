@@ -103,7 +103,13 @@ export default function Post({ postData }: InferGetStaticPropsType<typeof getSta
 }
 
 export const getStaticPaths: GetStaticPaths = async () => {
-  const posts = await getSortedPostsData();
+  let posts: Awaited<ReturnType<typeof getSortedPostsData>> = [];
+  try {
+    posts = await getSortedPostsData();
+  } catch (err) {
+    console.error('读取 Notion 新闻失败，文章将在访问时按需生成:', err);
+  }
+
   const paths = posts.map((post) => ({
     params: { id: post.id },
   }));
