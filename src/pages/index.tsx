@@ -3,15 +3,22 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import Seo from '@/components/Seo';
 import { researchDirections } from '@/data/researchDirections';
+import { getHomeLogo } from '@/lib/notion-home';
+import {
+    getResearchDirections,
+    type DirectionItem,
+} from '@/lib/notion-directions';
 import { getSortedPostsData, PostData } from '@/lib/posts';
 import Link from 'next/link'; // 引入 Link 组件
 import { CalendarDays, Clock, ArrowRight } from 'lucide-react';
 
 interface HomeProps {
     latestPosts: PostData[];
+    logo: string;
+    directions: DirectionItem[];
 }
 
-const Home: React.FC<HomeProps> = ({ latestPosts }) => {
+const Home: React.FC<HomeProps> = ({ latestPosts, logo, directions }) => {
     const [loading, setLoading] = useState(true);
 
     // 预加载 Banner 图片
@@ -77,7 +84,7 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         <div className="p-6 md:w-1/3 text-center order-1 md:order-1 flex justify-center">
                             <div className="w-24 h-24 flex items-center justify-center rounded-full bg-white shadow-lg transform transition-transform duration-300 hover:scale-110 shrink-0">
                                 <img
-                                    src="/img/logo.png"
+                                    src={logo}
                                     alt="Logo"
                                     className="w-20 h-20 object-contain rounded-full"
                                 />
@@ -102,25 +109,32 @@ const Home: React.FC<HomeProps> = ({ latestPosts }) => {
                         Research Directions
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {researchDirections.map((card) => (
-                            <div
+                        {directions.map((card) => (
+                            <a
                                 key={card.id}
-                                className="card-enter bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105"
+                                href={card.link || undefined}
+                                {...(card.link
+                                    ? {
+                                          target: '_blank',
+                                          rel: 'noopener noreferrer',
+                                      }
+                                    : {})}
+                                className="card-enter block bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden transition-all duration-500 ease-out hover:scale-105"
                             >
                                 {/* 图片部分 */}
                                 <div className=" bg-gray-200 rounded-t-xl overflow-hidden relative"> {/* 减小高度 */}
                                     <img
                                         src={card.image}
-                                        alt={card.title}
+                                        alt={card.name}
                                         className="object-cover w-full h-full"
                                         loading="lazy"
                                     />
                                 </div>
                                 {/* 内容部分 */}
                                 <div className="p-4 min-h-[80px] flex items-center justify-center"> {/* 减小 padding 和 min-h */}
-                                    <h2 className="text-md font-semibold dark:text-white text-center">{card.title}</h2> {/* 减小字体大小 */}
+                                    <h2 className="text-md font-semibold dark:text-white text-center">{card.name}</h2> {/* 减小字体大小 */}
                                 </div>
-                            </div>
+                            </a>
                         ))}
                     </div>
                 </section>
@@ -232,9 +246,35 @@ export async function getStaticProps() {
     } catch (err) {
         console.error('读取 Notion 新闻失败，首页暂不显示新闻:', err);
     }
+    let logo = '/img/logo.png';
+    try {
+        logo = await getHomeLogo();
+    } catch (err) {
+        console.error('读取 Notion Home Logo 失败，使用本地 Logo:', err);
+    }
+
+    let directions: DirectionItem[] = [];
+    try {
+        directions = await getResearchDirections();
+    } catch (err) {
+        console.error('读取 Notion 研究方向失败，使用本地数据:', err);
+    }
+    if (directions.length === 0) {
+        directions = researchDirections.map((item, index) => ({
+            id: String(item.id),
+            name: item.title,
+            description: item.description,
+            image: item.image,
+            link: '',
+            order: index,
+        }));
+    }
+
     return {
         props: {
             latestPosts,
+            logo,
+            directions,
         },
         // 每 60 秒增量再生，确保 Notion 更新后网站自动同步
         revalidate: 60,

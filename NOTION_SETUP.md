@@ -397,3 +397,33 @@ NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=xxxxxxxx
 - `Research Topic` 填纯文本，**一行一个方向**；站点会自动拆分成列表，行首的 `•`、`-`、`*` 会自动去掉。
 - `Role` 填纯文本，例如 `Supervisor`、`PhD`、`Master`、`Undergraduate`、`RA`；写成 `PhD Student`、`博士生` 也能识别。
 - 如果 Notion 不允许直接转换类型，可以新建一个同名的 Text 属性，把旧值复制过去后删除旧属性，代码按列名读取，不受影响。
+
+
+## 十六、首页 Logo 与研究方向（Home / Research Directions）
+
+只把首页的 Logo 和研究方向卡片接到 Notion；Banner、站点名称、关于文字仍然在代码里。
+
+### 1. Home 表（只放 Logo）
+
+新建一张 `Home` 表，一行即可：
+
+| 属性名（列名） | 类型 | 说明 |
+| -------------- | ---- | ---- |
+| `Logo` | Files & media | 首页「关于」卡片里的 Logo；没有配置时用 `/img/logo.png` |
+| `Order` | Number | 有多行时取最小的一条 |
+| `Published` | Checkbox | 勾选后生效 |
+
+### 2. Research Directions 表（研究方向卡片）
+
+表名建议用 `Research Directions`：
+
+| 属性名（列名） | 类型 | 说明 |
+| -------------- | ---- | ---- |
+| `Name` | Title | 研究方向标题（卡片文字） |
+| `Image` | Files & media | 卡片配图 |
+| `Description` | Text | 简介（可选，当前卡片未展示） |
+| `Link` | URL | 点击卡片跳转的链接（可选） |
+| `Order` | Number | 排序 |
+| `Published` | Checkbox | 勾选后显示 |
+
+没有建表或没有记录时，继续使用 `src/data/researchDirections.ts` 和 `/img/logo.png`。修改后约 60 秒（ISR 再生）生效。
