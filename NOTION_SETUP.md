@@ -429,3 +429,27 @@ NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=xxxxxxxx
 | `Published` | Checkbox | 勾选后显示 |
 
 没有建表或没有记录时，继续使用 `src/data/researchDirections.ts` 和 `/img/logo.png`。修改后约 60 秒（ISR 再生）生效。
+
+
+## 十七、视频嵌入（YouTube / Bilibili）
+
+### Demo 视频
+
+在 Demo 表的 `Video` 列直接粘贴链接即可：
+
+- YouTube：`https://www.youtube.com/watch?v=...`、`https://youtu.be/...`、Shorts 链接；
+- Bilibili：`https://www.bilibili.com/video/BV...`（可带 `?p=2`）；
+- 也支持 mp4/webm 直链或 Notion 上传的视频文件。
+
+卡片封面优先用 `Cover`；没有填 `Cover` 时，YouTube 会自动使用官方缩略图，Bilibili 建议手动填一张 Cover。点开弹窗后使用 16:9 的嵌入播放器（直链视频仍用原生播放器）。
+
+### 新闻 / 成员正文
+
+在 Notion 页面正文里插入：
+
+- **Embed** 块，粘贴 YouTube 或 Bilibili 链接；
+- 或 **Video** 块（上传视频 / 粘贴 mp4 直链）。
+
+页面会渲染成响应式的 16:9 播放器。普通文本链接不会自动变成视频，仍按站外链接处理。
+
+注意：Bilibili 播放器在部分网络环境下可能加载较慢；YouTube 使用 `youtube-nocookie.com` 嵌入域。

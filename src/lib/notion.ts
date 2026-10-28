@@ -4,6 +4,7 @@ import { remark } from 'remark';
 import gfm from 'remark-gfm';
 import html from 'remark-html';
 import sanitizeHtml from 'sanitize-html';
+import { parseVideoEmbed, isDirectVideoUrl } from './video-embed';
 import type {
     PageObjectResponse,
     QueryDataSourceResponse,
@@ -776,6 +777,117 @@ n2m.setCustomTransformer('image', async (block) => {
 });
 
 // ============================================================
+// Notion 视频 / 嵌入 -> YouTube / Bilibili / 直链视频播放器
+// 与书签卡片一样，先输出占位符，HTML 清洗后再替换成播放器。
+// ============================================================
+const VIDEO_EMBED_PATTERN = /<p>\s*@@NVIDEO:([0-9a-f]+)@@\s*<\/p>/gi;
+
+interface VideoEmbedPayload {
+    url?: string;
+    embedUrl?: string;
+    provider?: string;
+}
+
+function videoEmbedPlaceholder(payload: VideoEmbedPayload): string {
+    return `@@NVIDEO:${Buffer.from(
+        JSON.stringify(payload),
+        'utf8'
+    ).toString('hex')}@@`;
+}
+
+n2m.setCustomTransformer('embed', async (block) => {
+    const embed = (block as {
+        embed?: {
+            url?: string;
+        };
+    }).embed;
+    if (!embed?.url) return '';
+
+    const info = parseVideoEmbed(embed.url);
+    if (info) {
+        return videoEmbedPlaceholder({
+            url: embed.url,
+            provider: info.provider,
+            embedUrl: info.embedUrl,
+        });
+    }
+
+    // 非视频嵌入保留为普通链接
+    try {
+        const host = new URL(embed.url).hostname.replace(/^www\./, '');
+        return `[${host}](${embed.url})`;
+    } catch {
+        return '';
+    }
+});
+
+n2m.setCustomTransformer('video', async (block) => {
+    const video = (block as {
+        id: string;
+        video?: {
+            type?: string;
+            external?: { url?: string };
+            file?: { url?: string };
+        };
+    });
+    if (!video.video) return '';
+
+    const raw = video.video.external?.url ?? video.video.file?.url ?? '';
+    if (!raw) return '';
+
+    const info = parseVideoEmbed(raw);
+    if (info) {
+        return videoEmbedPlaceholder({
+            url: raw,
+            provider: info.provider,
+            embedUrl: info.embedUrl,
+        });
+    }
+
+    // 直链视频：Notion 上传的文件走代理
+    if (isDirectVideoUrl(raw) || video.video.type === 'file') {
+        const src =
+            video.video.type === 'file'
+                ? `/api/notion-image?blockId=${video.id}`
+                : raw;
+        return videoEmbedPlaceholder({ url: src });
+    }
+
+    return '';
+});
+
+function renderVideoEmbed(encoded: string): string {
+    let payload: VideoEmbedPayload;
+    try {
+        payload = JSON.parse(
+            Buffer.from(encoded, 'hex').toString('utf8')
+        ) as VideoEmbedPayload;
+    } catch {
+        return '';
+    }
+
+    if (payload.embedUrl) {
+        return `<div class="md-embed"><iframe src="${escapeHtml(
+            payload.embedUrl
+        )}" title="Embedded video" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>`;
+    }
+
+    if (payload.url) {
+        return `<div class="md-embed"><video src="${escapeHtml(
+            payload.url
+        )}" controls playsinline preload="metadata"></video></div>`;
+    }
+
+    return '';
+}
+
+function convertVideoEmbeds(html: string): string {
+    return html.replace(VIDEO_EMBED_PATTERN, (_match, encoded: string) =>
+        renderVideoEmbed(encoded)
+    );
+}
+
+// ============================================================
 // Notion 书签 / 链接预览 -> 链接卡片
 // notion-to-md 默认只输出一个 [bookmark](url) 文本链接，标题会丢失。
 // 这里先输出一个占位符，等 HTML 清洗完成后再替换成带样式的链接卡片。
@@ -1130,7 +1242,9 @@ function sanitizeContentHtml(
     });
 
     return addHeadingAnchors(
-        wrapTables(wrapFigures(convertLinkCards(cleaned)))
+        wrapTables(
+            wrapFigures(convertVideoEmbeds(convertLinkCards(cleaned)))
+        )
     );
 }
 

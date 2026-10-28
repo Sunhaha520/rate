@@ -4,6 +4,7 @@ import Footer from '@/components/Footer';
 import Seo from '@/components/Seo';
 import { resources } from '@/data/resources';
 import { getDemoResources, DemoItem } from '@/lib/notion-demo';
+import { parseVideoEmbed, isDirectVideoUrl } from '@/lib/video-embed';
 import { Play, X, ArrowUpRight, ImageIcon } from 'lucide-react';
 
 interface DemoResourcesPageProps {
@@ -14,7 +15,14 @@ interface DemoResourcesPageProps {
 // 直接用视频本身的第一帧当封面（静音、只取元数据，不自动播放）。
 function DemoCover({ item }: { item: DemoItem }) {
     const [coverFailed, setCoverFailed] = useState(false);
+    const [thumbFailed, setThumbFailed] = useState(false);
     const imgRef = useRef<HTMLImageElement>(null);
+    const embed = item.isVideo ? parseVideoEmbed(item.headImage) : null;
+    const canPlayNative =
+        item.isVideo &&
+        !embed &&
+        (isDirectVideoUrl(item.headImage) ||
+            item.headImage.includes('/api/notion-image'));
 
     // SSR 阶段图片可能已经加载失败，onError 来不及绑定；水合后补一次检查
     useEffect(() => {
@@ -38,7 +46,22 @@ function DemoCover({ item }: { item: DemoItem }) {
         );
     }
 
-    if (item.isVideo && item.headImage) {
+    // YouTube 使用官方缩略图
+    if (embed?.thumbnail && !thumbFailed) {
+        return (
+            <img
+                src={embed.thumbnail}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                onError={() => setThumbFailed(true)}
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
+        );
+    }
+
+    // 直链视频（mp4 等）取第一帧；YouTube / Bilibili 不使用 <video>
+    if (canPlayNative) {
         const src = item.headImage.includes('#')
             ? item.headImage
             : `${item.headImage}#t=0.1`;
@@ -55,7 +78,7 @@ function DemoCover({ item }: { item: DemoItem }) {
         );
     }
 
-    if (item.headImage) {
+    if (!embed && !item.isVideo && item.headImage) {
         return (
             <img
                 src={item.headImage}
@@ -80,6 +103,16 @@ function DemoCover({ item }: { item: DemoItem }) {
 
 const DemoResourcesPage: React.FC<DemoResourcesPageProps> = ({ resources }) => {
     const [selected, setSelected] = useState<DemoItem | null>(null);
+    const selectedEmbed =
+        selected && selected.isVideo
+            ? parseVideoEmbed(selected.headImage)
+            : null;
+    const selectedCanPlayNative =
+        Boolean(selected) &&
+        selected!.isVideo &&
+        !selectedEmbed &&
+        (isDirectVideoUrl(selected!.headImage) ||
+            selected!.headImage.includes('/api/notion-image'));
 
     // Esc 关闭 + 打开弹窗时锁定页面滚动
     useEffect(() => {
@@ -241,20 +274,35 @@ const DemoResourcesPage: React.FC<DemoResourcesPageProps> = ({ resources }) => {
                         <div className="min-h-0 flex-1 overflow-y-auto">
                             {(selected.isVideo || selected.headImage) && (
                                 <div className="w-full bg-slate-950">
-                                    {selected.isVideo && selected.headImage ? (
+                                    {selectedEmbed ? (
+                                        <div className="relative h-48 w-full sm:h-auto sm:aspect-video">
+                                            <iframe
+                                                src={selectedEmbed.embedUrl}
+                                                title={selected.title}
+                                                loading="lazy"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                allowFullScreen
+                                                className="absolute inset-0 h-full w-full border-0"
+                                            />
+                                        </div>
+                                    ) : selectedCanPlayNative ? (
                                         <video
                                             src={selected.headImage}
                                             controls
                                             playsInline
                                             className="max-h-[28vh] w-full object-contain sm:max-h-[38vh]"
                                         />
-                                    ) : (
+                                    ) : selected.coverImage || !selected.isVideo ? (
                                         <img
-                                            src={selected.headImage}
+                                            src={
+                                                selected.isVideo
+                                                    ? selected.coverImage
+                                                    : selected.headImage
+                                            }
                                             alt={selected.title}
                                             className="h-40 w-full object-cover sm:h-72"
                                         />
-                                    )}
+                                    ) : null}
                                 </div>
                             )}
 
